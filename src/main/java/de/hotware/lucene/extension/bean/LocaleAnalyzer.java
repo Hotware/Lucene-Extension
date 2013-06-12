@@ -10,9 +10,9 @@ import org.apache.lucene.util.Version;
  * @author Martin Braun
  */
 public enum LocaleAnalyzer {
-	de_DE(new GermanAnalyzer(Version.LUCENE_41)),
-	en_EN(new EnglishAnalyzer(Version.LUCENE_41)),
-	DEFAULT(new StandardAnalyzer(Version.LUCENE_41));
+	de_DE(new GermanAnalyzer(Version.LUCENE_43)),
+	en_EN(new EnglishAnalyzer(Version.LUCENE_43)),
+	DEFAULT(new StandardAnalyzer(Version.LUCENE_43));
 
 	private final Analyzer analyzer;
 

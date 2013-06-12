@@ -290,9 +290,9 @@ public @interface BeanField {
 			}
 
 		},
-		GERMAN_ANALYZER(new GermanAnalyzer(Version.LUCENE_41)),
-		ENGLISH_ANALYZER(new EnglishAnalyzer(Version.LUCENE_41)),
-		STANDARD_ANALYZER(new StandardAnalyzer(Version.LUCENE_41));
+		GERMAN_ANALYZER(new GermanAnalyzer(Version.LUCENE_43)),
+		ENGLISH_ANALYZER(new EnglishAnalyzer(Version.LUCENE_43)),
+		STANDARD_ANALYZER(new StandardAnalyzer(Version.LUCENE_43));
 
 		private final Analyzer analyzer;
 
