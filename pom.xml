@@ -1,38 +1,45 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>de.hotware.lucene.extension.bean</groupId>
-  <!-- artifactIds weden klein und mit 
-	Bindestrichen geschrieben (wie alles bei Maven) -->
-  <artifactId>LuceneBeanExtension</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>LuceneBeanExtension</name>
-  <!-- Falsche URL? -->
-  <url>http://maven.apache.org</url>
-  
-  <!-- SCM-infos fehlen -> Du kannst das Ding ja gar net releasen ...
-	siehe maven-release-plugin
-  -->
-  <!-- Du benutzt da nur Java 1.5? -> maven-compiler-plugin -->
-  
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-	<dependency>
-		<artifactId>lucene-core</artifactId>
-		<groupId>org.apache.lucene</groupId>
-		<type>jar</type>
-		<version>4.3.0</version>
-	</dependency>
-	<dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>4.3.0</version>
-    </dependency>
-  </dependencies>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.hotware.lucene.extension.bean</groupId>
+	<!-- artifactIds werden klein und mit Bindestrichen geschrieben (wie alles 
+		bei Maven) -->
+	<artifactId>lucene-bean-extension</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0</version>
+	<name>LuceneBeanExtension</name>
+	<url>https://github.com/Hotware/LuceneBeanExtension</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+	
+	<scm>
+		<developerConnection>scm:git:https://github.com/Hotware/LuceneBeanExtension.git</developerConnection>
+		<tag>lucene-bean-extension-1.0</tag>
+	</scm>
+
+	<!-- SCM-infos fehlen -> Du kannst das Ding ja gar net releasen ... siehe 
+		maven-release-plugin -->
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<artifactId>lucene-core</artifactId>
+			<groupId>org.apache.lucene</groupId>
+			<type>jar</type>
+			<version>4.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.3.0</version>
+		</dependency>
+	</dependencies>
 </project>
