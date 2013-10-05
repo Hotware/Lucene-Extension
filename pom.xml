@@ -15,6 +15,9 @@
 	</properties>
 	
 	<scm>
+		<connection>
+			scm:git:https://github.com/Hotware/LuceneBeanExtension.git
+		</connection>
 		<developerConnection>scm:git:https://github.com/Hotware/LuceneBeanExtension.git</developerConnection>
 		<tag>lucene-bean-extension-1.0</tag>
 	</scm>
