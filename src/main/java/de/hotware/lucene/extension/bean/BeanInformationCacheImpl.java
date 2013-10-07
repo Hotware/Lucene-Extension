@@ -1,7 +1,12 @@
 package de.hotware.lucene.extension.bean;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,20 +60,42 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 				Field[] fields = clazz.getDeclaredFields();
 				for(Field field : fields) {
 					if(field.isAnnotationPresent(BeanField.class)) {
+						Class<?> fieldClass;
+						List<Type> genericTypes = new ArrayList<Type>();
+						{
+							Type type = field.getGenericType();
+							if(type instanceof ParameterizedType) {
+								ParameterizedType parType = (ParameterizedType) type;
+								fieldClass = (Class<?>) parType.getRawType();
+								//TODO: maybe we want more? i.e. Map<String, List<Integer>>?
+								//we only cover one layer of generics as only the Primitives are allowed
+								//as types in the collections
+								Type[] genericTypeArgs = ((ParameterizedType) type).getActualTypeArguments();
+								genericTypes.addAll(Arrays.asList(genericTypeArgs));
+							} else if(type instanceof GenericArrayType) {
+								//cannot be handled differently
+								//will cause exceptions later in BeanConverterImpl
+								//but this is not the point of this class
+								fieldClass = Object[].class;
+							} else {
+								fieldClass = (Class<?>) type;
+							}
+						}
 						field.setAccessible(true);
 						BeanField bf = field.getAnnotation(BeanField.class);
 						TypeWrapper typeWrapper = bf.type();
 						FieldType fieldType = new FieldType();
 						fieldType.setIndexed(bf.index());
 						fieldType.setStored(bf.store());
-						if(typeWrapper.getNumericType() != null) {
-							fieldType.setNumericType(bf.type().getNumericType());
+						if(typeWrapper != null) {
+							fieldType.setNumericType(typeWrapper.getNumericType());
 						}
 						fieldType.freeze();
 						FieldInformation fieldInformation = new FieldInformation(field,
-								field.getType(),
+								fieldClass,
+								Collections.unmodifiableList(genericTypes),
 								fieldType,
-								field.getAnnotation(BeanField.class));
+								bf);
 						fieldInformations.add(fieldInformation);
 					}
 				}
@@ -89,7 +116,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 			PerFieldAnalyzerWrapper wrapper = this.perFieldAnalyzerWrapperCache
 					.get(clazz);
 			if(wrapper == null) {
-				Analyzer defaultAnalyzer = BeanField.DEFAULT_ANALYZER
+				Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER
 						.getAnalyzer(locale);
 				Map<String, Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
 				for(FieldInformation info : fieldInformations) {

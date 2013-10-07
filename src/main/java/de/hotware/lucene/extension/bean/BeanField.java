@@ -10,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;
-import java.lang.reflect.Array;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
@@ -39,11 +38,7 @@ import org.apache.lucene.util.Version;
 @Retention(RUNTIME)
 public @interface BeanField {
 
-	public static final String DEFAULT_NAME = "#DEFAULT";
-	public static final AnalyzerWrapper DEFAULT_ANALYZER = (AnalyzerWrapper) Util
-			.getDefaultValueForAnnotationMethod(BeanField.class, "analyzer");
-
-	public String name() default DEFAULT_NAME;
+	public String name() default "#DEFAULT";
 
 	public boolean index() default false;
 
@@ -187,33 +182,6 @@ public @interface BeanField {
 
 		public NumericType getNumericType() {
 			return this.numericType;
-		}
-
-		public final void addDocFields(Document document,
-				String name,
-				Object value,
-				FieldType fieldType,
-				Class<?> objectFieldType) {
-			if(objectFieldType.isArray()) {
-				if(value != null) {
-					int size = Array.getLength(value);
-					for(int i = 0; i < size; ++i) {
-						this.handleDocFieldValue(document,
-								name,
-								Array.get(value, i),
-								fieldType,
-								objectFieldType);
-					}
-				}
-			} else {
-				if(value != null) {
-					this.handleDocFieldValue(document,
-							name,
-							value,
-							fieldType,
-							objectFieldType);
-				}
-			}
 		}
 
 		public final Object toBeanValue(IndexableField field) {

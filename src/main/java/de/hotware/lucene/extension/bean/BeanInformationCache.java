@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.lang.reflect.Type;
+
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.FieldType;
 
@@ -22,15 +24,18 @@ public interface BeanInformationCache {
 
 		private final Field field;
 		private final Class<?> fieldClass;
+		private final List<Type> genericTypeArgs;
 		private final FieldType fieldType;
 		private final BeanField beanField;
 
 		protected FieldInformation(Field field,
 				Class<?> fieldClass,
+				List<Type> genericTypeArgs,
 				FieldType fieldType,
 				BeanField beanField) {
 			super();
 			this.field = field;
+			this.genericTypeArgs = genericTypeArgs;
 			this.fieldClass = fieldClass;
 			this.fieldType = fieldType;
 			this.beanField = beanField;
@@ -50,6 +55,10 @@ public interface BeanInformationCache {
 
 		public BeanField getBeanField() {
 			return this.beanField;
+		}
+		
+		public List<Type> getGenericTypeArgs() {
+			return this.genericTypeArgs;
 		}
 
 	}
