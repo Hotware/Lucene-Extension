@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -21,7 +23,7 @@ import junit.framework.TestCase;
 
 public class BeanConverterTest extends TestCase {
 	
-	public class TestBean {
+	public static class TestBean {
 		
 		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER_STRING)
 		public Integer integerStringTest;
@@ -92,7 +94,6 @@ public class BeanConverterTest extends TestCase {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + getOuterType().hashCode();
 			result = prime * result + (booleanPrimTest ? 1231 : 1237);
 			result = prime * result
 					+ ((booleanTest == null) ? 0 : booleanTest.hashCode());
@@ -160,8 +161,6 @@ public class BeanConverterTest extends TestCase {
 			if (getClass() != obj.getClass())
 				return false;
 			TestBean other = (TestBean) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
 			if (booleanPrimTest != other.booleanPrimTest)
 				return false;
 			if (booleanTest == null) {
@@ -259,10 +258,6 @@ public class BeanConverterTest extends TestCase {
 			return true;
 		}
 
-		private BeanConverterTest getOuterType() {
-			return BeanConverterTest.this;
-		}
-		
 	}
 	
 	public final class WrongTypeTest {
@@ -282,62 +277,52 @@ public class BeanConverterTest extends TestCase {
 	}
 
 	public void testBeanConverterImpl() {
-		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
-		System.out.println(converter + " successfully created");
+		new BeanConverterImpl(new BeanInformationCacheImpl());
 	}
 
-	public void testDocumentToBean() {
+	public void testBeanDocumentConversionViceVersa() throws IllegalArgumentException, IllegalAccessException {
 		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
-		Document document = new Document();
-//		IndexableField indexableField = new LongField(name, value, stored)
-//		fail("Not yet implemented");
-	}
-
-	public void testBeanToDocument() throws IllegalArgumentException, IllegalAccessException {
-		
-		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
-		
 		Field[] fields = TestBean.class.getFields();
+		TestBean testBean = new TestBean();
 		for(Field field : fields) {
 			String fieldName = field.getName();
-			TestBean test = new TestBean();
 			Class<?> type = field.getType();
 			if(type.equals(int.class)) {
-				field.setInt(test, Integer.MAX_VALUE);
+				field.setInt(testBean, Integer.MAX_VALUE);
 			} else if(type.equals(long.class)) {
-				field.setLong(test, Long.MAX_VALUE);
+				field.setLong(testBean, Long.MAX_VALUE);
 			} else if(type.equals(double.class)) {
-				field.setDouble(test, Double.MAX_VALUE);
+				field.setDouble(testBean, Double.MAX_VALUE);
 			} else if(type.equals(float.class)) {
-				field.setFloat(test, Float.MAX_VALUE);
+				field.setFloat(testBean, Float.MAX_VALUE);
 			} else if(type.equals(boolean.class)) {
-				field.setBoolean(test, true);
+				field.setBoolean(testBean, true);
 			} else if(type.equals(Integer.class)) {
-				field.set(test, Integer.MAX_VALUE);
+				field.set(testBean, Integer.MAX_VALUE);
 			} else if(type.equals(Long.class)) {
-				field.set(test, Long.MAX_VALUE);
+				field.set(testBean, Long.MAX_VALUE);
 			} else if(type.equals(Double.class)) {
-				field.set(test, Double.MAX_VALUE);
+				field.set(testBean, Double.MAX_VALUE);
 			} else if(type.equals(Float.class)) {
-				field.set(test, Float.MAX_VALUE);
+				field.set(testBean, Float.MAX_VALUE);
 			} else if(type.equals(Boolean.class)) {
-				field.set(test, true);
+				field.set(testBean, true);
 			} else if(type.equals(String.class)) {	
-				field.set(test, "Test");
+				field.set(testBean, "Test");
 			} else if(type.equals(Object.class)) {
-				field.set(test, new Date());
+				field.set(testBean, new Date());
 			} else {
 				fail("type is not handled in the Unit-Test, please add " + type);
 			}
-			Document document = converter.beanToDocument(test);
+			Document document = converter.beanToDocument(testBean);
 			//check if all values are stored the same way they were entered
 			if(fieldName.equals("serializeTest")) {
 				System.out.println("doing serialize equality test.");
-				assertTrue(Arrays.equals(toSerializedLuceneValue(field.get(test)), 
+				assertTrue(Arrays.equals(toSerializedLuceneValue(field.get(testBean)), 
 						document.getBinaryValue(fieldName).bytes));
 			} else if(fieldName.equals("customNameTest")) {
 				System.out.println("doing custom name equality test.");
-				String originalValue = (String) field.get(test);
+				String originalValue = (String) field.get(testBean);
 				String documentValue = document.get("customName");
 				assertEquals(originalValue, documentValue);
 			} else if(fieldName.equals("notAnnotatedTest")) {
@@ -348,18 +333,41 @@ public class BeanConverterTest extends TestCase {
 				//can do this without checking for a present annotation
 				BeanField bf = field.getAnnotation(BeanField.class);
 				System.out.println("doing " + bf.type() +" tests on \"" +  fieldName + "\".");
-				assertEquals(field.get(test).toString(), document.get(fieldName));
+				assertEquals(field.get(testBean).toString(), document.get(fieldName));
 				IndexableField indexField = document.getField(fieldName);
 				IndexableFieldType indexFieldType = indexField.fieldType();
 				assertEquals(bf.store(), indexFieldType.stored());
 				assertEquals(bf.index(), indexFieldType.indexed());
+				//TODO: test if fieldType is correct?
 			}
 		}
 		
-	}	
-
-	public void testGetAnalyzer() {
-//		fail("Not yet implemented");
+		//now that all the conversion works we can safely generate
+		//a document with that and work backwards :)
+		System.out.println("doing reverse conversion (document to bean) test.");
+		Document document = converter.beanToDocument(testBean);
+		TestBean reverseBean = converter.documentToBean(TestBean.class, document);
+		assertEquals(testBean, reverseBean);		
+		
+		System.out.println("Result: conversion test successfull.");
+	}
+	
+	public void testWrongType() {
+		System.out.println("testing with malformed beans.");
+		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
+		try {
+			WrongTypeTest wrongTypeTest = new WrongTypeTest();
+			//really awkward type. :)
+			wrongTypeTest.wrongType = new HashMap<Object, GregorianCalendar>();
+			converter.beanToDocument(wrongTypeTest);
+			fail("Exception expected");
+		} catch(IllegalArgumentException e) {
+		}
+		try {
+			converter.beanToDocument(WrongTypeTest.class);
+			fail("Exception expected");
+		} catch(IllegalArgumentException e) {
+		}
 	}
 	
 	protected static byte[] toSerializedLuceneValue(Object value) {

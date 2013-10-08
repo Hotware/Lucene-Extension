@@ -312,12 +312,19 @@ public class BeanConverterImpl implements BeanConverter {
 			if(typeWrapper == null) {
 				throw new IllegalArgumentException("typeWrapper may not be null");
 			}
-			if(typeWrapper != TypeWrapper.SERIALIZED) {
-				if(!ALL_TYPES.contains(objectFieldClass)) {
-					throw new IllegalArgumentException("type of Java-Bean field not supported");
-				}
+			if(typeWrapper != TypeWrapper.SERIALIZED && !ALL_TYPES.contains(objectFieldClass)) {
+				throw new IllegalArgumentException("type of Java-Bean field not supported");
 			}
 			TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
+			if(typeHandler == null) {
+				if(typeWrapper == TypeWrapper.SERIALIZED) {
+					//serialisation is handled like a default object
+					typeHandler = TypeHandler.DEFAULT;
+				} else {
+					throw new AssertionError("typeHandler was null at a point where the typeHandler"
+							+ " may only be null if typeWrapper is SERIALIZED");
+				}
+			}
 			typeHandler.writeDocumentInfoToBean(fieldInformation, document, ret);	
 		}
 		if(!foundAnnotation) {
@@ -339,12 +346,9 @@ public class BeanConverterImpl implements BeanConverter {
 			Class<?> objectFieldType = fieldInformation.getFieldClass();
 			Class<?> objectFieldClass = fieldInformation.getFieldClass();
 			TypeWrapper typeWrapper = bf.type();
-			if(typeWrapper != TypeWrapper.SERIALIZED &&
-					(!PLAIN_TYPES.contains(objectFieldType) &&
-							objectFieldType.isArray() && !PLAIN_TYPES
-								.contains(objectFieldType.getComponentType()))) {
+			if(typeWrapper != TypeWrapper.SERIALIZED &&!ALL_TYPES.contains(objectFieldType)) {
 				throw new IllegalArgumentException("only primitive types and "
-						+ "their array-types are allowed");
+						+ "Lists/Sets of them are allowed");
 			}
 			TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
 			if(typeHandler == null) {
