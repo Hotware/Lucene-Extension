@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -27,6 +29,8 @@ import de.hotware.lucene.extension.bean.BeanInformationCache.FieldInformation;
  * @author Martin Braun
  */
 public class BeanConverterImpl implements BeanConverter {
+	
+	private final static Logger LOGGER = Logger.getLogger(BeanConverterImpl.class.getName());
 
 	private static final Set<Class<?>> PLAIN_TYPES;
 	static {
@@ -147,7 +151,7 @@ public class BeanConverterImpl implements BeanConverter {
 							throw new RuntimeException(e);
 						}
 					} else {
-						//TODO: log that there are more than one value in an non List/Set field
+						LOGGER.log(Level.WARNING, "more than one value in an non List/Set field.");
 					}
 				}
 			
@@ -300,7 +304,6 @@ public class BeanConverterImpl implements BeanConverter {
 		} catch(IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
-		//TODO: do this from the document to the bean not the other way around
 		List<FieldInformation> fieldInformations = this.cache
 				.getFieldInformations(clazz);
 		boolean foundAnnotation = false;

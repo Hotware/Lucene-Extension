@@ -15,7 +15,6 @@ import org.apache.lucene.document.FieldType;
  */
 public interface BeanInformationCache {
 
-	//TODO: MAP???
 	public List<FieldInformation> getFieldInformations(Class<?> clazz);
 
 	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz,
