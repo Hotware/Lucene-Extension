@@ -129,6 +129,14 @@ public @interface BeanField {
 			}
 
 		},
+		LONG_STRING(null) {
+			
+			@Override
+			public Object toBeanValueInternal(Object value) {
+				return Long.parseLong((String) value);
+			}
+			
+		},
 		STRING(null),
 		BOOLEAN(null) {
 

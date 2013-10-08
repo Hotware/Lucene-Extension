@@ -14,6 +14,18 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	
+	<build>
+		<plugins>
+	        <plugin>
+	            <artifactId>maven-compiler-plugin</artifactId>
+	            <configuration>
+	                <source>1.7</source>
+	                <target>1.7</target>
+	            </configuration>
+	        </plugin>
+	    </plugins>
+	</build>
+	
 	<scm>
 		<connection>
 			scm:git:https://github.com/Hotware/LuceneBeanExtension.git
@@ -21,9 +33,6 @@
 		<developerConnection>scm:git:git@github.com:Hotware/LuceneBeanExtension.git</developerConnection>
 		<tag>lucene-bean-extension-1.0</tag>
 	</scm>
-
-	<!-- SCM-infos fehlen -> Du kannst das Ding ja gar net releasen ... siehe 
-		maven-release-plugin -->
 
 	<dependencies>
 		<dependency>

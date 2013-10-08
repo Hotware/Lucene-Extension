@@ -80,6 +80,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 							} else {
 								fieldClass = (Class<?>) type;
 							}
+							//TODO: what about WildcardType and TypeVariable
 						}
 						field.setAccessible(true);
 						BeanField bf = field.getAnnotation(BeanField.class);
@@ -136,6 +137,16 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 		} finally {
 			this.perFieldAnalyzerWrapperCacheLock.unlock();
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "BeanInformationCacheImpl [annotatedFieldsCache="
+				+ annotatedFieldsCache + ", annotatedFieldsCacheLock="
+				+ annotatedFieldsCacheLock + ", perFieldAnalyzerWrapperCache="
+				+ perFieldAnalyzerWrapperCache
+				+ ", perFieldAnalyzerWrapperCacheLock="
+				+ perFieldAnalyzerWrapperCacheLock + "]";
 	}
 
 }

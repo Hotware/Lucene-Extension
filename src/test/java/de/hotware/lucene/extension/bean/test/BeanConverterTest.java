@@ -1,0 +1,385 @@
+package de.hotware.lucene.extension.bean.test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Date;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.IndexableFieldType;
+
+import de.hotware.lucene.extension.bean.BeanConverter;
+import de.hotware.lucene.extension.bean.BeanConverterImpl;
+import de.hotware.lucene.extension.bean.BeanField;
+import de.hotware.lucene.extension.bean.BeanField.AnalyzerWrapper;
+import de.hotware.lucene.extension.bean.BeanInformationCacheImpl;
+import de.hotware.lucene.extension.bean.BeanField.TypeWrapper;
+import junit.framework.TestCase;
+
+public class BeanConverterTest extends TestCase {
+	
+	public class TestBean {
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER_STRING)
+		public Integer integerStringTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER)
+		public Integer integerTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER_STRING)
+		public int integerPrimStringTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER)
+		public int integerPrimTest;
+
+		@BeanField(store = true, index = true, type = TypeWrapper.LONG_STRING)
+		public Long longStringTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.LONG)
+		public Long longTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.LONG_STRING)
+		public long longStringPrimTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.LONG)
+		public long longPrimTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT)
+		public Float floatTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT_STRING)
+		public Float floatStringTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT)
+		public float floatPrimTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT_STRING)
+		public float floatStringPrimTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE)
+		public Double doubleTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE_STRING)
+		public Double doubleStringTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE)
+		public double doublePrimTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE_STRING)
+		public double doubleStringPrimTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.BOOLEAN)
+		public Boolean booleanTest;
+		@BeanField(store = true, index = true, type = TypeWrapper.BOOLEAN)
+		public boolean booleanPrimTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		public String stringTest;
+		
+		@BeanField(store = false, index = true, type = TypeWrapper.STRING)
+		public String notStoredButIndexedTest;
+		@BeanField(store = true, index = false, type = TypeWrapper.STRING)
+		public String notIndexedButStoredTest;
+		
+		@BeanField(store = false, index = true, type = TypeWrapper.STRING, analyzer = AnalyzerWrapper.KEY_WORD_ANALYZER)
+		public String customAnalyzerTest;
+		
+		//index is ignored, so do whatever you want here
+		@BeanField(store = true, index = false, type = TypeWrapper.SERIALIZED)
+		public Object serializeTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.STRING, name = "customName")
+		public String customNameTest;
+		
+		public String notAnnotatedTest;
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + (booleanPrimTest ? 1231 : 1237);
+			result = prime * result
+					+ ((booleanTest == null) ? 0 : booleanTest.hashCode());
+			result = prime
+					* result
+					+ ((customAnalyzerTest == null) ? 0 : customAnalyzerTest
+							.hashCode());
+			long temp;
+			temp = Double.doubleToLongBits(doublePrimTest);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(doubleStringPrimTest);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			result = prime
+					* result
+					+ ((doubleStringTest == null) ? 0 : doubleStringTest
+							.hashCode());
+			result = prime * result
+					+ ((doubleTest == null) ? 0 : doubleTest.hashCode());
+			result = prime * result + Float.floatToIntBits(floatPrimTest);
+			result = prime * result + Float.floatToIntBits(floatStringPrimTest);
+			result = prime
+					* result
+					+ ((floatStringTest == null) ? 0 : floatStringTest
+							.hashCode());
+			result = prime * result
+					+ ((floatTest == null) ? 0 : floatTest.hashCode());
+			result = prime * result + integerPrimStringTest;
+			result = prime * result + integerPrimTest;
+			result = prime
+					* result
+					+ ((integerStringTest == null) ? 0 : integerStringTest
+							.hashCode());
+			result = prime * result
+					+ ((integerTest == null) ? 0 : integerTest.hashCode());
+			result = prime * result
+					+ (int) (longPrimTest ^ (longPrimTest >>> 32));
+			result = prime * result
+					+ (int) (longStringPrimTest ^ (longStringPrimTest >>> 32));
+			result = prime
+					* result
+					+ ((longStringTest == null) ? 0 : longStringTest.hashCode());
+			result = prime * result
+					+ ((longTest == null) ? 0 : longTest.hashCode());
+			result = prime
+					* result
+					+ ((notIndexedButStoredTest == null) ? 0
+							: notIndexedButStoredTest.hashCode());
+			result = prime
+					* result
+					+ ((notStoredButIndexedTest == null) ? 0
+							: notStoredButIndexedTest.hashCode());
+			result = prime * result
+					+ ((serializeTest == null) ? 0 : serializeTest.hashCode());
+			result = prime * result
+					+ ((stringTest == null) ? 0 : stringTest.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			TestBean other = (TestBean) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (booleanPrimTest != other.booleanPrimTest)
+				return false;
+			if (booleanTest == null) {
+				if (other.booleanTest != null)
+					return false;
+			} else if (!booleanTest.equals(other.booleanTest))
+				return false;
+			if (customAnalyzerTest == null) {
+				if (other.customAnalyzerTest != null)
+					return false;
+			} else if (!customAnalyzerTest.equals(other.customAnalyzerTest))
+				return false;
+			if (Double.doubleToLongBits(doublePrimTest) != Double
+					.doubleToLongBits(other.doublePrimTest))
+				return false;
+			if (Double.doubleToLongBits(doubleStringPrimTest) != Double
+					.doubleToLongBits(other.doubleStringPrimTest))
+				return false;
+			if (doubleStringTest == null) {
+				if (other.doubleStringTest != null)
+					return false;
+			} else if (!doubleStringTest.equals(other.doubleStringTest))
+				return false;
+			if (doubleTest == null) {
+				if (other.doubleTest != null)
+					return false;
+			} else if (!doubleTest.equals(other.doubleTest))
+				return false;
+			if (Float.floatToIntBits(floatPrimTest) != Float
+					.floatToIntBits(other.floatPrimTest))
+				return false;
+			if (Float.floatToIntBits(floatStringPrimTest) != Float
+					.floatToIntBits(other.floatStringPrimTest))
+				return false;
+			if (floatStringTest == null) {
+				if (other.floatStringTest != null)
+					return false;
+			} else if (!floatStringTest.equals(other.floatStringTest))
+				return false;
+			if (floatTest == null) {
+				if (other.floatTest != null)
+					return false;
+			} else if (!floatTest.equals(other.floatTest))
+				return false;
+			if (integerPrimStringTest != other.integerPrimStringTest)
+				return false;
+			if (integerPrimTest != other.integerPrimTest)
+				return false;
+			if (integerStringTest == null) {
+				if (other.integerStringTest != null)
+					return false;
+			} else if (!integerStringTest.equals(other.integerStringTest))
+				return false;
+			if (integerTest == null) {
+				if (other.integerTest != null)
+					return false;
+			} else if (!integerTest.equals(other.integerTest))
+				return false;
+			if (longPrimTest != other.longPrimTest)
+				return false;
+			if (longStringPrimTest != other.longStringPrimTest)
+				return false;
+			if (longStringTest == null) {
+				if (other.longStringTest != null)
+					return false;
+			} else if (!longStringTest.equals(other.longStringTest))
+				return false;
+			if (longTest == null) {
+				if (other.longTest != null)
+					return false;
+			} else if (!longTest.equals(other.longTest))
+				return false;
+			if (notIndexedButStoredTest == null) {
+				if (other.notIndexedButStoredTest != null)
+					return false;
+			} else if (!notIndexedButStoredTest
+					.equals(other.notIndexedButStoredTest))
+				return false;
+			if (notStoredButIndexedTest == null) {
+				if (other.notStoredButIndexedTest != null)
+					return false;
+			} else if (!notStoredButIndexedTest
+					.equals(other.notStoredButIndexedTest))
+				return false;
+			if (serializeTest == null) {
+				if (other.serializeTest != null)
+					return false;
+			} else if (!serializeTest.equals(other.serializeTest))
+				return false;
+			if (stringTest == null) {
+				if (other.stringTest != null)
+					return false;
+			} else if (!stringTest.equals(other.stringTest))
+				return false;
+			return true;
+		}
+
+		private BeanConverterTest getOuterType() {
+			return BeanConverterTest.this;
+		}
+		
+	}
+	
+	public final class WrongTypeTest {
+		
+		//not being serialized -> exception is expected when used with the BeanConverter
+		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		public Object wrongType;
+		
+	}
+
+	protected void setUp() throws Exception {
+		super.setUp();
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+
+	public void testBeanConverterImpl() {
+		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
+		System.out.println(converter + " successfully created");
+	}
+
+	public void testDocumentToBean() {
+		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
+		Document document = new Document();
+//		IndexableField indexableField = new LongField(name, value, stored)
+//		fail("Not yet implemented");
+	}
+
+	public void testBeanToDocument() throws IllegalArgumentException, IllegalAccessException {
+		
+		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
+		
+		Field[] fields = TestBean.class.getFields();
+		for(Field field : fields) {
+			String fieldName = field.getName();
+			TestBean test = new TestBean();
+			Class<?> type = field.getType();
+			if(type.equals(int.class)) {
+				field.setInt(test, Integer.MAX_VALUE);
+			} else if(type.equals(long.class)) {
+				field.setLong(test, Long.MAX_VALUE);
+			} else if(type.equals(double.class)) {
+				field.setDouble(test, Double.MAX_VALUE);
+			} else if(type.equals(float.class)) {
+				field.setFloat(test, Float.MAX_VALUE);
+			} else if(type.equals(boolean.class)) {
+				field.setBoolean(test, true);
+			} else if(type.equals(Integer.class)) {
+				field.set(test, Integer.MAX_VALUE);
+			} else if(type.equals(Long.class)) {
+				field.set(test, Long.MAX_VALUE);
+			} else if(type.equals(Double.class)) {
+				field.set(test, Double.MAX_VALUE);
+			} else if(type.equals(Float.class)) {
+				field.set(test, Float.MAX_VALUE);
+			} else if(type.equals(Boolean.class)) {
+				field.set(test, true);
+			} else if(type.equals(String.class)) {	
+				field.set(test, "Test");
+			} else if(type.equals(Object.class)) {
+				field.set(test, new Date());
+			} else {
+				fail("type is not handled in the Unit-Test, please add " + type);
+			}
+			Document document = converter.beanToDocument(test);
+			//check if all values are stored the same way they were entered
+			if(fieldName.equals("serializeTest")) {
+				System.out.println("doing serialize equality test.");
+				assertTrue(Arrays.equals(toSerializedLuceneValue(field.get(test)), 
+						document.getBinaryValue(fieldName).bytes));
+			} else if(fieldName.equals("customNameTest")) {
+				System.out.println("doing custom name equality test.");
+				String originalValue = (String) field.get(test);
+				String documentValue = document.get("customName");
+				assertEquals(originalValue, documentValue);
+			} else if(fieldName.equals("notAnnotatedTest")) {
+				System.out.println("doing not annotated test.");
+				assertEquals(null, document.get(fieldName));
+			} else {
+				//normally a check is needed, but in the test-case we
+				//can do this without checking for a present annotation
+				BeanField bf = field.getAnnotation(BeanField.class);
+				System.out.println("doing " + bf.type() +" tests on \"" +  fieldName + "\".");
+				assertEquals(field.get(test).toString(), document.get(fieldName));
+				IndexableField indexField = document.getField(fieldName);
+				IndexableFieldType indexFieldType = indexField.fieldType();
+				assertEquals(bf.store(), indexFieldType.stored());
+				assertEquals(bf.index(), indexFieldType.indexed());
+			}
+		}
+		
+	}	
+
+	public void testGetAnalyzer() {
+//		fail("Not yet implemented");
+	}
+	
+	protected static byte[] toSerializedLuceneValue(Object value) {
+		ObjectOutputStream out = null;
+		try {
+			ByteArrayOutputStream serData = new ByteArrayOutputStream();
+			out = new ObjectOutputStream(serData);
+			out.writeObject(value);
+			return serData.toByteArray();
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if(out != null) {
+				try {
+					out.close();
+				} catch(IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+	}
+
+}

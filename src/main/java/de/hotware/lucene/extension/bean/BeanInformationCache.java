@@ -15,6 +15,7 @@ import org.apache.lucene.document.FieldType;
  */
 public interface BeanInformationCache {
 
+	//TODO: MAP???
 	public List<FieldInformation> getFieldInformations(Class<?> clazz);
 
 	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz,
@@ -61,6 +62,14 @@ public interface BeanInformationCache {
 			return this.genericTypeArgs;
 		}
 
+		@Override
+		public String toString() {
+			return "FieldInformation [field=" + field + ", fieldClass="
+					+ fieldClass + ", genericTypeArgs=" + genericTypeArgs
+					+ ", fieldType=" + fieldType + ", beanField=" + beanField
+					+ "]";
+		}
+
 	}
 
 	public static final class CacheMap<K, V> extends LinkedHashMap<K, V> {
@@ -76,6 +85,11 @@ public interface BeanInformationCache {
 		@Override
 		protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
 			return this.size() > this.size;
+		}
+
+		@Override
+		public String toString() {
+			return "CacheMap [size=" + size + "]";
 		}
 
 	}

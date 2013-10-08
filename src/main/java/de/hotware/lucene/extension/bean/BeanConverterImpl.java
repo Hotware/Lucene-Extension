@@ -37,38 +37,15 @@ public class BeanConverterImpl implements BeanConverter {
 			tmp.add(Float.class);
 			tmp.add(Double.class);
 			tmp.add(Long.class);
-			tmp.add(Character.class);
-			tmp.add(Byte.class);
 			tmp.add(Boolean.class);
-			tmp.add(Short.class);
 			tmp.add(int.class);
 			tmp.add(float.class);
 			tmp.add(double.class);
 			tmp.add(long.class);
-			tmp.add(char.class);
-			tmp.add(byte.class);
 			tmp.add(boolean.class);
-			tmp.add(short.class);
 			//and strings
 			tmp.add(String.class);
 			PLAIN_TYPES = Collections.unmodifiableSet(tmp);
-		}
-	}
-	
-	private static final Set<Class<?>> ARRAY_TYPES;
-	static {
-		{
-			Set<Class<?>> tmp = new HashSet<Class<?>>();
-			for(Class<?> clazz : PLAIN_TYPES) {
-				Class<?> arrayClass;
-				try {
-					arrayClass = Class.forName("[L"+ clazz.getName() +";");
-				} catch (ClassNotFoundException e) {
-					throw new AssertionError(e);
-				}
-				tmp.add(arrayClass);
-			}
-			ARRAY_TYPES = Collections.unmodifiableSet(tmp);
 		}
 	}
 	
@@ -76,9 +53,6 @@ public class BeanConverterImpl implements BeanConverter {
 	static {
 		{
 			Set<Class<?>> tmp = new HashSet<Class<?>>();
-			tmp.addAll(ARRAY_TYPES);
-			//and strings
-			tmp.add(String[].class);
 			//and one dimensional collections
 			tmp.add(List.class);
 			tmp.add(Set.class);
@@ -326,6 +300,7 @@ public class BeanConverterImpl implements BeanConverter {
 		} catch(IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+		//TODO: do this from the document to the bean not the other way around
 		List<FieldInformation> fieldInformations = this.cache
 				.getFieldInformations(clazz);
 		boolean foundAnnotation = false;
@@ -372,6 +347,15 @@ public class BeanConverterImpl implements BeanConverter {
 						+ "their array-types are allowed");
 			}
 			TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
+			if(typeHandler == null) {
+				if(typeWrapper == TypeWrapper.SERIALIZED) {
+					//serialisation is handled like a default object
+					typeHandler = TypeHandler.DEFAULT;
+				} else {
+					throw new AssertionError("typeHandler was null at a point where the typeHandler"
+							+ " may only be null if typeWrapper is SERIALIZED");
+				}
+			}
 			typeHandler.writeBeanInfoToDocument(fieldInformation, bean, ret);	
 		}
 		if(!foundAnnotation) {
@@ -385,6 +369,11 @@ public class BeanConverterImpl implements BeanConverter {
 		return this.cache.getPerFieldAnalyzerWrapper(clazz,
 				this.cache.getFieldInformations(clazz),
 				locale);
+	}
+
+	@Override
+	public String toString() {
+		return "BeanConverterImpl [cache=" + cache + "]";
 	}
 
 }
