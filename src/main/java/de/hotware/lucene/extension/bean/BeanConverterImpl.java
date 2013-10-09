@@ -222,7 +222,7 @@ public class BeanConverterImpl implements BeanConverter {
 					values.add(typeWrapper.toBeanValue(cur));
 				}
 				if(values.size() > 0) {
-					if(values.size() == 1)
+					if(values.size() == 1) {
 						try {
 							field.set(dest, values.get(0));
 						} catch(IllegalArgumentException e) {
@@ -231,9 +231,10 @@ public class BeanConverterImpl implements BeanConverter {
 							throw new RuntimeException(e);
 						}
 					} else {
-						LOGGER.log(Level.WARNING, "more than one value in an non List/Set field.");
+						LOGGER.log(Level.WARNING, "more than one value in an non List/Set field: " + values);
 					}
 				}
+			}
 			
 		}, LIST {
 			

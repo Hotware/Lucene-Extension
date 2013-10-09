@@ -4,10 +4,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -81,6 +85,15 @@ public class BeanConverterTest extends TestCase {
 		@BeanField(store = false, index = true, type = TypeWrapper.STRING, analyzer = AnalyzerWrapper.KEY_WORD_ANALYZER)
 		public String customAnalyzerTest;
 		
+		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		public List<String> listTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		public Set<String> setTest;
+		
+		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		public Set<String> emptySetTest;
+		
 		//index is ignored, so do whatever you want here
 		@BeanField(store = true, index = false, type = TypeWrapper.SERIALIZED)
 		public Object serializeTest;
@@ -101,6 +114,9 @@ public class BeanConverterTest extends TestCase {
 					* result
 					+ ((customAnalyzerTest == null) ? 0 : customAnalyzerTest
 							.hashCode());
+			result = prime
+					* result
+					+ ((customNameTest == null) ? 0 : customNameTest.hashCode());
 			long temp;
 			temp = Double.doubleToLongBits(doublePrimTest);
 			result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -129,6 +145,8 @@ public class BeanConverterTest extends TestCase {
 			result = prime * result
 					+ ((integerTest == null) ? 0 : integerTest.hashCode());
 			result = prime * result
+					+ ((listTest == null) ? 0 : listTest.hashCode());
+			result = prime * result
 					+ (int) (longPrimTest ^ (longPrimTest >>> 32));
 			result = prime * result
 					+ (int) (longStringPrimTest ^ (longStringPrimTest >>> 32));
@@ -139,6 +157,10 @@ public class BeanConverterTest extends TestCase {
 					+ ((longTest == null) ? 0 : longTest.hashCode());
 			result = prime
 					* result
+					+ ((notAnnotatedTest == null) ? 0 : notAnnotatedTest
+							.hashCode());
+			result = prime
+					* result
 					+ ((notIndexedButStoredTest == null) ? 0
 							: notIndexedButStoredTest.hashCode());
 			result = prime
@@ -147,6 +169,8 @@ public class BeanConverterTest extends TestCase {
 							: notStoredButIndexedTest.hashCode());
 			result = prime * result
 					+ ((serializeTest == null) ? 0 : serializeTest.hashCode());
+			result = prime * result
+					+ ((setTest == null) ? 0 : setTest.hashCode());
 			result = prime * result
 					+ ((stringTest == null) ? 0 : stringTest.hashCode());
 			return result;
@@ -172,6 +196,11 @@ public class BeanConverterTest extends TestCase {
 				if (other.customAnalyzerTest != null)
 					return false;
 			} else if (!customAnalyzerTest.equals(other.customAnalyzerTest))
+				return false;
+			if (customNameTest == null) {
+				if (other.customNameTest != null)
+					return false;
+			} else if (!customNameTest.equals(other.customNameTest))
 				return false;
 			if (Double.doubleToLongBits(doublePrimTest) != Double
 					.doubleToLongBits(other.doublePrimTest))
@@ -219,6 +248,11 @@ public class BeanConverterTest extends TestCase {
 					return false;
 			} else if (!integerTest.equals(other.integerTest))
 				return false;
+			if (listTest == null) {
+				if (other.listTest != null)
+					return false;
+			} else if (!listTest.equals(other.listTest))
+				return false;
 			if (longPrimTest != other.longPrimTest)
 				return false;
 			if (longStringPrimTest != other.longStringPrimTest)
@@ -232,6 +266,11 @@ public class BeanConverterTest extends TestCase {
 				if (other.longTest != null)
 					return false;
 			} else if (!longTest.equals(other.longTest))
+				return false;
+			if (notAnnotatedTest == null) {
+				if (other.notAnnotatedTest != null)
+					return false;
+			} else if (!notAnnotatedTest.equals(other.notAnnotatedTest))
 				return false;
 			if (notIndexedButStoredTest == null) {
 				if (other.notIndexedButStoredTest != null)
@@ -250,6 +289,11 @@ public class BeanConverterTest extends TestCase {
 					return false;
 			} else if (!serializeTest.equals(other.serializeTest))
 				return false;
+			if (setTest == null) {
+				if (other.setTest != null)
+					return false;
+			} else if (!setTest.equals(other.setTest))
+				return false;
 			if (stringTest == null) {
 				if (other.stringTest != null)
 					return false;
@@ -257,7 +301,7 @@ public class BeanConverterTest extends TestCase {
 				return false;
 			return true;
 		}
-
+		
 	}
 	
 	public final class WrongTypeTest {
@@ -309,6 +353,20 @@ public class BeanConverterTest extends TestCase {
 				field.set(testBean, true);
 			} else if(type.equals(String.class)) {	
 				field.set(testBean, "Test");
+			} else if(fieldName.equals("emptySetTest")) {
+				field.set(testBean, new HashSet<String>());
+			} else if(type.equals(Set.class) ) {
+				Set<String> set = new HashSet<String>();
+				set.add("1");
+				set.add("2");
+				set.add("3");
+				field.set(testBean, set);
+			} else if(type.equals(List.class)) {
+				List<String> list = new ArrayList<String>();
+				list.add("1");
+				list.add("2");
+				list.add("3");
+				field.set(testBean, list);
 			} else if(type.equals(Object.class)) {
 				field.set(testBean, new Date());
 			} else {
@@ -327,6 +385,26 @@ public class BeanConverterTest extends TestCase {
 				assertEquals(originalValue, documentValue);
 			} else if(fieldName.equals("notAnnotatedTest")) {
 				System.out.println("doing not annotated test.");
+				assertEquals(null, document.get(fieldName));
+			} else if(fieldName.equals("listTest")) {
+				System.out.println("doing listTest");
+				@SuppressWarnings("unchecked")
+				List<String> originalList = (List<String>) field.get(testBean);
+				IndexableField[] documentFields = document.getFields(fieldName);
+				for(int i = 0; i < originalList.size(); ++i) {
+					assertEquals(originalList.get(i), documentFields[i].stringValue());
+				}
+			} else if(fieldName.equals("setTest")) {
+				System.out.println("doing listTest");
+				@SuppressWarnings("unchecked")
+				Set<String> originalSet = (Set<String>) field.get(testBean);
+				Set<String> docSet = new HashSet<String>();
+				for(IndexableField documentField : document.getFields(fieldName)) {
+					docSet.add(documentField.stringValue());
+				}
+				assertEquals(originalSet, docSet);
+			} else if(fieldName.equals("emptySetTest")) {
+				System.out.println("doing emptySetTest");
 				assertEquals(null, document.get(fieldName));
 			} else {
 				//normally a check is needed, but in the test-case we
@@ -347,13 +425,17 @@ public class BeanConverterTest extends TestCase {
 		System.out.println("doing reverse conversion (document to bean) test.");
 		Document document = converter.beanToDocument(testBean);
 		TestBean reverseBean = converter.documentToBean(TestBean.class, document);
-		assertEquals(testBean, reverseBean);		
+		
+		//setting the stuff that can not be in the document and therefore not in the reverseBean
+		reverseBean.notAnnotatedTest = testBean.notAnnotatedTest;
+		reverseBean.notStoredButIndexedTest = testBean.notStoredButIndexedTest;
+		assertTrue(testBean.equals(reverseBean));		
 		
 		System.out.println("Result: conversion test successfull.");
 	}
 	
 	public void testWrongType() {
-		System.out.println("testing with malformed beans.");
+		System.out.println("doing malformed bean tests.");
 		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
 		try {
 			WrongTypeTest wrongTypeTest = new WrongTypeTest();
