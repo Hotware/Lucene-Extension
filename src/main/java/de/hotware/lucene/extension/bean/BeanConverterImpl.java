@@ -95,6 +95,86 @@ public class BeanConverterImpl implements BeanConverter {
 			TYPE_HANDLER = Collections.unmodifiableMap(tmp);
 		}
 	}
+
+	private final BeanInformationCache cache;
+
+	public BeanConverterImpl(BeanInformationCache cache) {
+		this.cache = cache;
+	}
+
+	@Override
+	public <T> T documentToBean(Class<T> clazz, Document document) {
+		T ret;
+		try {
+			ret = clazz.newInstance();
+		} catch(InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch(IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		List<FieldInformation> fieldInformations = this.cache
+				.getFieldInformations(clazz);
+		boolean foundAnnotation = false;
+		for(FieldInformation fieldInformation : fieldInformations) {
+			foundAnnotation = true;
+			TypeHandler typeHandler = this.getTypeHandler(fieldInformation);
+			typeHandler.writeDocumentInfoToBean(fieldInformation, document, ret);	
+		}
+		if(!foundAnnotation) {
+			throw new IllegalArgumentException("the given object is no correct bean");
+		}
+		return ret;
+	}
+
+	@Override
+	public Document beanToDocument(Object bean) {
+		Class<?> clazz = bean.getClass();
+		List<FieldInformation> fieldInformations = this.cache
+				.getFieldInformations(clazz);
+		Document ret = new Document();
+		boolean foundAnnotation = false;
+		for(FieldInformation fieldInformation : fieldInformations) {
+			foundAnnotation = true;
+			TypeHandler typeHandler = this.getTypeHandler(fieldInformation);
+			typeHandler.writeBeanInfoToDocument(fieldInformation, bean, ret);	
+		}
+		if(!foundAnnotation) {
+			throw new IllegalArgumentException("the given object is no correct bean");
+		}
+		return ret;
+	}
+
+	@Override
+	public Analyzer getAnalyzer(Class<?> clazz, String locale) {
+		return this.cache.getPerFieldAnalyzerWrapper(clazz,
+				this.cache.getFieldInformations(clazz),
+				locale);
+	}
+
+	@Override
+	public String toString() {
+		return "BeanConverterImpl [cache=" + cache + "]";
+	}
+	
+	private TypeHandler getTypeHandler(FieldInformation fieldInformation) {
+		BeanField bf = fieldInformation.getBeanField();
+		Class<?> objectFieldClass = fieldInformation.getFieldClass();
+		TypeWrapper typeWrapper = bf.type();
+		if(typeWrapper != TypeWrapper.SERIALIZED && !ALL_TYPES.contains(objectFieldClass)) {
+			throw new IllegalArgumentException("type of Java-Bean field not supported");
+		}
+		TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
+		if(typeHandler == null) {
+			if(typeWrapper == TypeWrapper.SERIALIZED) {
+				//serialisation is handled like a default object
+				typeHandler = TypeHandler.DEFAULT;
+			} else {
+				throw new AssertionError("typeHandler was null at a point where the typeHandler"
+						+ " may only be null if typeWrapper is SERIALIZED");
+			}
+		}
+		return typeHandler;
+	}
 	
 	private static enum TypeHandler {
 		DEFAULT {
@@ -286,101 +366,6 @@ public class BeanConverterImpl implements BeanConverter {
 		public abstract void writeDocumentInfoToBean(FieldInformation fieldInformation, Document origin, Object dest);		
 		
 		
-	}
-
-	private final BeanInformationCache cache;
-
-	public BeanConverterImpl(BeanInformationCache cache) {
-		this.cache = cache;
-	}
-
-	@Override
-	public <T> T documentToBean(Class<T> clazz, Document document) {
-		T ret;
-		try {
-			ret = clazz.newInstance();
-		} catch(InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch(IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-		List<FieldInformation> fieldInformations = this.cache
-				.getFieldInformations(clazz);
-		boolean foundAnnotation = false;
-		for(FieldInformation fieldInformation : fieldInformations) {
-			foundAnnotation = true;
-			BeanField bf = fieldInformation.getBeanField();
-			Class<?> objectFieldClass = fieldInformation.getFieldClass();
-			TypeWrapper typeWrapper = bf.type();
-			if(typeWrapper == null) {
-				throw new IllegalArgumentException("typeWrapper may not be null");
-			}
-			if(typeWrapper != TypeWrapper.SERIALIZED && !ALL_TYPES.contains(objectFieldClass)) {
-				throw new IllegalArgumentException("type of Java-Bean field not supported");
-			}
-			TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
-			if(typeHandler == null) {
-				if(typeWrapper == TypeWrapper.SERIALIZED) {
-					//serialisation is handled like a default object
-					typeHandler = TypeHandler.DEFAULT;
-				} else {
-					throw new AssertionError("typeHandler was null at a point where the typeHandler"
-							+ " may only be null if typeWrapper is SERIALIZED");
-				}
-			}
-			typeHandler.writeDocumentInfoToBean(fieldInformation, document, ret);	
-		}
-		if(!foundAnnotation) {
-			throw new IllegalArgumentException("the given object is no correct bean");
-		}
-		return ret;
-	}
-
-	@Override
-	public Document beanToDocument(Object bean) {
-		Class<?> clazz = bean.getClass();
-		List<FieldInformation> fieldInformations = this.cache
-				.getFieldInformations(clazz);
-		Document ret = new Document();
-		boolean foundAnnotation = false;
-		for(FieldInformation fieldInformation : fieldInformations) {
-			foundAnnotation = true;
-			BeanField bf = fieldInformation.getBeanField();
-			Class<?> objectFieldType = fieldInformation.getFieldClass();
-			Class<?> objectFieldClass = fieldInformation.getFieldClass();
-			TypeWrapper typeWrapper = bf.type();
-			if(typeWrapper != TypeWrapper.SERIALIZED &&!ALL_TYPES.contains(objectFieldType)) {
-				throw new IllegalArgumentException("only primitive types and "
-						+ "Lists/Sets of them are allowed");
-			}
-			TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
-			if(typeHandler == null) {
-				if(typeWrapper == TypeWrapper.SERIALIZED) {
-					//serialisation is handled like a default object
-					typeHandler = TypeHandler.DEFAULT;
-				} else {
-					throw new AssertionError("typeHandler was null at a point where the typeHandler"
-							+ " may only be null if typeWrapper is SERIALIZED");
-				}
-			}
-			typeHandler.writeBeanInfoToDocument(fieldInformation, bean, ret);	
-		}
-		if(!foundAnnotation) {
-			throw new IllegalArgumentException("the given object is no correct bean");
-		}
-		return ret;
-	}
-
-	@Override
-	public Analyzer getAnalyzer(Class<?> clazz, String locale) {
-		return this.cache.getPerFieldAnalyzerWrapper(clazz,
-				this.cache.getFieldInformations(clazz),
-				locale);
-	}
-
-	@Override
-	public String toString() {
-		return "BeanConverterImpl [cache=" + cache + "]";
 	}
 
 }
