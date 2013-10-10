@@ -112,9 +112,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 	}
 
 	@Override
-	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz,
-			List<FieldInformation> fieldInformations,
-			String locale) {
+	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz) {
 		this.perFieldAnalyzerWrapperCacheLock.lock();
 		try {
 			PerFieldAnalyzerWrapper wrapper = this.perFieldAnalyzerWrapperCache
@@ -122,7 +120,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 			if(wrapper == null) {
 				Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER;
 				Map<String, Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
-				for(FieldInformation info : fieldInformations) {
+				for(FieldInformation info : this.getFieldInformations(clazz)) {
 					String fieldName = info.getField().getName();
 					BeanField bf = info.getBeanField();
 					Analyzer analyzer;

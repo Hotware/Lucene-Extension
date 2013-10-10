@@ -17,8 +17,7 @@ public interface BeanInformationCache {
 
 	public List<FieldInformation> getFieldInformations(Class<?> clazz);
 
-	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz,
-			List<FieldInformation> fieldInformations, String locale);
+	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz);
 
 	public static final class FieldInformation {
 
