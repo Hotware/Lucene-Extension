@@ -26,7 +26,6 @@ import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.FieldType.NumericType;
 import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.util.Version;
 
 /**
  * Utility class used for annotation of Beans that should be stored into lucene
@@ -43,6 +42,8 @@ public @interface BeanField {
 	public boolean index() default false;
 
 	public boolean store() default true;
+	
+	public boolean tokenized() default true;
 
 	public TypeWrapper type();
 
@@ -266,9 +267,10 @@ public @interface BeanField {
 			}
 
 		},
-		GERMAN_ANALYZER(new GermanAnalyzer(Version.LUCENE_43)),
-		ENGLISH_ANALYZER(new EnglishAnalyzer(Version.LUCENE_43)),
-		STANDARD_ANALYZER(new StandardAnalyzer(Version.LUCENE_43));
+		GERMAN_ANALYZER(new GermanAnalyzer(LuceneVersion.VERSION)),
+		ENGLISH_ANALYZER(new EnglishAnalyzer(LuceneVersion.VERSION)),
+		SUGGEST_ANALYZER(new SuggestAnalyzer(LuceneVersion.VERSION)),
+		STANDARD_ANALYZER(new StandardAnalyzer(LuceneVersion.VERSION));
 
 		private final Analyzer analyzer;
 

@@ -4,15 +4,14 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.util.Version;
 
 /**
  * @author Martin Braun
  */
 public enum LocaleAnalyzer {
-	de_DE(new GermanAnalyzer(Version.LUCENE_43)),
-	en_EN(new EnglishAnalyzer(Version.LUCENE_43)),
-	DEFAULT(new StandardAnalyzer(Version.LUCENE_43));
+	de_DE(new GermanAnalyzer(LuceneVersion.VERSION)),
+	en_EN(new EnglishAnalyzer(LuceneVersion.VERSION)),
+	DEFAULT(new StandardAnalyzer(LuceneVersion.VERSION));
 
 	private final Analyzer analyzer;
 

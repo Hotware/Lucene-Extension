@@ -5,7 +5,7 @@
 		bei Maven) -->
 	<artifactId>lucene-bean-extension</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 	<name>LuceneBeanExtension</name>
 	<url>https://github.com/Hotware/LuceneBeanExtension</url>
 
@@ -46,12 +46,12 @@
 			<artifactId>lucene-core</artifactId>
 			<groupId>org.apache.lucene</groupId>
 			<type>jar</type>
-			<version>4.4.0</version>
+			<version>4.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.4.0</version>
+			<version>4.5.0</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -88,6 +88,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 						FieldType fieldType = new FieldType();
 						fieldType.setIndexed(bf.index());
 						fieldType.setStored(bf.store());
+						fieldType.setTokenized(bf.tokenized());
 						if(typeWrapper != null) {
 							fieldType.setNumericType(typeWrapper.getNumericType());
 						}

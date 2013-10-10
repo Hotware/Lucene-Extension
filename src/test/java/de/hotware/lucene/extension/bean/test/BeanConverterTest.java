@@ -416,6 +416,7 @@ public class BeanConverterTest extends TestCase {
 				IndexableFieldType indexFieldType = indexField.fieldType();
 				assertEquals(bf.store(), indexFieldType.stored());
 				assertEquals(bf.index(), indexFieldType.indexed());
+				assertEquals(bf.tokenized(), indexFieldType.tokenized());
 				//TODO: test if fieldType is correct?
 			}
 		}
