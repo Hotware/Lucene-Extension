@@ -1,11 +1,10 @@
 package de.hotware.lucene.extension.bean.test;
 
-import java.util.List;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 
 import de.hotware.lucene.extension.bean.BeanField;
 import de.hotware.lucene.extension.bean.BeanInformationCache;
 import de.hotware.lucene.extension.bean.BeanInformationCacheImpl;
-import de.hotware.lucene.extension.bean.BeanInformationCache.FieldInformation;
 import de.hotware.lucene.extension.bean.analyzer.StockAnalyzerProvider;
 import de.hotware.lucene.extension.bean.type.StockType;
 import junit.framework.TestCase;
@@ -26,12 +25,13 @@ public class BeanInformationCacheTest extends TestCase {
 	
 	public void testGetFieldInformations() {
 		BeanInformationCache cache = new BeanInformationCacheImpl();
-		List<FieldInformation> fieldInfos = cache.getFieldInformations(AnalyzerTestBean.class);		
+		cache.getFieldInformations(AnalyzerTestBean.class);		
 	}
 	
 	public void testGetPerFieldAnalyzerWrapper() {
 		BeanInformationCache cache = new BeanInformationCacheImpl();
-		PerFieldAnalyzerWrapper wrapper = cache.getPerFieldAnalyzerWrapper(AnalyzerTestBean.class);		
+		PerFieldAnalyzerWrapper wrapper = cache.getPerFieldAnalyzerWrapper(AnalyzerTestBean.class);
+		assertTrue(wrapper.toString().contains("GermanAnalyzer"));
 	}
 
 }
