@@ -17,8 +17,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexableField;
 
-import de.hotware.lucene.extension.bean.BeanField.TypeWrapper;
 import de.hotware.lucene.extension.bean.BeanInformationCache.FieldInformation;
+import de.hotware.lucene.extension.bean.type.StockType;
+import de.hotware.lucene.extension.bean.type.Type;
 
 /**
  * Basic Implementation of a BeanConverter (does caching of the
@@ -159,13 +160,13 @@ public class BeanConverterImpl implements BeanConverter {
 	private TypeHandler getTypeHandler(FieldInformation fieldInformation) {
 		BeanField bf = fieldInformation.getBeanField();
 		Class<?> objectFieldClass = fieldInformation.getFieldClass();
-		TypeWrapper typeWrapper = bf.type();
-		if(typeWrapper != TypeWrapper.SERIALIZED && !ALL_TYPES.contains(objectFieldClass)) {
+		Class<?> typeWrapper = bf.type();
+		if(!typeWrapper.equals(StockType.SerializeType.class) && !ALL_TYPES.contains(objectFieldClass)) {
 			throw new IllegalArgumentException("type of Java-Bean field not supported");
 		}
 		TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
 		if(typeHandler == null) {
-			if(typeWrapper == TypeWrapper.SERIALIZED) {
+			if(typeWrapper.equals(StockType.SerializeType.class)) {
 				//serialisation is handled like a default object
 				typeHandler = TypeHandler.DEFAULT;
 			} else {
@@ -185,7 +186,12 @@ public class BeanConverterImpl implements BeanConverter {
 				BeanField bf = fieldInformation.getBeanField();
 				Class<?> objectFieldType = fieldInformation.getFieldClass();
 				FieldType fieldType = fieldInformation.getFieldType();
-				TypeWrapper typeWrapper = bf.type();
+				Type typeWrapper;
+				try {
+					typeWrapper = (Type) bf.type().newInstance();
+				} catch(InstantiationException | IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
 				String name = bf.name();
 				if(name.equals(Constants.DEFAULT_NAME)) {
 					name = field.getName();
@@ -210,7 +216,12 @@ public class BeanConverterImpl implements BeanConverter {
 			public void writeDocumentInfoToBean(FieldInformation fieldInformation, Document origin, Object dest) {
 				Field field = fieldInformation.getField();
 				BeanField bf = fieldInformation.getBeanField();
-				TypeWrapper typeWrapper = bf.type();
+				Type typeWrapper;
+				try {
+					typeWrapper = (Type) bf.type().newInstance();
+				} catch(InstantiationException | IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
 				String name = bf.name();
 				if(name.equals(Constants.DEFAULT_NAME)) {
 					name = field.getName();
@@ -279,7 +290,12 @@ public class BeanConverterImpl implements BeanConverter {
 			BeanField bf = fieldInformation.getBeanField();
 			Class<?> objectFieldType = fieldInformation.getFieldClass();
 			FieldType fieldType = fieldInformation.getFieldType();
-			TypeWrapper typeWrapper = bf.type();
+			Type typeWrapper;
+			try {
+				typeWrapper = (Type) bf.type().newInstance();
+			} catch(InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
 			String name = bf.name();
 			if(name.equals(Constants.DEFAULT_NAME)) {
 				name = field.getName();
@@ -307,7 +323,12 @@ public class BeanConverterImpl implements BeanConverter {
 				Object dest, @SuppressWarnings("rawtypes") Class<? extends Collection> collectionClass) {
 			Field field = fieldInformation.getField();
 			BeanField bf = fieldInformation.getBeanField();
-			TypeWrapper typeWrapper = bf.type();
+			Type typeWrapper;
+			try {
+				typeWrapper = (Type) bf.type().newInstance();
+			} catch(InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
 			String name = bf.name();
 			if(name.equals(Constants.DEFAULT_NAME)) {
 				name = field.getName();

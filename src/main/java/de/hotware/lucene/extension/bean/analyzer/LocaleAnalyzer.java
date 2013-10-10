@@ -1,9 +1,11 @@
-package de.hotware.lucene.extension.bean;
+package de.hotware.lucene.extension.bean.analyzer;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+
+import de.hotware.lucene.extension.bean.LuceneVersion;
 
 /**
  * @author Martin Braun

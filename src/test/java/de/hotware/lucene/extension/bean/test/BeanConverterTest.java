@@ -1,5 +1,8 @@
 package de.hotware.lucene.extension.bean.test;
 
+import de.hotware.lucene.extension.bean.analyzer.StockAnalyzerProvider;
+import de.hotware.lucene.extension.bean.type.StockType.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -20,85 +23,85 @@ import org.apache.lucene.index.IndexableFieldType;
 import de.hotware.lucene.extension.bean.BeanConverter;
 import de.hotware.lucene.extension.bean.BeanConverterImpl;
 import de.hotware.lucene.extension.bean.BeanField;
-import de.hotware.lucene.extension.bean.BeanField.AnalyzerWrapper;
 import de.hotware.lucene.extension.bean.BeanInformationCacheImpl;
-import de.hotware.lucene.extension.bean.BeanField.TypeWrapper;
+import de.hotware.lucene.extension.bean.type.StockType;
 import junit.framework.TestCase;
 
 public class BeanConverterTest extends TestCase {
 	
 	public static class TestBean {
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER_STRING)
+		@BeanField(store = true, index = true, type = IntegerStringType.class)
 		public Integer integerStringTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER)
+		@BeanField(store = true, index = true, type = IntegerType.class)
 		public Integer integerTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER_STRING)
+		@BeanField(store = true, index = true, type = IntegerStringType.class)
 		public int integerPrimStringTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.INTEGER)
+		@BeanField(store = true, index = true, type = IntegerType.class)
 		public int integerPrimTest;
 
-		@BeanField(store = true, index = true, type = TypeWrapper.LONG_STRING)
+		@BeanField(store = true, index = true, type = LongStringType.class)
 		public Long longStringTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.LONG)
+		@BeanField(store = true, index = true, type = LongType.class)
 		public Long longTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.LONG_STRING)
+		@BeanField(store = true, index = true, type = LongStringType.class)
 		public long longStringPrimTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.LONG)
+		@BeanField(store = true, index = true, type = LongType.class)
 		public long longPrimTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT)
+		@BeanField(store = true, index = true, type = FloatType.class)
 		public Float floatTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT_STRING)
+		@BeanField(store = true, index = true, type = FloatStringType.class)
 		public Float floatStringTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT)
+		@BeanField(store = true, index = true, type = FloatType.class)
 		public float floatPrimTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.FLOAT_STRING)
+		@BeanField(store = true, index = true, type = FloatStringType.class)
 		public float floatStringPrimTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE)
+		@BeanField(store = true, index = true, type = DoubleType.class)
 		public Double doubleTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE_STRING)
+		@BeanField(store = true, index = true, type = DoubleStringType.class)
 		public Double doubleStringTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE)
+		@BeanField(store = true, index = true, type = DoubleType.class)
 		public double doublePrimTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.DOUBLE_STRING)
+		@BeanField(store = true, index = true, type = DoubleStringType.class)
 		public double doubleStringPrimTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.BOOLEAN)
+		@BeanField(store = true, index = true, type = BooleanType.class)
 		public Boolean booleanTest;
-		@BeanField(store = true, index = true, type = TypeWrapper.BOOLEAN)
+		@BeanField(store = true, index = true, type = BooleanType.class)
 		public boolean booleanPrimTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		@BeanField(store = true, index = true, type = StringType.class)
 		public String stringTest;
 		
-		@BeanField(store = false, index = true, type = TypeWrapper.STRING)
+		@BeanField(store = false, index = true, type = StringType.class)
 		public String notStoredButIndexedTest;
-		@BeanField(store = true, index = false, type = TypeWrapper.STRING)
+		@BeanField(store = true, index = false, type = StringType.class)
 		public String notIndexedButStoredTest;
 		
-		@BeanField(store = false, index = true, type = TypeWrapper.STRING, analyzer = AnalyzerWrapper.KEY_WORD_ANALYZER)
+		@BeanField(store = false, index = true, type = StringType.class, 
+				analyzerProvider = StockAnalyzerProvider.GermanAnalyzerProvider.class)
 		public String customAnalyzerTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		@BeanField(store = true, index = true, type = StringType.class)
 		public List<String> listTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		@BeanField(store = true, index = true, type = StringType.class)
 		public Set<String> setTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		@BeanField(store = true, index = true, type = StringType.class)
 		public Set<String> emptySetTest;
 		
 		//index is ignored, so do whatever you want here
-		@BeanField(store = true, index = false, type = TypeWrapper.SERIALIZED)
+		@BeanField(store = true, index = false, type = SerializeType.class)
 		public Object serializeTest;
 		
-		@BeanField(store = true, index = true, type = TypeWrapper.STRING, name = "customName")
+		@BeanField(store = true, index = true, type = StockType.StringType.class, name = "customName")
 		public String customNameTest;
 		
 		public String notAnnotatedTest;
@@ -307,7 +310,7 @@ public class BeanConverterTest extends TestCase {
 	public final class WrongTypeTest {
 		
 		//not being serialized -> exception is expected when used with the BeanConverter
-		@BeanField(store = true, index = true, type = TypeWrapper.STRING)
+		@BeanField(store = true, index = true, type = StockType.StringType.class)
 		public Object wrongType;
 		
 	}

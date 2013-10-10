@@ -1,4 +1,4 @@
-package de.hotware.lucene.extension.bean;
+package de.hotware.lucene.extension.bean.analyzer;
 
 import java.io.Reader;
 

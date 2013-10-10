@@ -17,8 +17,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.FieldType;
 
-import de.hotware.lucene.extension.bean.BeanField.AnalyzerWrapper;
-import de.hotware.lucene.extension.bean.BeanField.TypeWrapper;
+import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
 
 /**
  * @author Martin Braun
@@ -84,14 +83,17 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 						}
 						field.setAccessible(true);
 						BeanField bf = field.getAnnotation(BeanField.class);
-						TypeWrapper typeWrapper = bf.type();
+						de.hotware.lucene.extension.bean.type.Type typeWrapper;
+						try {
+							typeWrapper = (de.hotware.lucene.extension.bean.type.Type) bf.type().newInstance();
+						} catch(InstantiationException | IllegalAccessException e) {
+							throw new RuntimeException(e);
+						}
 						FieldType fieldType = new FieldType();
 						fieldType.setIndexed(bf.index());
 						fieldType.setStored(bf.store());
 						fieldType.setTokenized(bf.tokenized());
-						if(typeWrapper != null) {
-							fieldType.setNumericType(typeWrapper.getNumericType());
-						}
+						typeWrapper.configureFieldType(fieldType);
 						fieldType.freeze();
 						FieldInformation fieldInformation = new FieldInformation(field,
 								fieldClass,
@@ -118,16 +120,20 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 			PerFieldAnalyzerWrapper wrapper = this.perFieldAnalyzerWrapperCache
 					.get(clazz);
 			if(wrapper == null) {
-				Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER
-						.getAnalyzer(locale);
+				Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER;
 				Map<String, Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
 				for(FieldInformation info : fieldInformations) {
 					String fieldName = info.getField().getName();
 					BeanField bf = info.getBeanField();
-					AnalyzerWrapper analyzer = bf.analyzer();
+					Analyzer analyzer;
+					try {
+						analyzer = ((AnalyzerProvider) bf.analyzerProvider().newInstance()).getAnalyzer();
+					} catch(InstantiationException | IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
 					if(!analyzer.equals(defaultAnalyzer)) {
 						fieldAnalyzers.put(fieldName,
-								analyzer.getAnalyzer(locale));
+								analyzer);
 					}
 				}
 				wrapper = new PerFieldAnalyzerWrapper(defaultAnalyzer,
