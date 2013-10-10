@@ -28,8 +28,6 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 
 	private final Map<Class<?>, List<FieldInformation>> annotatedFieldsCache;
 	private final Lock annotatedFieldsCacheLock;
-	private final Map<Class<?>, PerFieldAnalyzerWrapper> perFieldAnalyzerWrapperCache;
-	private final Lock perFieldAnalyzerWrapperCacheLock;
 
 	/**
 	 * calls {@link #BeanInformationCacheImpl(int)} with
@@ -44,8 +42,6 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 	public BeanInformationCacheImpl(int cacheSize) {
 		this.annotatedFieldsCacheLock = new ReentrantLock();
 		this.annotatedFieldsCache = new CacheMap<Class<?>, List<FieldInformation>>(cacheSize);
-		this.perFieldAnalyzerWrapperCacheLock = new ReentrantLock();
-		this.perFieldAnalyzerWrapperCache = new CacheMap<Class<?>, PerFieldAnalyzerWrapper>(cacheSize);
 	}
 
 	@Override
@@ -69,8 +65,10 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 								//TODO: maybe we want more? i.e. Map<String, List<Integer>>?
 								//we only cover one layer of generics as only the Primitives are allowed
 								//as types in the collections
-								Type[] genericTypeArgs = ((ParameterizedType) type).getActualTypeArguments();
-								genericTypes.addAll(Arrays.asList(genericTypeArgs));
+								Type[] genericTypeArgs = ((ParameterizedType) type)
+										.getActualTypeArguments();
+								genericTypes.addAll(Arrays
+										.asList(genericTypeArgs));
 							} else if(type instanceof GenericArrayType) {
 								//cannot be handled differently
 								//will cause exceptions later in BeanConverterImpl
@@ -85,7 +83,8 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 						BeanField bf = field.getAnnotation(BeanField.class);
 						de.hotware.lucene.extension.bean.type.Type typeWrapper;
 						try {
-							typeWrapper = (de.hotware.lucene.extension.bean.type.Type) bf.type().newInstance();
+							typeWrapper = (de.hotware.lucene.extension.bean.type.Type) bf
+									.type().newInstance();
 						} catch(InstantiationException | IllegalAccessException e) {
 							throw new RuntimeException(e);
 						}
@@ -113,45 +112,30 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 
 	@Override
 	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz) {
-		this.perFieldAnalyzerWrapperCacheLock.lock();
-		try {
-			PerFieldAnalyzerWrapper wrapper = this.perFieldAnalyzerWrapperCache
-					.get(clazz);
-			if(wrapper == null) {
-				Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER;
-				Map<String, Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
-				for(FieldInformation info : this.getFieldInformations(clazz)) {
-					String fieldName = info.getField().getName();
-					BeanField bf = info.getBeanField();
-					Analyzer analyzer;
-					try {
-						analyzer = ((AnalyzerProvider) bf.analyzerProvider().newInstance()).getAnalyzer();
-					} catch(InstantiationException | IllegalAccessException e) {
-						throw new RuntimeException(e);
-					}
-					if(!analyzer.equals(defaultAnalyzer)) {
-						fieldAnalyzers.put(fieldName,
-								analyzer);
-					}
-				}
-				wrapper = new PerFieldAnalyzerWrapper(defaultAnalyzer,
-						fieldAnalyzers);
-				this.perFieldAnalyzerWrapperCache.put(clazz, wrapper);
+		Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER;
+		Map<String, Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
+		for(FieldInformation info : this.getFieldInformations(clazz)) {
+			String fieldName = info.getField().getName();
+			BeanField bf = info.getBeanField();
+			Analyzer analyzer;
+			try {
+				analyzer = ((AnalyzerProvider) bf.analyzerProvider()
+						.newInstance()).getAnalyzer();
+			} catch(InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
 			}
-			return wrapper;
-		} finally {
-			this.perFieldAnalyzerWrapperCacheLock.unlock();
+			if(!analyzer.equals(defaultAnalyzer)) {
+				fieldAnalyzers.put(fieldName, analyzer);
+			}
 		}
+		return new PerFieldAnalyzerWrapper(defaultAnalyzer, fieldAnalyzers);
 	}
 
 	@Override
 	public String toString() {
-		return "BeanInformationCacheImpl [annotatedFieldsCache="
-				+ annotatedFieldsCache + ", annotatedFieldsCacheLock="
-				+ annotatedFieldsCacheLock + ", perFieldAnalyzerWrapperCache="
-				+ perFieldAnalyzerWrapperCache
-				+ ", perFieldAnalyzerWrapperCacheLock="
-				+ perFieldAnalyzerWrapperCacheLock + "]";
+		return "BeanInformationCacheImpl [annotatedFieldsCache=" +
+				annotatedFieldsCache + ", annotatedFieldsCacheLock=" +
+				annotatedFieldsCacheLock + "]";
 	}
 
 }
