@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexableField;
@@ -143,13 +142,6 @@ public class BeanConverterImpl implements BeanConverter {
 			throw new IllegalArgumentException("the given object is no correct bean");
 		}
 		return ret;
-	}
-
-	@Override
-	public Analyzer getAnalyzer(Class<?> clazz, String locale) {
-		return this.cache.getPerFieldAnalyzerWrapper(clazz,
-				this.cache.getFieldInformations(clazz),
-				locale);
 	}
 
 	@Override
