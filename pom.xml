@@ -6,7 +6,7 @@
 		bei Maven) -->
 	<artifactId>lucene-bean-extension</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.5</version>
+	<version>0.1.5.6</version>
 	<name>LuceneBeanExtension</name>
 	<url>https://github.com/Hotware/LuceneBeanExtension</url>
 
