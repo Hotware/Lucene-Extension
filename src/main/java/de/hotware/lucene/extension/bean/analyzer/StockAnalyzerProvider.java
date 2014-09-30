@@ -54,14 +54,6 @@ public class StockAnalyzerProvider {
 		
 	}
 	
-	public static class SuggestAnalyzerProvider extends AnalyzerProviderTemplate {
-
-		public SuggestAnalyzerProvider() {
-			super(new SuggestAnalyzer(LuceneVersion.VERSION));
-		}
-		
-	}
-	
 	public static class StandardAnalyzerProvider extends AnalyzerProviderTemplate {
 
 		public StandardAnalyzerProvider() {

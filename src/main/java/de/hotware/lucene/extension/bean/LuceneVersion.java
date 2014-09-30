@@ -8,6 +8,6 @@ public final class LuceneVersion {
 		throw new AssertionError("can't touch this!");
 	}
 	
-	public static final Version VERSION = Version.LUCENE_45;
+	public static final Version VERSION = Version.LUCENE_4_9;
 
 }
