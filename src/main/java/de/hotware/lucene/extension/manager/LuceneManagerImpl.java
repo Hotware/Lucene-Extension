@@ -26,7 +26,7 @@ public class LuceneManagerImpl implements LuceneManager {
 	private final Directory directory;
 	private final IndexWriterConfig indexWriterConfig;
 	private final BeanInformationCache beanInformationCache;
-	private IndexWriter indexWriter;
+	private UncloseableIndexWriter indexWriter;
 	private IndexSearcher indexSearcher;
 	private DirectoryReader indexReader;
 	private boolean closed;
@@ -39,7 +39,7 @@ public class LuceneManagerImpl implements LuceneManager {
 		this.indexWriterConfig = new IndexWriterConfig(Version.LUCENE_4_9,
 				new StandardAnalyzer(Version.LUCENE_4_9));
 		try {
-			this.indexWriter = new IndexWriter(this.directory,
+			this.indexWriter = new UncloseableIndexWriter(this.directory,
 					this.indexWriterConfig);
 			this.indexReader = DirectoryReader.open(this.directory);
 			this.indexSearcher = new IndexSearcher(this.indexReader);
@@ -87,8 +87,8 @@ public class LuceneManagerImpl implements LuceneManager {
 		this.lock.lock();
 		try {
 			this.checkOpen();
-			this.indexWriter.close();
-			this.indexWriter = new IndexWriter(this.directory,
+			this.indexWriter.closeInternal();
+			this.indexWriter = new UncloseableIndexWriter(this.directory,
 					this.indexWriterConfig);
 		} finally {
 			this.lock.unlock();
@@ -102,7 +102,7 @@ public class LuceneManagerImpl implements LuceneManager {
 			List<Exception> exceptions = new ArrayList<>();
 			try {
 				if(this.indexWriter != null) {
-					this.indexWriter.close();
+					this.indexWriter.closeInternal();
 				}
 			} catch (IOException e) {
 				exceptions.add(e);
@@ -119,6 +119,9 @@ public class LuceneManagerImpl implements LuceneManager {
 						+ exceptions);
 			}
 		} finally {
+			if(IndexWriter.isLocked(this.directory)) {
+				IndexWriter.unlock(this.directory);
+			}
 			this.lock.unlock();
 		}
 	}
@@ -132,6 +135,30 @@ public class LuceneManagerImpl implements LuceneManager {
 		if (this.closed) {
 			throw new IllegalStateException("has been closed");
 		}
+	}
+	
+	private static class UncloseableIndexWriter extends IndexWriter {
+
+		public UncloseableIndexWriter(Directory d, IndexWriterConfig conf)
+				throws IOException {
+			super(d, conf);
+		}
+		
+		@Override
+		public void close() {
+			throw new UnsupportedOperationException("don't close this indexwriter by hand,"
+					+ " the manager will do this for you!");
+		}
+		
+		@Override
+		public void close(boolean waitForMerges) {
+			this.close();
+		}
+		
+		private void closeInternal() throws IOException {
+			super.close(true);
+		}
+		
 	}
 
 }
