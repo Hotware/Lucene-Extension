@@ -26,14 +26,6 @@
 		</plugins>
 	</build>
 
-	<scm>
-		<connection>
-			scm:git:https://github.com/Hotware/LuceneBeanExtension.git
-		</connection>
-		<developerConnection>scm:git:git@github.com:Hotware/LuceneBeanExtension.git</developerConnection>
-		<tag>lucene-bean-extension-1.0</tag>
-	</scm>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -53,4 +45,5 @@
 			<version>4.9.0</version>
 		</dependency>
 	</dependencies>
+	
 </project>
