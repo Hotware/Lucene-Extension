@@ -83,6 +83,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 						BeanField bf = field.getAnnotation(BeanField.class);
 						de.hotware.lucene.extension.bean.type.Type typeWrapper;
 						try {
+							//TODO: maybe cache these?
 							typeWrapper = (de.hotware.lucene.extension.bean.type.Type) bf
 									.type().newInstance();
 						} catch(InstantiationException | IllegalAccessException e) {
