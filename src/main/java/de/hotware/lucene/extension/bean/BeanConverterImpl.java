@@ -24,8 +24,6 @@ import de.hotware.lucene.extension.bean.type.Type;
  * Basic Implementation of a BeanConverter (does caching of the
  * field-information)
  * 
- * TODO: toBeanValue(...): maybe change this to the specific value-methods (to prevent all the parsing)
- * 
  * @author Martin Braun
  */
 public class BeanConverterImpl implements BeanConverter {

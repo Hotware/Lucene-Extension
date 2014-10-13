@@ -19,6 +19,11 @@ import de.hotware.lucene.extension.bean.BeanConverterImpl;
 import de.hotware.lucene.extension.bean.BeanInformationCache;
 import de.hotware.lucene.extension.bean.BeanInformationCacheImpl;
 
+/**
+ * Reference Implementation of a LuceneManager
+ * 
+ * @author Martin Braun
+ */
 public class LuceneManagerImpl implements LuceneManager {
 
 	private final Lock lock;

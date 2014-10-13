@@ -5,6 +5,8 @@ import org.apache.lucene.analysis.Analyzer;
 import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
 
 /**
+ * Constants and stuff
+ * 
  * @author Martin Braun
  */
 public class Constants {

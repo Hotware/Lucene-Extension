@@ -211,7 +211,8 @@ public final class StockType {
 	 * 
 	 * @author Martin Braun
 	 */
-	public static class StringTermVectorPositionsOffsetsType extends BaseStockType {
+	public static class StringTermVectorPositionsOffsetsType extends
+			BaseStockType {
 
 		public StringTermVectorPositionsOffsetsType(NumericType numericType) {
 			super(numericType);
@@ -240,6 +241,20 @@ public final class StockType {
 
 	}
 
+	/**
+	 * the index attribute is ignored, as these Serialized Types can only be
+	 * stored to be retrieved afterwards. <br />
+	 * <br />
+	 * This class does serialization via {@link java.io.ByteArrayOutputStream}'s
+	 * writeObject so all types that should be serialized here, have to
+	 * implement the {@link java.io.Serializable} interface. <br />
+	 * <br />
+	 * This method of serialization is known not to be the fastest way,
+	 * so if you need better performance it might be a good idea to implement
+	 * your own {@link Type}
+	 * 
+	 * @author Martin Braun
+	 */
 	public static class SerializeType extends BaseStockType {
 
 		public SerializeType() {

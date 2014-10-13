@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -20,6 +21,8 @@ import org.apache.lucene.document.FieldType;
 import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
 
 /**
+ * Reference Implementation for a BeanInformationCache
+ * 
  * @author Martin Braun
  */
 public class BeanInformationCacheImpl implements BeanInformationCache {
@@ -137,6 +140,28 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 		return "BeanInformationCacheImpl [annotatedFieldsCache=" +
 				annotatedFieldsCache + ", annotatedFieldsCacheLock=" +
 				annotatedFieldsCacheLock + "]";
+	}
+	
+	private static final class CacheMap<K, V> extends LinkedHashMap<K, V> {
+
+		private final int size;
+
+		public CacheMap(int size) {
+			this.size = size;
+		}
+
+		private static final long serialVersionUID = 2690314341945452137L;
+
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+			return this.size() > this.size;
+		}
+
+		@Override
+		public String toString() {
+			return "CacheMap [size=" + size + "]";
+		}
+
 	}
 
 }

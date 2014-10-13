@@ -1,10 +1,7 @@
 package de.hotware.lucene.extension.bean;
 
 import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 import java.lang.reflect.Type;
 
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
@@ -66,28 +63,6 @@ public interface BeanInformationCache {
 					+ fieldClass + ", genericTypeArgs=" + genericTypeArgs
 					+ ", fieldType=" + fieldType + ", beanField=" + beanField
 					+ "]";
-		}
-
-	}
-
-	public static final class CacheMap<K, V> extends LinkedHashMap<K, V> {
-
-		private final int size;
-
-		public CacheMap(int size) {
-			this.size = size;
-		}
-
-		private static final long serialVersionUID = 2690314341945452137L;
-
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-			return this.size() > this.size;
-		}
-
-		@Override
-		public String toString() {
-			return "CacheMap [size=" + size + "]";
 		}
 
 	}
