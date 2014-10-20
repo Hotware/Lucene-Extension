@@ -15,11 +15,8 @@ public final class FieldInformation {
 	private final FieldType fieldType;
 	private final BeanField beanField;
 
-	protected FieldInformation(FrozenField field,
-			Class<?> fieldClass,
-			List<Type> genericTypeArgs,
-			FieldType fieldType,
-			BeanField beanField) {
+	protected FieldInformation(FrozenField field, Class<?> fieldClass,
+			List<Type> genericTypeArgs, FieldType fieldType, BeanField beanField) {
 		super();
 		this.field = field;
 		this.genericTypeArgs = genericTypeArgs;
@@ -32,10 +29,13 @@ public final class FieldInformation {
 		return this.field;
 	}
 
+	/**
+	 * you shouldn't need this, but if you need to, here it is.
+	 */
 	public Class<?> getFieldClass() {
 		return this.fieldClass;
 	}
-	
+
 	public FieldType getFieldType() {
 		return this.fieldType;
 	}
@@ -43,7 +43,7 @@ public final class FieldInformation {
 	public BeanField getBeanField() {
 		return this.beanField;
 	}
-	
+
 	public List<Type> getGenericTypeArgs() {
 		return this.genericTypeArgs;
 	}
@@ -52,8 +52,7 @@ public final class FieldInformation {
 	public String toString() {
 		return "FieldInformation [field=" + field + ", fieldClass="
 				+ fieldClass + ", genericTypeArgs=" + genericTypeArgs
-				+ ", fieldType=" + fieldType + ", beanField=" + beanField
-				+ "]";
+				+ ", fieldType=" + fieldType + ", beanField=" + beanField + "]";
 	}
 
 }

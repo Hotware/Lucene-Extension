@@ -2,18 +2,20 @@ package de.hotware.lucene.extension.bean.field;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 
 /**
  * We don't want people to tamper with the field's setter methods. so we have
  * this 'frozen' class for this.
- * 
+ * <br />
+ * <br />
  * This will not prevent all tampering. As users will still have access to the
  * declaring class but will make people think about what they are doing first
  * 
  * @author Martin Braun
  */
-public class FrozenField {
+public final class FrozenField implements Member {
 
 	private final Field field;
 
@@ -22,7 +24,7 @@ public class FrozenField {
 	}
 
 	public Class<?> getDeclaringClass() {
-		return field.getDeclaringClass();
+		throw new UnsupportedOperationException("nope. you shouldn't need this!");
 	}
 
 	public String getName() {
