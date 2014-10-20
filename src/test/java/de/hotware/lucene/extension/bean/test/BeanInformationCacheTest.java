@@ -4,13 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 
 import de.hotware.lucene.extension.bean.BeanField;
-import de.hotware.lucene.extension.bean.BeanInformationCache;
-import de.hotware.lucene.extension.bean.BeanInformationCacheImpl;
 import de.hotware.lucene.extension.bean.analyzer.StockAnalyzerProvider;
+import de.hotware.lucene.extension.bean.field.BeanInformationCache;
+import de.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 import de.hotware.lucene.extension.bean.type.StockType;
 import junit.framework.TestCase;
 
@@ -42,16 +41,6 @@ public class BeanInformationCacheTest extends TestCase {
 	public void testGetFieldInformations() {
 		BeanInformationCache cache = new BeanInformationCacheImpl();
 		cache.getFieldInformations(AnalyzerTestBean.class);
-	}
-
-	public void testGetPerFieldAnalyzerWrapper() throws NoSuchMethodException,
-			SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		BeanInformationCache cache = new BeanInformationCacheImpl();
-		PerFieldAnalyzerWrapper wrapper = cache
-				.getPerFieldAnalyzerWrapper(AnalyzerTestBean.class);
-
-		assertEquals(GermanAnalyzer.class, getAnalyzer(wrapper, "test", GermanAnalyzer.class));
 	}
 
 }

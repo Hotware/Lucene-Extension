@@ -16,8 +16,8 @@ import org.apache.lucene.util.Version;
 
 import de.hotware.lucene.extension.bean.BeanConverter;
 import de.hotware.lucene.extension.bean.BeanConverterImpl;
-import de.hotware.lucene.extension.bean.BeanInformationCache;
-import de.hotware.lucene.extension.bean.BeanInformationCacheImpl;
+import de.hotware.lucene.extension.bean.field.BeanInformationCache;
+import de.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 
 /**
  * Reference Implementation of a LuceneManager

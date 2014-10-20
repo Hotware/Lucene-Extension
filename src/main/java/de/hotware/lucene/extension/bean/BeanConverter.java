@@ -1,5 +1,6 @@
 package de.hotware.lucene.extension.bean;
 
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 
 /**
@@ -13,5 +14,7 @@ public interface BeanConverter {
 	public <T> T documentToBean(Class<T> clazz, Document document);
 
 	public Document beanToDocument(Object bean);
+
+	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz);
 
 }

@@ -1,4 +1,4 @@
-package de.hotware.lucene.extension.bean;
+package de.hotware.lucene.extension.bean.field;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -7,18 +7,16 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.FieldType;
 
-import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
+import de.hotware.lucene.extension.bean.BeanField;
+import de.hotware.lucene.extension.bean.BeanFields;
 
 /**
  * Reference Implementation for a BeanInformationCache
@@ -98,27 +96,6 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 		} finally {
 			this.annotatedFieldsCacheLock.unlock();
 		}
-	}
-
-	@Override
-	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz) {
-		Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER;
-		Map<String, Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
-		for (FieldInformation info : this.getFieldInformations(clazz)) {
-			String fieldName = info.getField().getName();
-			BeanField bf = info.getBeanField();
-			Analyzer analyzer;
-			try {
-				analyzer = ((AnalyzerProvider) bf.analyzerProvider()
-						.newInstance()).getAnalyzer();
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new RuntimeException(e);
-			}
-			if (!analyzer.equals(defaultAnalyzer)) {
-				fieldAnalyzers.put(fieldName, analyzer);
-			}
-		}
-		return new PerFieldAnalyzerWrapper(defaultAnalyzer, fieldAnalyzers);
 	}
 
 	@Override

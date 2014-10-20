@@ -12,11 +12,15 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexableField;
 
-import de.hotware.lucene.extension.bean.BeanInformationCache.FieldInformation;
+import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
+import de.hotware.lucene.extension.bean.field.BeanInformationCache;
+import de.hotware.lucene.extension.bean.field.FieldInformation;
 import de.hotware.lucene.extension.bean.type.StockType;
 import de.hotware.lucene.extension.bean.type.Type;
 
@@ -140,6 +144,27 @@ public class BeanConverterImpl implements BeanConverter {
 			throw new IllegalArgumentException("the given object is no correct bean");
 		}
 		return ret;
+	}
+	
+	@Override
+	public PerFieldAnalyzerWrapper getPerFieldAnalyzerWrapper(Class<?> clazz) {
+		Analyzer defaultAnalyzer = Constants.DEFAULT_ANALYZER;
+		Map<String, Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
+		for (FieldInformation info : this.cache.getFieldInformations(clazz)) {
+			String fieldName = info.getField().getName();
+			BeanField bf = info.getBeanField();
+			Analyzer analyzer;
+			try {
+				analyzer = ((AnalyzerProvider) bf.analyzerProvider()
+						.newInstance()).getAnalyzer(info);
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			if (!analyzer.equals(defaultAnalyzer)) {
+				fieldAnalyzers.put(fieldName, analyzer);
+			}
+		}
+		return new PerFieldAnalyzerWrapper(defaultAnalyzer, fieldAnalyzers);
 	}
 
 	@Override

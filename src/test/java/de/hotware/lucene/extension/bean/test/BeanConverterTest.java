@@ -1,6 +1,7 @@
 package de.hotware.lucene.extension.bean.test;
 
 import de.hotware.lucene.extension.bean.analyzer.StockAnalyzerProvider;
+import de.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 import de.hotware.lucene.extension.bean.type.StockType.*;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +24,6 @@ import org.apache.lucene.index.IndexableFieldType;
 import de.hotware.lucene.extension.bean.BeanConverter;
 import de.hotware.lucene.extension.bean.BeanConverterImpl;
 import de.hotware.lucene.extension.bean.BeanField;
-import de.hotware.lucene.extension.bean.BeanInformationCacheImpl;
 import de.hotware.lucene.extension.bean.type.StockType;
 import junit.framework.TestCase;
 

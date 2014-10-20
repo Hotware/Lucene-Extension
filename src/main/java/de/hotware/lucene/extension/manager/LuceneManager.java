@@ -6,7 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 
 import de.hotware.lucene.extension.bean.BeanConverter;
-import de.hotware.lucene.extension.bean.BeanInformationCache;
+import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 
 /**
  * A LuceneManager helps you to handle all Low-Level Index-Management.

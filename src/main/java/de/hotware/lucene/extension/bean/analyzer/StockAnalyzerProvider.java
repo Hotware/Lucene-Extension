@@ -7,6 +7,7 @@ import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 import de.hotware.lucene.extension.bean.LuceneVersion;
+import de.hotware.lucene.extension.bean.field.FieldInformation;
 
 /**
  * some Basic AnalyzerProviders implemented for your convenience
@@ -29,7 +30,7 @@ public class StockAnalyzerProvider {
 		}
 
 		@Override
-		public Analyzer getAnalyzer() {
+		public Analyzer getAnalyzer(FieldInformation fieldInformation) {
 			return this.analyzer;
 		}
 

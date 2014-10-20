@@ -23,7 +23,7 @@ public class Constants {
 			AnalyzerProvider analyzerProvider = (AnalyzerProvider) ((Class<?>)Util
 				.getDefaultValueForAnnotationMethod(BeanField.class,
 						"analyzerProvider")).newInstance();
-			DEFAULT_ANALYZER = analyzerProvider.getAnalyzer();
+			DEFAULT_ANALYZER = analyzerProvider.getAnalyzer(null);
 		} catch(InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
