@@ -1,6 +1,5 @@
 package de.hotware.lucene.extension.bean;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +20,7 @@ import org.apache.lucene.index.IndexableField;
 import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.FieldInformation;
+import de.hotware.lucene.extension.bean.field.FrozenField;
 import de.hotware.lucene.extension.bean.type.StockType;
 import de.hotware.lucene.extension.bean.type.Type;
 
@@ -197,7 +197,7 @@ public class BeanConverterImpl implements BeanConverter {
 			
 			@Override
 			public void writeBeanInfoToDocument(FieldInformation fieldInformation, Object origin, Document dest) {
-				Field field = fieldInformation.getField();
+				FrozenField field = fieldInformation.getField();
 				BeanField bf = fieldInformation.getBeanField();
 				Class<?> objectFieldType = fieldInformation.getFieldClass();
 				FieldType fieldType = fieldInformation.getFieldType();
@@ -229,7 +229,7 @@ public class BeanConverterImpl implements BeanConverter {
 			}
 
 			public void writeDocumentInfoToBean(FieldInformation fieldInformation, Document origin, Object dest) {
-				Field field = fieldInformation.getField();
+				FrozenField field = fieldInformation.getField();
 				BeanField bf = fieldInformation.getBeanField();
 				Type typeWrapper;
 				try {
@@ -301,7 +301,7 @@ public class BeanConverterImpl implements BeanConverter {
 		};
 		
 		private static void iterableWriteBeanToDocument(FieldInformation fieldInformation, Object origin, Document dest) {
-			Field field = fieldInformation.getField();
+			FrozenField field = fieldInformation.getField();
 			BeanField bf = fieldInformation.getBeanField();
 			Class<?> objectFieldType = fieldInformation.getFieldClass();
 			FieldType fieldType = fieldInformation.getFieldType();
@@ -336,7 +336,7 @@ public class BeanConverterImpl implements BeanConverter {
 		
 		private static void collectionWriteDocumentToBean(FieldInformation fieldInformation, Document origin,
 				Object dest, @SuppressWarnings("rawtypes") Class<? extends Collection> collectionClass) {
-			Field field = fieldInformation.getField();
+			FrozenField field = fieldInformation.getField();
 			BeanField bf = fieldInformation.getBeanField();
 			Type typeWrapper;
 			try {

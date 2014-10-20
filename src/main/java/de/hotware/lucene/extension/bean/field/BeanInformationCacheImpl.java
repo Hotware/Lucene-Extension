@@ -144,7 +144,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 		fieldType.setTokenized(bf.tokenized());
 		typeWrapper.configureFieldType(fieldType);
 		fieldType.freeze();
-		return new FieldInformation(field, fieldClass,
+		return new FieldInformation(new FrozenField(field), fieldClass,
 				Collections.unmodifiableList(genericTypes), fieldType, bf);
 	}
 

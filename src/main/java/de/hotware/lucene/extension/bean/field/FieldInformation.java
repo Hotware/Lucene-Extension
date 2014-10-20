@@ -1,6 +1,5 @@
 package de.hotware.lucene.extension.bean.field;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -10,13 +9,13 @@ import de.hotware.lucene.extension.bean.BeanField;
 
 public final class FieldInformation {
 
-	private final Field field;
+	private final FrozenField field;
 	private final Class<?> fieldClass;
 	private final List<Type> genericTypeArgs;
 	private final FieldType fieldType;
 	private final BeanField beanField;
 
-	protected FieldInformation(Field field,
+	protected FieldInformation(FrozenField field,
 			Class<?> fieldClass,
 			List<Type> genericTypeArgs,
 			FieldType fieldType,
@@ -29,7 +28,7 @@ public final class FieldInformation {
 		this.beanField = beanField;
 	}
 
-	public Field getField() {
+	public FrozenField getField() {
 		return this.field;
 	}
 
