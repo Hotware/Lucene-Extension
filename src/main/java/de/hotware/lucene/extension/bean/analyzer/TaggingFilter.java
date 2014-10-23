@@ -64,7 +64,7 @@ public final class TaggingFilter extends TokenFilter {
 				throw new IllegalStateException(
 						"already matched a start/end tag");
 			}
-			if (this.isInPos = true) {
+			if (this.isInPos) {
 				LOGGER.warning("duplicate start of tag "
 						+ posStartPattern.toString());
 			}
@@ -79,8 +79,8 @@ public final class TaggingFilter extends TokenFilter {
 				throw new IllegalStateException(
 						"already matched a start/end tag");
 			}
-			if (this.isInPos = true) {
-				LOGGER.warning("duplicate end of tag "
+			if (!this.isInPos) {
+				LOGGER.warning("end of tag found but no opening tag found before "
 						+ posEndPattern.toString());
 			}
 			this.isInPos = false;
@@ -96,6 +96,9 @@ public final class TaggingFilter extends TokenFilter {
 			} else {
 				this.termAtt.setEmpty();
 			}
+		} else {
+			//we dont want the markers to be found in the tokens
+			this.termAtt.setEmpty();
 		}
 
 		return true;
