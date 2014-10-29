@@ -19,8 +19,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
  * This <#verb> is <#end_of_verb> a sentence. <br />
  * new TaggingFilter(input, Pattern.compile("<#verb>"),
  * Pattern.compile("<#end_of_verb>")) <br />
- * This will only index the is token in the sentence. All other tokens are
- * ignored.
+ * This will only index the "is" token in the sentence. All other tokens are
+ * set to empty
  * 
  * @author Martin Braun
  */
