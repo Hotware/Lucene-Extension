@@ -1,4 +1,4 @@
-package de.hotware.lucene.filter;
+package de.hotware.lucene.extension.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package de.hotware.lucene.filter;
+package de.hotware.lucene.extension.filter;
 
 import java.io.Reader;
 import java.util.regex.Pattern;
@@ -8,9 +8,11 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
+
 import de.hotware.lucene.extension.bean.LuceneVersion;
+import de.hotware.lucene.extension.filter.TaggingFilter;
+import de.hotware.lucene.extension.filter.TaggingFilter.IndexFormatProvider;
 import de.hotware.lucene.extension.util.Tokenize;
-import de.hotware.lucene.filter.TaggingFilter.IndexFormatProvider;
 import junit.framework.TestCase;
 
 public class TaggingFilterTest extends TestCase {
