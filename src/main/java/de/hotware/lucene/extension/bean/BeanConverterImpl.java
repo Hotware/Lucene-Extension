@@ -119,8 +119,11 @@ public class BeanConverterImpl implements BeanConverter {
 		boolean foundAnnotation = false;
 		for(FieldInformation fieldInformation : fieldInformations) {
 			foundAnnotation = true;
-			TypeHandler typeHandler = this.getTypeHandler(fieldInformation);
-			typeHandler.writeDocumentInfoToBean(fieldInformation, document, ret);	
+			//only call this for fieldInformations with store = true
+			if(fieldInformation.getBeanField().store()) {
+				TypeHandler typeHandler = this.getTypeHandler(fieldInformation);
+				typeHandler.writeDocumentInfoToBean(fieldInformation, document, ret);
+			}
 		}
 		if(!foundAnnotation) {
 			throw new IllegalArgumentException("the given object is no correct bean");

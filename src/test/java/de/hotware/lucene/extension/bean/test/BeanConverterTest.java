@@ -84,7 +84,7 @@ public class BeanConverterTest extends TestCase {
 		@BeanField(store = true, index = false, type = StringType.class)
 		public String notIndexedButStoredTest;
 		
-		@BeanField(store = false, index = true, type = StringType.class, 
+		@BeanField(store = true, index = true, type = StringType.class, 
 				analyzerProvider = StockAnalyzerProvider.GermanAnalyzerProvider.class)
 		public String customAnalyzerTest;
 		

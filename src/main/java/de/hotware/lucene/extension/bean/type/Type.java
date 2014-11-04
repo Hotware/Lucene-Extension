@@ -6,8 +6,7 @@ import org.apache.lucene.index.IndexableField;
 
 /**
  * the main extension point for providing different types to handle in Lucene
- * Beans
- * <br />
+ * Beans <br />
  * <br />
  * For slightly easier usage use {@link BaseType}
  * 
@@ -41,7 +40,11 @@ public interface Type {
 
 	/**
 	 * set the options for the FieldType you want the Field in your Document to
-	 * have here, as it gets frozen afterwards
+	 * have here, as it gets frozen afterwards. this is called after all other
+	 * stuff is set up in the fieldtype.
+	 * 
+	 * <b>Note: you can change the index, store and tokenized attribute in here,
+	 * but it is discouraged to do so</b>
 	 */
 	public void configureFieldType(FieldType fieldType);
 
