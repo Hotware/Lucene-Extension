@@ -214,8 +214,8 @@ public final class StockType {
 	public static class StringTermVectorPositionsOffsetsType extends
 			BaseStockType {
 
-		public StringTermVectorPositionsOffsetsType(NumericType numericType) {
-			super(numericType);
+		public StringTermVectorPositionsOffsetsType() {
+			super(null);
 		}
 
 		@Override
