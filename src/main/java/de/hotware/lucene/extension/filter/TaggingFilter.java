@@ -19,15 +19,13 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
  * <br />
  * <br />
  * All Tokens between a start and end tag can be recognized. One use case would
- * be Part of Speech tagging, i.e.: <br />
+ * be Part of Speech tagging. <br />
  * <br />
- * This <#(verb)> is <#(end_of_verb)> a sentence. <br />
- * new TaggingFilter(input, Pattern.compile("<#(verb)>"),
- * Pattern.compile("<#(end_of_verb)>")) <br />
- * This will only index the "is" token in the sentence. All other tokens are set
- * to empty <br />
- * <br />
- * The pattern has to have one group.
+ * Tagging could be done in other ways, for example by providing custom
+ * Attributes during Filtering, but for this one would have to provide a custom
+ * {@link org.apache.lucene.search.Query} implementation. This could be worth
+ * exploring if the performance of an index created with the help of this class
+ * is insufficient.
  * 
  * @author Martin Braun
  */
@@ -55,17 +53,46 @@ public final class TaggingFilter extends TokenFilter {
 	private int curTagIndex;
 
 	private String curTerm;
-	private char[] curBuffer;
 	private int curPosLen;
 	private int tokStart;
 	private int tokEnd;
 
+	/**
+	 * Interface to let the user decide how tagged terms get stored into the
+	 * index
+	 * 
+	 * @author Martin
+	 */
 	public static interface IndexFormatProvider {
 
+		/**
+		 * @param tagName
+		 *            name of the found tag
+		 * @param term
+		 *            the original term
+		 * @return the term to store in the index
+		 */
 		public String produce(String tagName, String term);
 
 	}
 
+	/**
+	 * @param input
+	 *            The input TokenStream for this filter
+	 * @param patternForStartTag
+	 *            pattern for the start tag. has to contain one capturing group
+	 *            to determine the tag name.
+	 * @param patternForEndTag
+	 *            pattern for the end tag. has to contain one capturing group to
+	 *            determine the tag name.
+	 * @param indexFormatProvider
+	 *            the {@link IndexFormatProvider} to use with this filter
+	 *            instance
+	 * @param allowMarkerTokens
+	 *            true if marker tokens (start and end tag) should be written
+	 *            into the index. these will not be passed to the provided
+	 *            {@link #indexFormatProvider}
+	 */
 	public TaggingFilter(TokenStream input, Pattern patternForStartTag,
 			Pattern patternForEndTag, IndexFormatProvider indexFormatProvider,
 			boolean allowMarkerTokens) {
@@ -86,7 +113,7 @@ public final class TaggingFilter extends TokenFilter {
 
 	@Override
 	public boolean incrementToken() throws IOException {
-		if (this.curBuffer == null) {
+		if (this.curTerm == null) {
 			if (!input.incrementToken()) {
 				if (this.currentTags.size() > 0) {
 					LOGGER.warning("end of input reached and POS tag "
@@ -95,7 +122,6 @@ public final class TaggingFilter extends TokenFilter {
 				return false;
 			} else {
 				this.curTerm = String.valueOf(this.termAtt);
-				this.curBuffer = this.termAtt.buffer().clone();
 				this.curPosLen = this.posLenAtt.getPositionLength();
 				this.tokStart = this.offsetAtt.startOffset();
 				this.tokEnd = this.offsetAtt.endOffset();
@@ -195,7 +221,6 @@ public final class TaggingFilter extends TokenFilter {
 	private void nextToken() {
 		this.curTagIndex = -1;
 		this.produceTaggedVersions = false;
-		this.curBuffer = null;
 		this.curTerm = null;
 	}
 
