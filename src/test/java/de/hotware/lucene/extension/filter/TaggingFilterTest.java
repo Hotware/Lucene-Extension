@@ -1,5 +1,13 @@
 package de.hotware.lucene.extension.filter;
 
+/*
+ * ----------------------------------------------------------------------------
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <martinbraun123@aol.com> wrote this file.  As long as you retain this notice you
+ * can do whatever you want with this stuff. If we meet some day, and you think
+ * this stuff is worth it, you can buy me a beer in return.   Martin Braun
+ * ----------------------------------------------------------------------------
+ */
 import java.io.Reader;
 import java.util.regex.Pattern;
 
@@ -23,20 +31,22 @@ public class TaggingFilterTest extends TestCase {
 		protected TokenStreamComponents createComponents(String fieldName,
 				Reader reader) {
 			// we use a tokenizer that doesn't remove dots,
-			// hyphens or whatever as this program is used for language research
+			// hyphens or whatever as this is intended to be used for language research
 			// and
 			// we don't want to filter things out that could be found otherwise
 			final Tokenizer src = new WhitespaceTokenizer(
 					LuceneVersion.VERSION, reader);
 			TokenStream tok = new TrimFilter(LuceneVersion.VERSION, src);
-			tok = new TaggingFilter(tok, Pattern.compile("<#([a-zA-Z]+)>"), Pattern.compile("</#([a-zA-Z]+)>"), new IndexFormatProvider() {
-				
-				@Override
-				public String produce(String tagName, String term) {
-					return "#" + tagName + "_" + term;
-				}
-				
-			}, true);
+			tok = new TaggingFilter(tok, Pattern.compile("<#([a-zA-Z]+)>"),
+					Pattern.compile("</#([a-zA-Z]+)>"),
+					new IndexFormatProvider() {
+
+						@Override
+						public String produce(String tagName, String term) {
+							return "#" + tagName + "_" + term;
+						}
+
+					}, true);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
 			// for
 			// the analysis of texts with all its parts
@@ -44,7 +54,7 @@ public class TaggingFilterTest extends TestCase {
 		}
 
 	}
-	
+
 	public void testFilter() {
 		SimpleTaggingAnalyzer analyzer = new SimpleTaggingAnalyzer();
 		String input = "<#word> This </#word> <#word> <#verb> is </#verb> a </#word> sentence";
