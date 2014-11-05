@@ -206,28 +206,6 @@ public final class StockType {
 
 	}
 
-	/**
-	 * additionally stores the TermVector's Positions and Offsets
-	 * 
-	 * @author Martin Braun
-	 */
-	public static class StringTermVectorPositionsOffsetsType extends
-			BaseStockType {
-
-		public StringTermVectorPositionsOffsetsType() {
-			super(null);
-		}
-
-		@Override
-		public void configureFieldType(FieldType fieldType) {
-			super.configureFieldType(fieldType);
-			fieldType.setStoreTermVectors(true);
-			fieldType.setStoreTermVectorPositions(true);
-			fieldType.setStoreTermVectorOffsets(true);
-		}
-
-	}
-
 	public static class BooleanType extends BaseStockType {
 
 		public BooleanType() {

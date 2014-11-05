@@ -142,6 +142,12 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 		fieldType.setIndexed(bf.index());
 		fieldType.setStored(bf.store());
 		fieldType.setTokenized(bf.tokenized());
+		fieldType.setStoreTermVectors(bf.storeTermVectors());
+		fieldType.setStoreTermVectorPositions(bf.storeTermVectorPositions());
+		fieldType.setStoreTermVectorOffsets(bf.storeTermVectorOffsets());
+		fieldType.setStoreTermVectorPayloads(bf.storeTermVectorPayloads());
+		fieldType.setOmitNorms(bf.omitNorms());
+		fieldType.setIndexOptions(bf.indexOptions());
 		typeWrapper.configureFieldType(fieldType);
 		fieldType.freeze();
 		return new FieldInformation(new FrozenField(field), fieldClass,
