@@ -15,7 +15,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -25,6 +24,7 @@ import org.apache.lucene.document.FieldType;
 
 import de.hotware.lucene.extension.bean.BeanField;
 import de.hotware.lucene.extension.bean.BeanFields;
+import de.hotware.lucene.extension.util.CacheMap;
 
 /**
  * Reference Implementation for a BeanInformationCache
@@ -33,7 +33,7 @@ import de.hotware.lucene.extension.bean.BeanFields;
  */
 public class BeanInformationCacheImpl implements BeanInformationCache {
 
-	public static final int DEFAULT_CACHE_SIZE = 1000;
+	public static final int DEFAULT_CACHE_SIZE = 1024;
 
 	private final Map<Class<?>, List<FieldInformation>> annotatedFieldsCache;
 	private final Lock annotatedFieldsCacheLock;
@@ -160,28 +160,6 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 		fieldType.freeze();
 		return new FieldInformation(new FrozenField(field), fieldClass,
 				Collections.unmodifiableList(genericTypes), fieldType, bf);
-	}
-
-	private static final class CacheMap<K, V> extends LinkedHashMap<K, V> {
-
-		private final int size;
-
-		public CacheMap(int size) {
-			this.size = size;
-		}
-
-		private static final long serialVersionUID = 2690314341945452137L;
-
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-			return this.size() > this.size;
-		}
-
-		@Override
-		public String toString() {
-			return "CacheMap [size=" + size + "]";
-		}
-
 	}
 
 }
