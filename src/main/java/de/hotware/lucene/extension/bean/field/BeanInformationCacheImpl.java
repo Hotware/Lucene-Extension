@@ -9,12 +9,7 @@
 package de.hotware.lucene.extension.bean.field;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -66,38 +61,38 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 				for (Field field : fields) {
 					if (field.isAnnotationPresent(BeanField.class)
 							|| field.isAnnotationPresent(BeanFields.class)) {
-						Class<?> fieldClass;
-						// TODO: apparently this is never needed in the
-						// BeanConverter API, so we should remove this
-						List<Type> genericTypes = new ArrayList<Type>();
-						{
-							Type type = field.getGenericType();
-							if (type instanceof ParameterizedType) {
-								ParameterizedType parType = (ParameterizedType) type;
-								fieldClass = (Class<?>) parType.getRawType();
-								// TODO: maybe we want more? i.e. Map<String,
-								// List<Integer>>?
-								// we only cover one layer of generics as only
-								// the Primitives are allowed
-								// as types in the collections
-								Type[] genericTypeArgs = ((ParameterizedType) type)
-										.getActualTypeArguments();
-								genericTypes.addAll(Arrays
-										.asList(genericTypeArgs));
-							} else if (type instanceof GenericArrayType) {
-								// cannot be handled differently
-								// will cause exceptions later in
-								// BeanConverterImpl
-								// but this is not the point of this class
-								fieldClass = Object[].class;
-							} else {
-								fieldClass = (Class<?>) type;
-							}
-							// TODO: what about WildcardType and TypeVariable
-						}
+						Class<?> fieldClass = field.getType();
+						// TODO: apparently the genericTypes are never needed in
+						// the BeanConverter API, so we don't need this anymore
+						// users can always implement their own custom type
+						// hierarchies
+						
+						// {
+						// Type type = field.getGenericType();
+						// if (type instanceof ParameterizedType) {
+						// ParameterizedType parType = (ParameterizedType) type;
+						// fieldClass = (Class<?>) parType.getRawType();
+						// // TODO: maybe we want more?
+						// // i.e. Map<String, List<Integer>>?
+						// // we only cover one layer of generics as only
+						// // the Primitives are allowed
+						// // as types in the collections
+						// } else if (type instanceof GenericArrayType) {
+						// // cannot be handled differently
+						// // will cause exceptions later in
+						// // BeanConverterImpl
+						// // but this is not the point of this class
+						// // fieldClass = Object[].class;
+						// fieldClass = (Class<?>) type;
+						// } else {
+						// fieldClass = (Class<?>) type;
+						// }
+						// // TODO: what about WildcardType and
+						// // TypeVariable
+						// }
 						field.setAccessible(true);
 						fieldInformations.addAll(this.getFieldInformations(
-								field, fieldClass, genericTypes));
+								field, fieldClass));
 					}
 				}
 				this.annotatedFieldsCache.put(clazz, fieldInformations);
@@ -116,19 +111,17 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 	}
 
 	private List<FieldInformation> getFieldInformations(Field field,
-			Class<?> fieldClass, List<Type> genericTypes) {
+			Class<?> fieldClass) {
 		List<FieldInformation> infos = new ArrayList<>();
 		if (field.isAnnotationPresent(BeanField.class)) {
 			infos.add(this.buildFieldInformation(
-					field.getAnnotation(BeanField.class), field, fieldClass,
-					genericTypes));
+					field.getAnnotation(BeanField.class), field, fieldClass));
 		}
 		if (field.isAnnotationPresent(BeanFields.class)) {
 			BeanFields bfs = field.getAnnotation(BeanFields.class);
 			if (bfs.value() != null) {
 				for (BeanField bf : bfs.value()) {
-					infos.add(this.buildFieldInformation(bf, field, fieldClass,
-							genericTypes));
+					infos.add(this.buildFieldInformation(bf, field, fieldClass));
 				}
 			} else {
 				throw new IllegalArgumentException(
@@ -139,7 +132,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 	}
 
 	private FieldInformation buildFieldInformation(BeanField bf, Field field,
-			Class<?> fieldClass, List<Type> genericTypes) {
+			Class<?> fieldClass) {
 		de.hotware.lucene.extension.bean.type.Type typeWrapper;
 		try {
 			// TODO: maybe cache these?
@@ -161,7 +154,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 		typeWrapper.configureFieldType(fieldType);
 		fieldType.freeze();
 		return new FieldInformation(new FrozenField(field), fieldClass,
-				Collections.unmodifiableList(genericTypes), fieldType, bf);
+				fieldType, bf);
 	}
 
 }
