@@ -105,7 +105,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 			this.annotatedFieldsCacheLock.unlock();
 		}
 	}
-
+	
 	@Override
 	public String toString() {
 		return "BeanInformationCacheImpl [annotatedFieldsCache="

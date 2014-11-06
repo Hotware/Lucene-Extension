@@ -30,7 +30,7 @@ import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.FieldInformation;
 import de.hotware.lucene.extension.bean.field.FrozenField;
-import de.hotware.lucene.extension.bean.type.StockType;
+import de.hotware.lucene.extension.bean.type.AnyClassType;
 import de.hotware.lucene.extension.bean.type.Type;
 import de.hotware.lucene.extension.util.CacheMap;
 
@@ -211,28 +211,26 @@ public class BeanConverterImpl implements BeanConverter {
 
 	@Override
 	public String toString() {
-		return "BeanConverterImpl [cache=" + cache + "]";
+		return "BeanConverterImpl [lock=" + lock + ", cache=" + cache
+				+ ", perFieldAnalyzerWrapperCache="
+				+ perFieldAnalyzerWrapperCache + "]";
 	}
 
 	private TypeHandler getTypeHandler(FieldInformation fieldInformation) {
 		BeanField bf = fieldInformation.getBeanField();
 		Class<?> objectFieldClass = fieldInformation.getFieldClass();
 		Class<?> typeWrapper = bf.type();
-		if (!typeWrapper.equals(StockType.SerializeType.class)
+		TypeHandler typeHandler;
+		if (AnyClassType.class.isAssignableFrom(typeWrapper)) {
+			// handle this as a default object
+			typeHandler = TypeHandler.DEFAULT;
+		} else if (!AnyClassType.class.isAssignableFrom(typeWrapper)
 				&& !ALL_TYPES.contains(objectFieldClass)) {
 			throw new IllegalArgumentException(
 					"type of Java-Bean field not supported");
-		}
-		TypeHandler typeHandler = TYPE_HANDLER.get(objectFieldClass);
-		if (typeHandler == null) {
-			if (typeWrapper.equals(StockType.SerializeType.class)) {
-				// serialisation is handled like a default object
-				typeHandler = TypeHandler.DEFAULT;
-			} else {
-				throw new AssertionError(
-						"typeHandler was null at a point where the typeHandler"
-								+ " may only be null if typeWrapper is SERIALIZED");
-			}
+		} else {
+			//use one of our supported TypeHandlers.
+			typeHandler = TYPE_HANDLER.get(objectFieldClass);
 		}
 		return typeHandler;
 	}

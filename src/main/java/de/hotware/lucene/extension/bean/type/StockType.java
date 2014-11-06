@@ -241,7 +241,7 @@ public final class StockType {
 	 * 
 	 * @author Martin Braun
 	 */
-	public static class SerializeType extends BaseStockType {
+	public static class SerializeType extends BaseStockType implements AnyClassType {
 
 		public SerializeType() {
 			super(null);
