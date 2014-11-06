@@ -67,6 +67,8 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 					if (field.isAnnotationPresent(BeanField.class)
 							|| field.isAnnotationPresent(BeanFields.class)) {
 						Class<?> fieldClass;
+						// TODO: apparently this is never needed in the
+						// BeanConverter API, so we should remove this
 						List<Type> genericTypes = new ArrayList<Type>();
 						{
 							Type type = field.getGenericType();
@@ -105,7 +107,7 @@ public class BeanInformationCacheImpl implements BeanInformationCache {
 			this.annotatedFieldsCacheLock.unlock();
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "BeanInformationCacheImpl [annotatedFieldsCache="
