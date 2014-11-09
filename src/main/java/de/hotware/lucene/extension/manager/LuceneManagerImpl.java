@@ -11,14 +11,20 @@ package de.hotware.lucene.extension.manager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ReferenceManager;
+import org.apache.lucene.search.SearcherFactory;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
@@ -28,23 +34,32 @@ import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 
 /**
- * Reference Implementation of a LuceneManager
+ * Reference Implementation of a LuceneManager.
+ * 
+ * <br />
+ * 
+ * Refreshes the
  * 
  * @author Martin Braun
  */
 public class LuceneManagerImpl implements LuceneManager {
+
+	private static final Logger LOGGER = Logger
+			.getLogger(LuceneManagerImpl.class.getName());
 
 	private final Lock lock;
 	private final BeanConverter beanConverter;
 	private final Directory directory;
 	private final IndexWriterConfig indexWriterConfig;
 	private final BeanInformationCache beanInformationCache;
-	private UncloseableIndexWriter indexWriter;
-	private IndexSearcher indexSearcher;
-	private DirectoryReader indexReader;
+	private final ScheduledExecutorService searcherScheduler;
+	private SearcherManager searcherManager;
 	private boolean closed;
+	
+	public static Scheduling ONCE_EVERY_MINUTE = new Scheduling(1, 1, TimeUnit.MINUTES);
 
-	public LuceneManagerImpl(Directory directory) throws IOException {
+	public LuceneManagerImpl(Directory directory, Scheduling scheduling)
+			throws IOException {
 		this.lock = new ReentrantLock();
 		this.beanConverter = new BeanConverterImpl(
 				this.beanInformationCache = new BeanInformationCacheImpl());
@@ -52,14 +67,26 @@ public class LuceneManagerImpl implements LuceneManager {
 		this.indexWriterConfig = new IndexWriterConfig(Version.LUCENE_4_9,
 				new StandardAnalyzer(Version.LUCENE_4_9));
 		try {
-			this.indexWriter = new UncloseableIndexWriter(this.directory,
-					this.indexWriterConfig);
-			this.indexReader = DirectoryReader.open(this.directory);
-			this.indexSearcher = new IndexSearcher(this.indexReader);
-		} catch(IOException e) {
+			this.searcherManager = new SearcherManager(this.directory,
+					new SearcherFactory());
+		} catch (IOException e) {
 			this.close();
 			throw e;
 		}
+		this.searcherScheduler = Executors.newScheduledThreadPool(1);
+		this.searcherScheduler.scheduleAtFixedRate(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					LuceneManagerImpl.this.searcherManager.maybeRefresh();
+				} catch (IOException e) {
+					LOGGER.warning(e.toString());
+				}
+			}
+
+		}, scheduling.getInitialDelay(), scheduling.getPeriod(),
+				scheduling.getUnit());
 	}
 
 	@Override
@@ -68,41 +95,16 @@ public class LuceneManagerImpl implements LuceneManager {
 	}
 
 	@Override
-	public final IndexWriter getIndexWriter() {
-		this.lock.lock();
-		try {
-			this.checkOpen();
-			return this.indexWriter;
-		} finally {
-			this.lock.unlock();
-		}
+	public final IndexWriter getIndexWriter() throws IOException {
+		return new IndexWriter(this.directory, this.indexWriterConfig);
 	}
 
 	@Override
-	public final IndexSearcher getIndexSearcher() throws IOException {
+	public final ReferenceManager<IndexSearcher> getIndexSearcherManager() {
 		this.lock.lock();
 		try {
 			this.checkOpen();
-			DirectoryReader newReader = DirectoryReader
-					.openIfChanged(this.indexReader);
-			if (newReader != null) {
-				this.indexReader = newReader;
-				this.indexSearcher = new IndexSearcher(this.indexReader);
-			}
-		} finally {
-			this.lock.unlock();
-		}
-		return this.indexSearcher;
-	}
-
-	@Override
-	public final void shouldReopenIndexWriter() throws IOException {
-		this.lock.lock();
-		try {
-			this.checkOpen();
-			this.indexWriter.closeInternal();
-			this.indexWriter = new UncloseableIndexWriter(this.directory,
-					this.indexWriterConfig);
+			return this.searcherManager;
 		} finally {
 			this.lock.unlock();
 		}
@@ -114,15 +116,8 @@ public class LuceneManagerImpl implements LuceneManager {
 			this.closed = true;
 			List<Exception> exceptions = new ArrayList<>();
 			try {
-				if(this.indexWriter != null) {
-					this.indexWriter.closeInternal();
-				}
-			} catch (IOException e) {
-				exceptions.add(e);
-			}
-			try {
-				if(this.indexReader != null) {
-					this.indexReader.close();
+				if (this.searcherManager != null) {
+					this.searcherManager.close();
 				}
 			} catch (IOException e) {
 				exceptions.add(e);
@@ -131,8 +126,12 @@ public class LuceneManagerImpl implements LuceneManager {
 				throw new IOException("IOException(s) while closing"
 						+ exceptions);
 			}
+			if (this.searcherScheduler != null) {
+				// as this is only running on searchers this is safe
+				this.searcherScheduler.shutdownNow();
+			}
 		} finally {
-			if(IndexWriter.isLocked(this.directory)) {
+			if (IndexWriter.isLocked(this.directory)) {
 				IndexWriter.unlock(this.directory);
 			}
 			this.lock.unlock();
@@ -148,30 +147,6 @@ public class LuceneManagerImpl implements LuceneManager {
 		if (this.closed) {
 			throw new IllegalStateException("has been closed");
 		}
-	}
-	
-	private static class UncloseableIndexWriter extends IndexWriter {
-
-		public UncloseableIndexWriter(Directory d, IndexWriterConfig conf)
-				throws IOException {
-			super(d, conf);
-		}
-		
-		@Override
-		public void close() {
-			throw new UnsupportedOperationException("don't close this indexwriter by hand,"
-					+ " the manager will do this for you!");
-		}
-		
-		@Override
-		public void close(boolean waitForMerges) {
-			this.close();
-		}
-		
-		private void closeInternal() throws IOException {
-			super.close(true);
-		}
-		
 	}
 
 }

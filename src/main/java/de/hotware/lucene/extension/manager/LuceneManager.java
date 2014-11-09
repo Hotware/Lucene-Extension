@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ReferenceManager;
 
 import de.hotware.lucene.extension.bean.BeanConverter;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
@@ -34,26 +35,13 @@ public interface LuceneManager extends AutoCloseable {
 	public BeanConverter getBeanConverter();
 
 	/**
-	 * returns the <b>shared</b> {@link org.apache.lucene.index.IndexWriter}
-	 * used in this instance. <br />
-	 * <br />
-	 * so if an {@link java.lang.OutOfMemoryError} occurs, be sure to call
-	 * {@link #shouldReopenIndexWriter()}
+	 * returns a <b>new</b> {@link org.apache.lucene.index.IndexWriter} <br />
+	 * be sure to close it.
+	 * @throws IOException 
 	 */
-	public IndexWriter getIndexWriter();
+	public IndexWriter getIndexWriter() throws IOException;
 
-	/**
-	 * @throws IOException
-	 *             if the (re-)opening of a IndexSearcher failed
-	 */
-	public IndexSearcher getIndexSearcher() throws IOException;
-
-	/**
-	 * tells the manager that the index-writer has to be re-opened
-	 * 
-	 * @throws IOException
-	 */
-	public void shouldReopenIndexWriter() throws IOException;
+	public ReferenceManager<IndexSearcher> getIndexSearcherManager();
 
 	/**
 	 * closes everything (except for the directory)
