@@ -30,21 +30,18 @@ public class TaggingFilterTest extends TestCase {
 				Reader reader) {
 			// we use a tokenizer that doesn't remove dots,
 			// hyphens or whatever as this is intended to be used for language
-			// research
-			// and
-			// we don't want to filter things out that could be found otherwise
+			// research and we don't want to filter things out that could be
+			// found otherwise
 			final Tokenizer src = new WhitespaceTokenizer(reader);
 			TokenStream tok = new TrimFilter(src);
-			tok = new StartEndTaggingFilter(tok,
-					new IndexFormatProvider() {
+			tok = new StartEndTaggingFilter(tok, new IndexFormatProvider() {
 
-						@Override
-						public String produce(String tagName, String term) {
-							return "#" + tagName + "_" + term;
-						}
+				@Override
+				public String produce(String tagName, String term) {
+					return "#" + tagName + "_" + term;
+				}
 
-					},
-					Pattern.compile("</#([a-zA-Z]+)>"),
+			}, Pattern.compile("</#([a-zA-Z]+)>"),
 					Pattern.compile("<#([a-zA-Z]+)>"), true);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
 			// for
@@ -61,9 +58,8 @@ public class TaggingFilterTest extends TestCase {
 				Reader reader) {
 			// we use a tokenizer that doesn't remove dots,
 			// hyphens or whatever as this is intended to be used for language
-			// research
-			// and
-			// we don't want to filter things out that could be found otherwise
+			// research and we don't want to filter things out that could be
+			// found otherwise
 			final Tokenizer src = new WhitespaceTokenizer(reader);
 			TokenStream tok = new TrimFilter(src);
 			tok = new NextTokenTaggingFilter(tok, new IndexFormatProvider() {
@@ -90,7 +86,7 @@ public class TaggingFilterTest extends TestCase {
 
 	public void testNextTokenTaggingFilter() {
 		SimpleNextTokenTaggingAnalyzer analyzer = new SimpleNextTokenTaggingAnalyzer();
-		String input = "<#word> This <#verb> is a sentence";
+		String input = "<#word> This test <#verb> is a sentence";
 		System.out.println(Tokenize.tokenizeString(analyzer, input));
 		analyzer.close();
 	}

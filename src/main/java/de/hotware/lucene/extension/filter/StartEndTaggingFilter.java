@@ -51,7 +51,7 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 			} else {
 				this.currentTags.add(tagName);
 			}
-			LOGGER.info("start tag found: " + curTerm);
+			LOGGER.finest("start tag found: " + curTerm);
 		}
 
 		if (endMatcher.matches()) {
@@ -68,7 +68,7 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 			} else {
 				this.currentTags.remove(tagName);
 			}
-			LOGGER.info("end tag found: " + curTerm);
+			LOGGER.finest("end tag found: " + curTerm);
 		}
 
 		if (!matchedOnce) {
@@ -84,7 +84,7 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 			if (!this.allowMarkerTokens) {
 				// we apparently dont want the markers to be found in the
 				// tokens
-				this.termAtt.setEmpty();
+				this.deleteToken();
 			}
 			this.nextToken();
 			return true;

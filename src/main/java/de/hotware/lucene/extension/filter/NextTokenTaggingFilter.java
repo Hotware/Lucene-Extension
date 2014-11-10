@@ -52,7 +52,7 @@ public final class NextTokenTaggingFilter extends TaggingFilter {
 			} else {
 				this.currentTags.add(tagName);
 			}
-			LOGGER.info("tag found: " + curTerm);
+			LOGGER.finest("tag found: " + curTerm);
 		}
 
 		if (!matchedOnce) {
@@ -68,7 +68,7 @@ public final class NextTokenTaggingFilter extends TaggingFilter {
 			if (!this.allowMarkerTokens) {
 				// we apparently dont want the markers to be found in the
 				// tokens
-				this.termAtt.setEmpty();
+				this.deleteToken();
 			}
 			this.nextToken();
 			return true;

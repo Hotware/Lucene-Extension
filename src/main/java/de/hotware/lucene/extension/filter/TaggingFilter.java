@@ -40,13 +40,13 @@ public abstract class TaggingFilter extends TokenFilter {
 	private static final Logger LOGGER = Logger.getLogger(TaggingFilter.class
 			.getClass().getName());
 
-	protected final CharTermAttribute termAtt = this
+	private final CharTermAttribute termAtt = this
 			.addAttribute(CharTermAttribute.class);
-	protected final PositionIncrementAttribute posIncAtt = this
+	private final PositionIncrementAttribute posIncAtt = this
 			.addAttribute(PositionIncrementAttribute.class);
-	protected final PositionLengthAttribute posLenAtt = this
+	private final PositionLengthAttribute posLenAtt = this
 			.addAttribute(PositionLengthAttribute.class);
-	protected final OffsetAttribute offsetAtt = this
+	private final OffsetAttribute offsetAtt = this
 			.addAttribute(OffsetAttribute.class);
 
 	protected final List<String> currentTags;
@@ -165,12 +165,21 @@ public abstract class TaggingFilter extends TokenFilter {
 	 * @return
 	 */
 	protected abstract boolean handleNewToken(String curTerm);
-	
+
 	/**
 	 * callback
 	 */
 	protected void finishedProducingTokens() {
-		
+
+	}
+
+	/**
+	 * delete the current token
+	 */
+	protected void deleteToken() {
+		this.termAtt.setEmpty();
+		// don't change the offset, posInc or posLen attribute, this has to be
+		// the same as in the source
 	}
 
 	/**
@@ -182,6 +191,10 @@ public abstract class TaggingFilter extends TokenFilter {
 		this.curTerm = null;
 	}
 
+	/**
+	 * call this if the tagged versions should be produced in the next call of
+	 * incrementTokens()
+	 */
 	protected final void produceTaggedVersions() {
 		this.curTagIndex = 0;
 		this.produceTaggedVersions = true;
