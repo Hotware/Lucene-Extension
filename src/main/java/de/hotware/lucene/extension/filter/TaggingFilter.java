@@ -21,17 +21,8 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 
 /**
- * Filter to process tokens between start and end tags. <br />
- * <br />
- * <br />
- * All Tokens between a start and end tag can be recognized. One use case would
- * be Part of Speech tagging. <br />
- * <br />
- * Tagging could be done in other ways, for example by providing custom
- * Attributes during Filtering, but for this one would have to provide a custom
- * {@link org.apache.lucene.search.Query} implementation. This could be worth
- * exploring if the performance of an index created with the help of this class
- * is insufficient.
+ * Base Class for TaggingFilters (tagging in the textfield itself, no custom
+ * attributes)
  * 
  * @author Martin Braun
  */
