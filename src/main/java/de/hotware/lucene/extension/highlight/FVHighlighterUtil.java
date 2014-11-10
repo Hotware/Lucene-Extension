@@ -37,7 +37,6 @@ import org.apache.lucene.search.vectorhighlight.FieldPhraseList;
 import org.apache.lucene.search.vectorhighlight.FieldQuery;
 import org.apache.lucene.search.vectorhighlight.FieldTermStack;
 import org.apache.lucene.search.vectorhighlight.FragListBuilder;
-import org.apache.lucene.search.vectorhighlight.FragmentsBuilder;
 
 /**
  * Utility class to be used with the utilities from
@@ -67,6 +66,10 @@ public class FVHighlighterUtil {
 	}
 
 	/**
+	 * Copied from: {@link FastVectorHighlighter}:
+	 * <br />
+	 * <br />
+	 * 
 	 * Return the best fragments. Matches are scanned from matchedFields and
 	 * turned into fragments against storedField. The highlighting may not make
 	 * sense if matchedFields has matches with offsets that don't correspond
@@ -75,8 +78,8 @@ public class FVHighlighterUtil {
 	 * outside of storedField. As such it is advisable that all matchedFields
 	 * share the same source as storedField or are at least a prefix of it.
 	 * 
-	 * @param fieldQuery
-	 *            {@link FieldQuery} object
+	 * @param query
+	 *            {@link Query} object
 	 * @param reader
 	 *            {@link IndexReader} of the index
 	 * @param docId
@@ -89,14 +92,6 @@ public class FVHighlighterUtil {
 	 *            the length (number of chars) of a fragment
 	 * @param maxNumFragments
 	 *            maximum number of fragments
-	 * @param fragListBuilder
-	 *            {@link FragListBuilder} object
-	 * @param fragmentsBuilder
-	 *            {@link FragmentsBuilder} object
-	 * @param preTags
-	 *            pre-tags to be used to highlight terms
-	 * @param postTags
-	 *            post-tags to be used to highlight terms
 	 * @param encoder
 	 *            an encoder that generates encoded text
 	 * @return created fragments or null when no fragments created. size of the
