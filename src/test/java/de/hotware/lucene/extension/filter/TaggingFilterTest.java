@@ -1,5 +1,3 @@
-package de.hotware.lucene.extension.filter;
-
 /*
  * ----------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
@@ -8,6 +6,8 @@ package de.hotware.lucene.extension.filter;
  * this stuff is worth it, you can buy me a beer in return.   Martin Braun
  * ----------------------------------------------------------------------------
  */
+package de.hotware.lucene.extension.filter;
+
 import java.io.Reader;
 import java.util.regex.Pattern;
 
@@ -17,7 +17,6 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
 
-import de.hotware.lucene.extension.bean.LuceneVersion;
 import de.hotware.lucene.extension.filter.TaggingFilter;
 import de.hotware.lucene.extension.filter.TaggingFilter.IndexFormatProvider;
 import de.hotware.lucene.extension.util.Tokenize;
@@ -34,9 +33,8 @@ public class TaggingFilterTest extends TestCase {
 			// hyphens or whatever as this is intended to be used for language research
 			// and
 			// we don't want to filter things out that could be found otherwise
-			final Tokenizer src = new WhitespaceTokenizer(
-					LuceneVersion.VERSION, reader);
-			TokenStream tok = new TrimFilter(LuceneVersion.VERSION, src);
+			final Tokenizer src = new WhitespaceTokenizer(reader);
+			TokenStream tok = new TrimFilter(src);
 			tok = new TaggingFilter(tok, Pattern.compile("<#([a-zA-Z]+)>"),
 					Pattern.compile("</#([a-zA-Z]+)>"),
 					new IndexFormatProvider() {

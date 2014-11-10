@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Martin Braun
  * ----------------------------------------------------------------------------
  */
-package de.hotware.lucene.extension.bean;
+package de.hotware.lucene.extension.util;
 
 import org.apache.lucene.util.Version;
 
@@ -22,6 +22,6 @@ public final class LuceneVersion {
 		throw new AssertionError("can't touch this!");
 	}
 
-	public static final Version VERSION = Version.LUCENE_4_9;
+	public static final Version VERSION = Version.LUCENE_4_10_2;
 
 }

@@ -26,19 +26,19 @@ import org.apache.lucene.search.ReferenceManager;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
 
 import de.hotware.lucene.extension.bean.BeanConverter;
 import de.hotware.lucene.extension.bean.BeanConverterImpl;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
+import de.hotware.lucene.extension.util.LuceneVersion;
 
 /**
  * Reference Implementation of a LuceneManager.
  * 
  * <br />
  * 
- * Refreshes the
+ * Refreshes the SearcherManager automatically in the provided time
  * 
  * @author Martin Braun
  */
@@ -55,8 +55,9 @@ public class LuceneManagerImpl implements LuceneManager {
 	private final ScheduledExecutorService searcherScheduler;
 	private SearcherManager searcherManager;
 	private boolean closed;
-	
-	public static Scheduling ONCE_EVERY_MINUTE = new Scheduling(1, 1, TimeUnit.MINUTES);
+
+	public static Scheduling ONCE_EVERY_MINUTE = new Scheduling(1, 1,
+			TimeUnit.MINUTES);
 
 	public LuceneManagerImpl(Directory directory, Scheduling scheduling)
 			throws IOException {
@@ -64,8 +65,8 @@ public class LuceneManagerImpl implements LuceneManager {
 		this.beanConverter = new BeanConverterImpl(
 				this.beanInformationCache = new BeanInformationCacheImpl());
 		this.directory = directory;
-		this.indexWriterConfig = new IndexWriterConfig(Version.LUCENE_4_9,
-				new StandardAnalyzer(Version.LUCENE_4_9));
+		this.indexWriterConfig = new IndexWriterConfig(LuceneVersion.VERSION,
+				new StandardAnalyzer());
 		try {
 			this.searcherManager = new SearcherManager(this.directory,
 					new SearcherFactory());

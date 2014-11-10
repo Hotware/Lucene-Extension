@@ -14,7 +14,6 @@ import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
-import de.hotware.lucene.extension.bean.LuceneVersion;
 import de.hotware.lucene.extension.bean.field.FieldInformation;
 
 /**
@@ -56,7 +55,7 @@ public class StockAnalyzerProvider {
 	public static class GermanAnalyzerProvider extends AnalyzerProviderTemplate {
 
 		public GermanAnalyzerProvider() {
-			super(new GermanAnalyzer(LuceneVersion.VERSION));
+			super(new GermanAnalyzer());
 		}
 
 	}
@@ -65,7 +64,7 @@ public class StockAnalyzerProvider {
 			AnalyzerProviderTemplate {
 
 		public EnglishAnalyzerProvider() {
-			super(new EnglishAnalyzer(LuceneVersion.VERSION));
+			super(new EnglishAnalyzer());
 		}
 
 	}
@@ -74,7 +73,7 @@ public class StockAnalyzerProvider {
 			AnalyzerProviderTemplate {
 
 		public StandardAnalyzerProvider() {
-			super(new StandardAnalyzer(LuceneVersion.VERSION));
+			super(new StandardAnalyzer());
 		}
 
 	}

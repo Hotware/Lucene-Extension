@@ -13,8 +13,6 @@ import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
-import de.hotware.lucene.extension.bean.LuceneVersion;
-
 /**
  * Locale dependent Analyzer helper class. So far only de_DE and en_EN are
  * supported. <br />
@@ -25,9 +23,9 @@ import de.hotware.lucene.extension.bean.LuceneVersion;
  * @author Martin Braun
  */
 public enum LocaleAnalyzer {
-	de_DE(new GermanAnalyzer(LuceneVersion.VERSION)), en_EN(
-			new EnglishAnalyzer(LuceneVersion.VERSION)), DEFAULT(
-			new StandardAnalyzer(LuceneVersion.VERSION));
+	de_DE(new GermanAnalyzer()), en_EN(
+			new EnglishAnalyzer()), DEFAULT(
+			new StandardAnalyzer());
 
 	private final Analyzer analyzer;
 

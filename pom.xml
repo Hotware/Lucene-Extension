@@ -4,7 +4,7 @@
 	<groupId>de.hotware.lucene.extension.bean</groupId>
 	<artifactId>lucene-bean-extension</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.9.0</version>
+	<version>0.1.9.1</version>
 	<name>LuceneBeanExtension</name>
 	<url>https://github.com/Hotware/LuceneBeanExtension</url>
 
@@ -37,13 +37,22 @@
 			<artifactId>lucene-core</artifactId>
 			<groupId>org.apache.lucene</groupId>
 			<type>jar</type>
-			<version>4.9.0</version>
+			<version>4.10.2</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.9.0</version>
+			<version>4.10.2</version>
+			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>4.10.2</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
-	
+
 </project>
