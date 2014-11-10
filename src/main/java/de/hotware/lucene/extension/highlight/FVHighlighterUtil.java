@@ -44,8 +44,7 @@ import org.apache.lucene.search.vectorhighlight.FragmentsBuilder;
  * 
  * <br />
  * 
- * Most of the code is copy pasted and we only support single valued fields for
- * simplicity.
+ * Most of the code is copy pasted.
  * 
  * @author Martin Braun
  * 
