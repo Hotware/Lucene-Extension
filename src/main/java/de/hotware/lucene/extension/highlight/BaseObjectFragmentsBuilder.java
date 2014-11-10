@@ -50,7 +50,7 @@ import org.apache.lucene.search.vectorhighlight.FieldPhraseList.WeightedPhraseIn
  */
 public abstract class BaseObjectFragmentsBuilder implements
 		ObjectFragmentsBuilder {
-	
+
 	protected final boolean discreteMultiValueHighlighting;
 
 	public BaseObjectFragmentsBuilder(boolean discreteMultiValueHighlighting) {
@@ -63,8 +63,7 @@ public abstract class BaseObjectFragmentsBuilder implements
 	@Override
 	public <T> List<T> createFragments(IndexReader reader, int docId,
 			String fieldName, FieldFragList fieldFragList, int maxNumFragments,
-			String[] preTags, String[] postTags, ObjectEncoder<T> encoder)
-			throws IOException {
+			ObjectEncoder<T> encoder) throws IOException {
 
 		if (maxNumFragments < 0) {
 			throw new IllegalArgumentException("maxNumFragments("
@@ -72,21 +71,21 @@ public abstract class BaseObjectFragmentsBuilder implements
 		}
 
 		List<WeightedFragInfo> fragInfos = fieldFragList.getFragInfos();
-	    Field[] values = getFields( reader, docId, fieldName );
-	    if( values.length == 0 ) {
-	      return null;
-	    }
+		Field[] values = getFields(reader, docId, fieldName);
+		if (values.length == 0) {
+			return null;
+		}
 
-	    if (discreteMultiValueHighlighting && values.length > 1) {
-	      fragInfos = discreteMultiValueHighlighting(fragInfos, values);
-	    }
+		if (discreteMultiValueHighlighting && values.length > 1) {
+			fragInfos = discreteMultiValueHighlighting(fragInfos, values);
+		}
 
 		fragInfos = getWeightedFragInfoList(fragInfos);
 		int limitFragments = maxNumFragments < fragInfos.size() ? maxNumFragments
 				: fragInfos.size();
 		List<T> fragments = new ArrayList<>(limitFragments);
 
-		for(int i = 0; i < limitFragments; ++i) {
+		for (int i = 0; i < limitFragments; ++i) {
 			fragments.add(encoder.encode(fragInfos.get(i), values));
 		}
 		return fragments;

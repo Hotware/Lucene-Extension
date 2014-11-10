@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
 import org.apache.lucene.search.vectorhighlight.FieldFragList;
 import org.apache.lucene.search.vectorhighlight.FieldPhraseList;
 import org.apache.lucene.search.vectorhighlight.FieldQuery;
@@ -44,7 +46,7 @@ import org.apache.lucene.search.vectorhighlight.FragmentsBuilder;
  * 
  * <br />
  * 
- * Most of the code is copy pasted.
+ * Most of the code is copy pasted but is restructured for our needs.
  * 
  * @author Martin Braun
  * 
@@ -52,9 +54,16 @@ import org.apache.lucene.search.vectorhighlight.FragmentsBuilder;
 public class FVHighlighterUtil {
 
 	private final int phraseLimit;
+	private final FastVectorHighlighter fvh;
+	private final FragListBuilder fragListBuilder;
+	private final ObjectFragmentsBuilder objectFragmentsBuilder;
 
-	public FVHighlighterUtil(int phraseLimit) {
+	public FVHighlighterUtil(int phraseLimit, FragListBuilder fragListBuilder,
+			ObjectFragmentsBuilder objectFragmentsBuilder) {
 		this.phraseLimit = phraseLimit;
+		this.fvh = new FastVectorHighlighter();
+		this.fragListBuilder = fragListBuilder;
+		this.objectFragmentsBuilder = objectFragmentsBuilder;
 	}
 
 	/**
@@ -95,24 +104,23 @@ public class FVHighlighterUtil {
 	 * @throws IOException
 	 *             If there is a low-level I/O error
 	 */
-	public final <T> List<T> getBestFragments(final FieldQuery fieldQuery,
-			IndexReader reader, int docId, String storedField,
-			Set<String> matchedFields, int fragCharSize, int maxNumFragments,
-			FragListBuilder fragListBuilder,
-			ObjectFragmentsBuilder fragmentsBuilder, String[] preTags,
-			String[] postTags, ObjectEncoder<T> encoder) throws IOException {
-		FieldFragList fieldFragList = getFieldFragList(fragListBuilder,
-				fieldQuery, reader, docId, matchedFields, fragCharSize);
-		return fragmentsBuilder.createFragments(reader, docId, storedField,
-				fieldFragList, maxNumFragments, preTags, postTags, encoder);
+	public final <T> List<T> getBestFragments(Query query, IndexReader reader,
+			int docId, String storedField, Set<String> matchedFields,
+			int fragCharSize, int maxNumFragments, ObjectEncoder<T> encoder)
+			throws IOException {
+		FieldQuery fieldQuery = this.fvh.getFieldQuery(query, reader);
+		FieldFragList fieldFragList = getFieldFragList(fieldQuery, reader,
+				docId, matchedFields, fragCharSize);
+		return this.objectFragmentsBuilder.createFragments(reader, docId,
+				storedField, fieldFragList, maxNumFragments, encoder);
 	}
 
 	/**
 	 * Build a FieldFragList for more than one field.
 	 */
-	public FieldFragList getFieldFragList(FragListBuilder fragListBuilder,
-			final FieldQuery fieldQuery, IndexReader reader, int docId,
-			Set<String> matchedFields, int fragCharSize) throws IOException {
+	public FieldFragList getFieldFragList(final FieldQuery fieldQuery,
+			IndexReader reader, int docId, Set<String> matchedFields,
+			int fragCharSize) throws IOException {
 		Iterator<String> matchedFieldsItr = matchedFields.iterator();
 		if (!matchedFieldsItr.hasNext()) {
 			throw new IllegalArgumentException(
@@ -123,10 +131,11 @@ public class FVHighlighterUtil {
 		while (matchedFieldsItr.hasNext()) {
 			FieldTermStack stack = new FieldTermStack(reader, docId,
 					matchedFieldsItr.next(), fieldQuery);
-			toMerge[i++] = new FieldPhraseList(stack, fieldQuery, phraseLimit);
+			toMerge[i++] = new FieldPhraseList(stack, fieldQuery,
+					this.phraseLimit);
 		}
-		return fragListBuilder.createFieldFragList(
-				new FieldPhraseList(toMerge), fragCharSize);
+		return this.fragListBuilder.createFieldFragList(new FieldPhraseList(
+				toMerge), fragCharSize);
 	}
 
 }

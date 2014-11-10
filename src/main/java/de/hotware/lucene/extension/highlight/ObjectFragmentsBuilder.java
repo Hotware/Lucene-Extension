@@ -58,7 +58,6 @@ public interface ObjectFragmentsBuilder {
 	 */
 	public <T> List<T> createFragments(IndexReader reader, int docId,
 			String fieldName, FieldFragList fieldFragList, int maxNumFragments,
-			String[] preTags, String[] postTags, ObjectEncoder<T> encoder)
-			throws IOException;
+			ObjectEncoder<T> encoder) throws IOException;
 
 }
