@@ -45,7 +45,6 @@ import org.apache.lucene.search.vectorhighlight.FieldFragList.WeightedFragInfo.S
 import org.apache.lucene.search.vectorhighlight.FieldPhraseList.WeightedPhraseInfo.Toffs;
 
 /**
- * 
  * @author Martin Braun
  */
 public abstract class BaseObjectFragmentsBuilder implements

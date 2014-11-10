@@ -66,8 +66,7 @@ public class FVHighlighterUtil {
 	}
 
 	/**
-	 * Copied from: {@link FastVectorHighlighter}:
-	 * <br />
+	 * Copied from: {@link FastVectorHighlighter}: <br />
 	 * <br />
 	 * 
 	 * Return the best fragments. Matches are scanned from matchedFields and
@@ -104,6 +103,19 @@ public class FVHighlighterUtil {
 			int fragCharSize, int maxNumFragments, ObjectEncoder<T> encoder)
 			throws IOException {
 		FieldQuery fieldQuery = this.fvh.getFieldQuery(query, reader);
+		return this.getBestFragments(fieldQuery, reader, docId, storedField,
+				matchedFields, fragCharSize, maxNumFragments, encoder);
+	}
+
+	public FieldQuery getFieldQuery(Query query, IndexReader reader)
+			throws IOException {
+		return this.fvh.getFieldQuery(query, reader);
+	}
+
+	public final <T> List<T> getBestFragments(FieldQuery fieldQuery,
+			IndexReader reader, int docId, String storedField,
+			Set<String> matchedFields, int fragCharSize, int maxNumFragments,
+			ObjectEncoder<T> encoder) throws IOException {
 		FieldFragList fieldFragList = getFieldFragList(fieldQuery, reader,
 				docId, matchedFields, fragCharSize);
 		return this.objectFragmentsBuilder.createFragments(reader, docId,
