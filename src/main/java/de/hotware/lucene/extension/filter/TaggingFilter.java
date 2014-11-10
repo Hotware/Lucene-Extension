@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -37,25 +35,23 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
  * 
  * @author Martin Braun
  */
-public final class TaggingFilter extends TokenFilter {
+public abstract class TaggingFilter extends TokenFilter {
 
 	private static final Logger LOGGER = Logger.getLogger(TaggingFilter.class
 			.getClass().getName());
 
-	private final CharTermAttribute termAtt = this
+	protected final CharTermAttribute termAtt = this
 			.addAttribute(CharTermAttribute.class);
-	private final PositionIncrementAttribute posIncAtt = this
+	protected final PositionIncrementAttribute posIncAtt = this
 			.addAttribute(PositionIncrementAttribute.class);
-	private final PositionLengthAttribute posLenAtt = this
+	protected final PositionLengthAttribute posLenAtt = this
 			.addAttribute(PositionLengthAttribute.class);
-	private final OffsetAttribute offsetAtt = this
+	protected final OffsetAttribute offsetAtt = this
 			.addAttribute(OffsetAttribute.class);
 
-	private final Pattern patternForStartTag;
-	private final Pattern patternForEndTag;
+	protected final List<String> currentTags;
+
 	private final IndexFormatProvider indexFormatProvider;
-	private final List<String> currentTags;
-	private final boolean allowMarkerTokens;
 
 	private boolean produceTaggedVersions;
 	private int curTagIndex;
@@ -101,26 +97,16 @@ public final class TaggingFilter extends TokenFilter {
 	 *            into the index. these will not be passed to the provided
 	 *            {@link #indexFormatProvider}
 	 */
-	public TaggingFilter(TokenStream input, Pattern patternForStartTag,
-			Pattern patternForEndTag, IndexFormatProvider indexFormatProvider,
-			boolean allowMarkerTokens) {
+	public TaggingFilter(TokenStream input,
+			IndexFormatProvider indexFormatProvider) {
 		super(input);
-		if (patternForStartTag.matcher("").groupCount() != 1
-				|| patternForEndTag.matcher("").groupCount() != 1) {
-			throw new IllegalArgumentException(
-					"start and end pattern have to have exactly"
-							+ " one capturing group in them");
-		}
-		this.patternForStartTag = patternForStartTag;
-		this.patternForEndTag = patternForEndTag;
 		this.indexFormatProvider = indexFormatProvider;
 		this.currentTags = new ArrayList<>();
 		this.produceTaggedVersions = false;
-		this.allowMarkerTokens = allowMarkerTokens;
 	}
 
 	@Override
-	public boolean incrementToken() throws IOException {
+	public final boolean incrementToken() throws IOException {
 		if (this.curTerm == null) {
 			if (!input.incrementToken()) {
 				if (this.currentTags.size() > 0) {
@@ -159,77 +145,46 @@ public final class TaggingFilter extends TokenFilter {
 			// check if we have to produce another tagged version of the current
 			// token. If not, go to the next token
 			if (this.curTagIndex >= this.currentTags.size()) {
+				this.finishedProducingTokens();
 				this.nextToken();
 			}
 			return true;
 		} else {
-			// handle a new token
-			Matcher startMatcher = this.patternForStartTag
-					.matcher(this.curTerm);
-			Matcher endMatcher = this.patternForEndTag.matcher(this.curTerm);
-
-			boolean matchedOnce = false;
-
-			if (startMatcher.matches()) {
-				if (!matchedOnce) {
-					matchedOnce = true;
-				} else {
-					throw new IllegalStateException(
-							"already matched a start/end tag");
-				}
-				String tagName = startMatcher.group(1);
-				if (this.currentTags.contains(tagName)) {
-					LOGGER.warning("duplicate start of tag "
-							+ this.patternForStartTag.toString());
-				} else {
-					this.currentTags.add(tagName);
-				}
-				LOGGER.info("POS start tag found: " + this.curTerm);
-			}
-
-			if (endMatcher.matches()) {
-				if (!matchedOnce) {
-					matchedOnce = true;
-				} else {
-					throw new IllegalStateException(
-							"already matched a start/end tag");
-				}
-				String tagName = endMatcher.group(1);
-				if (!this.currentTags.contains(tagName)) {
-					LOGGER.warning("end of tag found but no opening "
-							+ "tag found before " + this.patternForEndTag);
-				} else {
-					this.currentTags.remove(tagName);
-				}
-				LOGGER.info("POS end tag found: " + this.curTerm);
-			}
-
-			if (!matchedOnce) {
-				// first: return the original version, but make sure the next
-				// time the tagged versions are returned
-				if (this.currentTags.size() > 0) {
-					this.curTagIndex = 0;
-					this.produceTaggedVersions = true;
-				} else {
-					this.nextToken();
-				}
-				return true;
-			} else {
-				if (!this.allowMarkerTokens) {
-					// we apparently dont want the markers to be found in the
-					// tokens
-					this.termAtt.setEmpty();
-				}
-				this.nextToken();
-				return true;
-			}
+			return this.handleNewToken(this.curTerm);
 		}
 	}
 
-	private void nextToken() {
+	/**
+	 * called everytime a new token is read. here you can specify the logic that
+	 * handles the original version of the token and controls whether we should
+	 * produce taggedVersions or we should skip to the next token. this is
+	 * called from the incrementToken method and should return values
+	 * corresponding to that
+	 * 
+	 * @param curTerm
+	 * @return
+	 */
+	protected abstract boolean handleNewToken(String curTerm);
+	
+	/**
+	 * callback
+	 */
+	protected void finishedProducingTokens() {
+		
+	}
+
+	/**
+	 * call this if you want to continue with the next token in the stream.
+	 */
+	protected final void nextToken() {
 		this.curTagIndex = -1;
 		this.produceTaggedVersions = false;
 		this.curTerm = null;
+	}
+
+	protected final void produceTaggedVersions() {
+		this.curTagIndex = 0;
+		this.produceTaggedVersions = true;
 	}
 
 }
