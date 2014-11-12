@@ -185,6 +185,10 @@ public class BeanConverterImpl implements BeanConverter {
 				for (FieldInformation info : this.cache
 						.getFieldInformations(clazz)) {
 					BeanField bf = info.getBeanField();
+					String fieldName = bf.name();
+					if(fieldName.equals(Constants.DEFAULT_NAME)) {
+						fieldName = info.getField().getName();
+					}
 					Analyzer analyzer;
 					try {
 						analyzer = ((AnalyzerProvider) bf.analyzerProvider()
@@ -193,7 +197,7 @@ public class BeanConverterImpl implements BeanConverter {
 						throw new RuntimeException(e);
 					}
 					if (!analyzer.equals(defaultAnalyzer)) {
-						fieldAnalyzers.put(bf.name(), analyzer);
+						fieldAnalyzers.put(fieldName, analyzer);
 					}
 				}
 				ret = new PerFieldAnalyzerWrapper(defaultAnalyzer,

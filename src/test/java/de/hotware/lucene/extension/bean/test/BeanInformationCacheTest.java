@@ -33,6 +33,9 @@ public class BeanInformationCacheTest extends TestCase {
 		@BeanField(store = true, index = true, type = StockType.StringType.class, analyzerProvider = StockAnalyzerProvider.GermanAnalyzerProvider.class)
 		public String test;
 
+		@BeanField(name = "notTest2", store = true, index = true, type = StockType.StringType.class, analyzerProvider = StockAnalyzerProvider.GermanAnalyzerProvider.class)
+		public String test2;
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,12 +61,15 @@ public class BeanInformationCacheTest extends TestCase {
 	public void testGetPerFieldAnalyzerWrapper() throws NoSuchMethodException,
 			SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
+		BeanConverter converter = new BeanConverterImpl(
+				new BeanInformationCacheImpl());
 		PerFieldAnalyzerWrapper wrapper = converter
 				.getPerFieldAnalyzerWrapper(AnalyzerTestBean.class);
 
 		assertEquals(GermanAnalyzer.class,
 				getAnalyzer(wrapper, "test", GermanAnalyzer.class));
+		assertEquals(GermanAnalyzer.class,
+				getAnalyzer(wrapper, "notTest2", GermanAnalyzer.class));
 	}
 
 }
