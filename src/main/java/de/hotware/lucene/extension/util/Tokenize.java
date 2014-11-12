@@ -24,9 +24,8 @@ public class Tokenize {
 	
 	public static List<String> tokenizeString(Analyzer analyzer, String string) {
 		List<String> result = new ArrayList<String>();
-		try {
-			TokenStream stream = analyzer.tokenStream(null, new StringReader(
-					string));
+		try(TokenStream stream = analyzer.tokenStream(null, new StringReader(
+					string))) {
 			stream.reset();
 			while (stream.incrementToken()) {
 				result.add(stream.getAttribute(CharTermAttribute.class)
