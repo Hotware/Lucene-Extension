@@ -42,7 +42,7 @@ public class TaggingFilterTest extends TestCase {
 				}
 
 			}, Pattern.compile("</#([a-zA-Z]+)>"),
-					Pattern.compile("<#([a-zA-Z]+)>"), true);
+					Pattern.compile("<#([a-zA-Z]+)>"), true, true);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
 			// for
 			// the analysis of texts with all its parts
@@ -69,7 +69,7 @@ public class TaggingFilterTest extends TestCase {
 					return "#" + tagName + "_" + term;
 				}
 
-			}, Pattern.compile("<#([a-zA-Z]+)>"), true);
+			}, Pattern.compile("<#([a-zA-Z]+)>"), true, true);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
 			// for
 			// the analysis of texts with all its parts
