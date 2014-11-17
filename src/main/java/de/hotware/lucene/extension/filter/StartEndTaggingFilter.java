@@ -1,6 +1,5 @@
 package de.hotware.lucene.extension.filter;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +26,6 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 	private static final Logger LOGGER = Logger
 			.getLogger(StartEndTaggingFilter.class.getName());
 
-	private final TagAttribute tagAtt;
 	private final Pattern patternForStartTag;
 	private final Pattern patternForEndTag;
 	private final boolean allowMarkerTokens;
@@ -36,17 +34,12 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 			IndexFormatProvider indexFormatProvider, Pattern patternForEndTag,
 			Pattern patternForStartTag, boolean allowMarkerTokens,
 			boolean produceTagAttribute) {
-		super(input, indexFormatProvider);
+		super(input, indexFormatProvider, produceTagAttribute);
 		if (patternForStartTag.matcher("").groupCount() != 1
 				|| patternForEndTag.matcher("").groupCount() != 1) {
 			throw new IllegalArgumentException(
 					"start and end pattern have to have exactly"
 							+ " one capturing group in them");
-		}
-		if (produceTagAttribute) {
-			this.tagAtt = this.addAttribute(TagAttribute.class);
-		} else {
-			this.tagAtt = null;
 		}
 		this.patternForStartTag = patternForStartTag;
 		this.patternForEndTag = patternForEndTag;
@@ -96,9 +89,6 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 		}
 
 		if (!matchedOnce) {
-			if (this.tagAtt != null) {
-				this.tagAtt.setTags(new ArrayList<>(currentTags));
-			}
 			// first: return the original version in this call, but make sure
 			// the next time the tagged versions are returned
 			if (this.currentTags.size() > 0) {
@@ -106,6 +96,7 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 			} else {
 				this.nextToken();
 			}
+			this.finishCurrentWorkingToken();
 			return true;
 		} else {
 			if (!this.allowMarkerTokens) {

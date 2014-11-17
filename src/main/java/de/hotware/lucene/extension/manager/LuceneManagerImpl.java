@@ -59,16 +59,16 @@ public class LuceneManagerImpl implements LuceneManager {
 	public static Scheduling ONCE_EVERY_MINUTE = new Scheduling(1, 1,
 			TimeUnit.MINUTES);
 
-	private static final IndexWriterConfig defaultIndexWriterConfig;
-	static {
-		defaultIndexWriterConfig = new IndexWriterConfig(LuceneVersion.VERSION,
+	public static IndexWriterConfig getDefaultIndexWriterConfig() {
+		IndexWriterConfig defaultIndexWriterConfig = new IndexWriterConfig(LuceneVersion.VERSION,
 				new StandardAnalyzer());
 		defaultIndexWriterConfig.setCheckIntegrityAtMerge(true);
+		return defaultIndexWriterConfig;
 	}
 
 	public LuceneManagerImpl(Directory directory, Scheduling scheduling)
 			throws IOException {
-		this(directory, scheduling, defaultIndexWriterConfig);
+		this(directory, scheduling, getDefaultIndexWriterConfig());
 	}
 
 	public LuceneManagerImpl(Directory directory, Scheduling scheduling,
@@ -107,7 +107,7 @@ public class LuceneManagerImpl implements LuceneManager {
 	}
 
 	@Override
-	public final IndexWriter getIndexWriter() throws IOException {
+	public final IndexWriter getIndexWriter(IndexWriterConfig config) throws IOException {
 		return new IndexWriter(this.directory, this.indexWriterConfig);
 	}
 

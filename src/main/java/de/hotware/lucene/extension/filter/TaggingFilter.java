@@ -22,7 +22,7 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 
 /**
  * Base Class for TaggingFilters (tagging in the textfield itself, no custom
- * attributes)
+ * attributes). Implementing Classes should not tag empty strings
  * 
  * @author Martin Braun
  */
@@ -39,6 +39,7 @@ public abstract class TaggingFilter extends TokenFilter {
 			.addAttribute(PositionLengthAttribute.class);
 	private final OffsetAttribute offsetAtt = this
 			.addAttribute(OffsetAttribute.class);
+	private final TagAttribute tagAtt;
 
 	protected final List<String> currentTags;
 
@@ -89,11 +90,16 @@ public abstract class TaggingFilter extends TokenFilter {
 	 *            {@link #indexFormatProvider}
 	 */
 	public TaggingFilter(TokenStream input,
-			IndexFormatProvider indexFormatProvider) {
+			IndexFormatProvider indexFormatProvider, boolean produceTagAttribute) {
 		super(input);
 		this.indexFormatProvider = indexFormatProvider;
 		this.currentTags = new ArrayList<>();
 		this.produceTaggedVersions = false;
+		if (produceTagAttribute) {
+			this.tagAtt = this.addAttribute(TagAttribute.class);
+		} else {
+			this.tagAtt = null;
+		}
 	}
 
 	@Override
@@ -102,7 +108,8 @@ public abstract class TaggingFilter extends TokenFilter {
 			if (!input.incrementToken()) {
 				if (this.currentTags.size() > 0) {
 					LOGGER.warning("end of input reached and POS tag "
-							+ currentTags.toString() + " were never closed!");
+							+ currentTags.toString()
+							+ " was never closed/finished!");
 				}
 				return false;
 			} else {
@@ -122,6 +129,13 @@ public abstract class TaggingFilter extends TokenFilter {
 				throw new AssertionError(
 						"curTagIndex < 0 or >= than currentTags.size()");
 			}
+			if (this.curTerm.equals("")) {
+				// don't tag empty tokens
+				// TODO: maybe move this call as we can stop handling stuff earlier
+				this.finishedProducingTokens();
+				this.nextToken();
+				return true;
+			}
 			String curTag = this.currentTags.get(this.curTagIndex++);
 			// create the current tagged version.
 			String taggedVersion = this.indexFormatProvider.produce(curTag,
@@ -133,6 +147,7 @@ public abstract class TaggingFilter extends TokenFilter {
 			// this can just be copied
 			this.posLenAtt.setPositionLength(this.curPosLen);
 			this.offsetAtt.setOffset(this.tokStart, this.tokEnd);
+			this.finishCurrentWorkingToken();
 			// check if we have to produce another tagged version of the current
 			// token. If not, go to the next token
 			if (this.curTagIndex >= this.currentTags.size()) {
@@ -189,6 +204,16 @@ public abstract class TaggingFilter extends TokenFilter {
 	protected final void produceTaggedVersions() {
 		this.curTagIndex = 0;
 		this.produceTaggedVersions = true;
+	}
+
+	/**
+	 * call this to finish the current token (internally called for tagged
+	 * versions as well)
+	 */
+	protected final void finishCurrentWorkingToken() {
+		if (this.tagAtt != null) {
+			this.tagAtt.setTags(new ArrayList<>(this.currentTags));
+		}
 	}
 
 }

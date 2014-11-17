@@ -11,6 +11,7 @@ package de.hotware.lucene.extension.manager;
 import java.io.IOException;
 
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ReferenceManager;
 
@@ -39,7 +40,7 @@ public interface LuceneManager extends AutoCloseable {
 	 * be sure to close it.
 	 * @throws IOException 
 	 */
-	public IndexWriter getIndexWriter() throws IOException;
+	public IndexWriter getIndexWriter(IndexWriterConfig config) throws IOException;
 
 	public ReferenceManager<IndexSearcher> getIndexSearcherManager();
 

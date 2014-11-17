@@ -186,7 +186,7 @@ public class BeanConverterImpl implements BeanConverter {
 						.getFieldInformations(clazz)) {
 					BeanField bf = info.getBeanField();
 					String fieldName = bf.name();
-					if(fieldName.equals(Constants.DEFAULT_NAME)) {
+					if (fieldName.equals(Constants.DEFAULT_NAME)) {
 						fieldName = info.getField().getName();
 					}
 					Analyzer analyzer;
@@ -230,9 +230,11 @@ public class BeanConverterImpl implements BeanConverter {
 		} else if (!AnyClassType.class.isAssignableFrom(typeWrapper)
 				&& !ALL_TYPES.contains(objectFieldClass)) {
 			throw new IllegalArgumentException(
-					"type of Java-Bean field not supported");
+					"type of Java-Bean field not supported (maybe your custom type "
+							+ "is no subclass of AnyClassType?): "
+							+ fieldInformation.getField().getType());
 		} else {
-			//use one of our supported TypeHandlers.
+			// use one of our supported TypeHandlers.
 			typeHandler = TYPE_HANDLER.get(objectFieldClass);
 		}
 		return typeHandler;
