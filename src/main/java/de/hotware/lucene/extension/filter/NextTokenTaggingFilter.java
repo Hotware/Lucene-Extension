@@ -1,5 +1,6 @@
 package de.hotware.lucene.extension.filter;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,16 +17,22 @@ public final class NextTokenTaggingFilter extends TaggingFilter {
 	private static final Logger LOGGER = Logger
 			.getLogger(NextTokenTaggingFilter.class.getName());
 
+	private final TagAttribute tagAtt;
 	private final Pattern patternForTag;
 	private final boolean allowMarkerTokens;
 
 	public NextTokenTaggingFilter(TokenStream input,
 			IndexFormatProvider indexFormatProvider, Pattern patternForTag,
-			boolean allowMarkerTokens) {
+			boolean allowMarkerTokens, boolean produceTagAttribute) {
 		super(input, indexFormatProvider);
 		if (patternForTag.matcher("").groupCount() != 1) {
 			throw new IllegalArgumentException("pattern has to have exactly"
 					+ " one capturing group in it");
+		}
+		if (produceTagAttribute) {
+			this.tagAtt = this.addAttribute(TagAttribute.class);
+		} else {
+			this.tagAtt = null;
 		}
 		this.patternForTag = patternForTag;
 		this.allowMarkerTokens = allowMarkerTokens;
@@ -56,8 +63,11 @@ public final class NextTokenTaggingFilter extends TaggingFilter {
 		}
 
 		if (!matchedOnce) {
-			// first: return the original version, but make sure the next
-			// time the tagged versions are returned
+			if (this.tagAtt != null) {
+				this.tagAtt.setTags(new ArrayList<>(currentTags));
+			}
+			// first: return the original version in this call, but make sure
+			// the next time the tagged versions are returned
 			if (this.currentTags.size() > 0) {
 				this.produceTaggedVersions();
 			} else {
