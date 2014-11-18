@@ -10,7 +10,7 @@ package de.hotware.lucene.extension.bean.field;
 
 import org.apache.lucene.document.FieldType;
 
-import de.hotware.lucene.extension.bean.BeanField;
+import de.hotware.lucene.extension.bean.annotations.BeanField;
 
 public final class FieldInformation {
 

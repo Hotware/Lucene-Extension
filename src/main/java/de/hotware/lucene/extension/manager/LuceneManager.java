@@ -15,7 +15,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ReferenceManager;
 
-import de.hotware.lucene.extension.bean.BeanConverter;
+import de.hotware.lucene.extension.bean.converter.BeanConverter;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 
 /**

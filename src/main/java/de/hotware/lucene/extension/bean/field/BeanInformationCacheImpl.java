@@ -17,8 +17,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.lucene.document.FieldType;
 
-import de.hotware.lucene.extension.bean.BeanField;
-import de.hotware.lucene.extension.bean.BeanFields;
+import de.hotware.lucene.extension.bean.annotations.BeanField;
+import de.hotware.lucene.extension.bean.annotations.BeanFields;
 import de.hotware.lucene.extension.util.CacheMap;
 
 /**

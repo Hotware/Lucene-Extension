@@ -1,13 +1,24 @@
 package de.hotware.lucene.extension.filter;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.lucene.util.Attribute;
 
 public interface TagAttribute extends Attribute {
 	
-	public List<String> getTags();
+	/**
+	 * @return the internal set (can still be modified)
+	 */
+	public Set<String> getTags();
 	
-	public void setTags(List<String> tag);
+	/**
+	 * copies the array into the internal set
+	 */
+	public void addTags(String... tags);
+
+	/**
+	 * copies the iterable into the internal set
+	 */
+	public void addTags(Iterable<String> tags);
 
 }

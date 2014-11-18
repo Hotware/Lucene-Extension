@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Martin Braun
  * ----------------------------------------------------------------------------
  */
-package de.hotware.lucene.extension.bean;
+package de.hotware.lucene.extension.util;
 
 import java.lang.annotation.Annotation;
 

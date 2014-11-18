@@ -212,7 +212,7 @@ public abstract class TaggingFilter extends TokenFilter {
 	 */
 	protected final void finishCurrentWorkingToken() {
 		if (this.tagAtt != null) {
-			this.tagAtt.setTags(new ArrayList<>(this.currentTags));
+			this.tagAtt.addTags(this.currentTags);
 		}
 	}
 

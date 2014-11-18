@@ -27,8 +27,8 @@ import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 
-import de.hotware.lucene.extension.bean.BeanConverter;
-import de.hotware.lucene.extension.bean.BeanConverterImpl;
+import de.hotware.lucene.extension.bean.converter.BeanConverter;
+import de.hotware.lucene.extension.bean.converter.BeanConverterImpl;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 import de.hotware.lucene.extension.util.LuceneVersion;
@@ -50,7 +50,6 @@ public class LuceneManagerImpl implements LuceneManager {
 	private final Lock lock;
 	private final BeanConverter beanConverter;
 	private final Directory directory;
-	private final IndexWriterConfig indexWriterConfig;
 	private final BeanInformationCache beanInformationCache;
 	private final ScheduledExecutorService searcherScheduler;
 	private SearcherManager searcherManager;
@@ -66,18 +65,11 @@ public class LuceneManagerImpl implements LuceneManager {
 		return defaultIndexWriterConfig;
 	}
 
-	public LuceneManagerImpl(Directory directory, Scheduling scheduling)
-			throws IOException {
-		this(directory, scheduling, getDefaultIndexWriterConfig());
-	}
-
-	public LuceneManagerImpl(Directory directory, Scheduling scheduling,
-			IndexWriterConfig indexWriterConfig) throws IOException {
+	public LuceneManagerImpl(Directory directory, Scheduling scheduling) throws IOException {
 		this.lock = new ReentrantLock();
 		this.beanConverter = new BeanConverterImpl(
 				this.beanInformationCache = new BeanInformationCacheImpl());
 		this.directory = directory;
-		this.indexWriterConfig = indexWriterConfig;
 		try {
 			this.searcherManager = new SearcherManager(this.directory,
 					new SearcherFactory());
@@ -108,7 +100,7 @@ public class LuceneManagerImpl implements LuceneManager {
 
 	@Override
 	public final IndexWriter getIndexWriter(IndexWriterConfig config) throws IOException {
-		return new IndexWriter(this.directory, this.indexWriterConfig);
+		return new IndexWriter(this.directory, config);
 	}
 
 	@Override

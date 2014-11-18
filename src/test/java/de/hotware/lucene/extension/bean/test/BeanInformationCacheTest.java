@@ -15,10 +15,10 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 
-import de.hotware.lucene.extension.bean.BeanConverter;
-import de.hotware.lucene.extension.bean.BeanConverterImpl;
-import de.hotware.lucene.extension.bean.BeanField;
 import de.hotware.lucene.extension.bean.analyzer.StockAnalyzerProvider;
+import de.hotware.lucene.extension.bean.annotations.BeanField;
+import de.hotware.lucene.extension.bean.converter.BeanConverter;
+import de.hotware.lucene.extension.bean.converter.BeanConverterImpl;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 import de.hotware.lucene.extension.bean.type.StockType;

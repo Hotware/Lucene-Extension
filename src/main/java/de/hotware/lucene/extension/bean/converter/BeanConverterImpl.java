@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Martin Braun
  * ----------------------------------------------------------------------------
  */
-package de.hotware.lucene.extension.bean;
+package de.hotware.lucene.extension.bean.converter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +27,7 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexableField;
 
 import de.hotware.lucene.extension.bean.analyzer.AnalyzerProvider;
+import de.hotware.lucene.extension.bean.annotations.BeanField;
 import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.FieldInformation;
 import de.hotware.lucene.extension.bean.field.FrozenField;

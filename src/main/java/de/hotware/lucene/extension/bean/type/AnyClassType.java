@@ -15,7 +15,7 @@ package de.hotware.lucene.extension.bean.type;
  * <br /><br/>
  * 
  * Single-layered Sets/Lists are already supported in {
- * {@link de.hotware.lucene.extension.bean.BeanConverterImpl} and use
+ * {@link de.hotware.lucene.extension.bean.converter.BeanConverterImpl} and use
  * {@link de.hotware.lucene.extension.bean.type.Type} for internal conversion.
  * So don't use this interface for this.
  * 
