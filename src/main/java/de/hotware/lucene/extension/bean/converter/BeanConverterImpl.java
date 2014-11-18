@@ -9,6 +9,7 @@
 package de.hotware.lucene.extension.bean.converter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,8 @@ import de.hotware.lucene.extension.bean.field.BeanInformationCache;
 import de.hotware.lucene.extension.bean.field.FieldInformation;
 import de.hotware.lucene.extension.bean.field.FrozenField;
 import de.hotware.lucene.extension.bean.type.AnyClassType;
+import de.hotware.lucene.extension.bean.type.MultiFieldType;
+import de.hotware.lucene.extension.bean.type.SingularFieldType;
 import de.hotware.lucene.extension.bean.type.Type;
 import de.hotware.lucene.extension.util.CacheMap;
 
@@ -266,8 +269,22 @@ public class BeanConverterImpl implements BeanConverter {
 				try {
 					Object value = field.get(origin);
 					if (value != null) {
-						typeWrapper.handleDocFieldValue(dest, name,
-								field.get(origin), fieldType, objectFieldType);
+						if (typeWrapper instanceof SingularFieldType) {
+							((SingularFieldType) typeWrapper)
+									.handleDocFieldValue(dest, name,
+											field.get(origin), fieldType,
+											objectFieldType);
+						} else if (typeWrapper instanceof MultiFieldType) {
+							((MultiFieldType) typeWrapper)
+									.handleDocFieldValues(dest, name,
+											Arrays.asList(value), fieldType,
+											objectFieldType);
+						} else {
+							throw new IllegalArgumentException(
+									"unsupported Type " + typeWrapper
+											+ ", must either be subclass of "
+											+ "SingularType or MultiType");
+						}
 					}
 				} catch (IllegalArgumentException e) {
 					throw new RuntimeException(e);
@@ -292,11 +309,22 @@ public class BeanConverterImpl implements BeanConverter {
 					name = field.getName();
 				}
 
-				IndexableField[] indexFields = origin.getFields(name);
 				List<Object> values = new ArrayList<Object>();
-				for (IndexableField cur : indexFields) {
-					values.add(typeWrapper.toBeanValue(cur));
+				if (typeWrapper instanceof SingularFieldType) {
+					IndexableField[] indexFields = origin.getFields(name);
+					for (IndexableField cur : indexFields) {
+						values.add(((SingularFieldType) typeWrapper)
+								.toBeanValue(cur));
+					}
+				} else if (typeWrapper instanceof MultiFieldType) {
+					values.addAll(((MultiFieldType) typeWrapper).toBeanValues(
+							origin, name));
+				} else {
+					throw new IllegalArgumentException("unsupported Type "
+							+ typeWrapper + ", must either be subclass of "
+							+ "SingularType or MultiType");
 				}
+
 				if (values.size() > 0) {
 					if (values.size() == 1) {
 						try {
@@ -381,9 +409,20 @@ public class BeanConverterImpl implements BeanConverter {
 				Iterable<Object> iterable = (Iterable<Object>) field
 						.get(origin);
 				if (iterable != null) {
-					for (Object obj : iterable) {
-						typeWrapper.handleDocFieldValue(dest, name, obj,
-								fieldType, objectFieldType);
+					if (typeWrapper instanceof SingularFieldType) {
+						for (Object obj : iterable) {
+							((SingularFieldType) typeWrapper)
+									.handleDocFieldValue(dest, name, obj,
+											fieldType, objectFieldType);
+						}
+					} else if (typeWrapper instanceof MultiFieldType) {
+						((MultiFieldType) typeWrapper).handleDocFieldValues(
+								dest, name, iterable, fieldType,
+								objectFieldType);
+					} else {
+						throw new IllegalArgumentException("unsupported Type "
+								+ typeWrapper + ", must either be subclass of "
+								+ "SingularType or MultiType");
 					}
 				}
 			} catch (IllegalArgumentException e) {
@@ -415,9 +454,19 @@ public class BeanConverterImpl implements BeanConverter {
 				@SuppressWarnings("unchecked")
 				Collection<Object> collection = (Collection<Object>) collectionClass
 						.newInstance();
-				IndexableField[] indexFields = origin.getFields(name);
-				for (IndexableField cur : indexFields) {
-					collection.add(typeWrapper.toBeanValue(cur));
+				if (typeWrapper instanceof SingularFieldType) {
+					IndexableField[] indexFields = origin.getFields(name);
+					for (IndexableField cur : indexFields) {
+						collection.add(((SingularFieldType) typeWrapper)
+								.toBeanValue(cur));
+					}
+				} else if (typeWrapper instanceof MultiFieldType) {
+					collection.addAll(((MultiFieldType) typeWrapper)
+							.toBeanValues(origin, name));
+				} else {
+					throw new IllegalArgumentException("unsupported Type "
+							+ typeWrapper + ", must either be subclass of "
+							+ "SingularType or MultiType");
 				}
 				field.set(dest, collection);
 			} catch (IllegalArgumentException e) {
@@ -428,42 +477,6 @@ public class BeanConverterImpl implements BeanConverter {
 				throw new RuntimeException(e);
 			}
 		}
-
-		// },
-		// MAP {
-		// @Override
-		// public void writeBeanInfoToDocument() {
-		// // Auto-generated method stub
-		//
-		// }
-		//
-		// @Override
-		// public void writeDocumentInfoToBean(FieldInformation
-		// fieldInformation,
-		// Document origin, Object dest) {
-		// List<Type> genericTypeArgs = fieldInformation.getGenericTypeArgs();
-		// Field field = fieldInformation.getField();
-		// BeanField bf = fieldInformation.getBeanField();
-		// Class<?> objectFieldClass = fieldInformation.getFieldClass();
-		// TypeWrapper typeWrapper = bf.type();
-		// String name = bf.name();
-		// if(name.equals(Constants.DEFAULT_NAME)) {
-		// name = field.getName();
-		// }
-		// IndexableField[] lookupFields = origin.getFields(name + "_lookup");
-		// for(IndexableField lookup : lookupFields) {
-		// StringField stringField = ((StringField) lookup);
-		// String key = stringField.stringValue();
-		// IndexableField[] indexFields = origin.getFields(key);
-		// }
-		// IndexableField[] indexFields = origin.getFields(name);
-		// List<Object> values = new ArrayList<Object>();
-		// for(IndexableField cur : indexFields) {
-		// //: maybe change this to the specific value-methods (to prevent all
-		// the parsing)
-		// values.add(typeWrapper.toBeanValue(cur));
-		// }
-		// }
 
 		public abstract void writeBeanInfoToDocument(
 				FieldInformation fieldInformation, Object origin, Document dest);

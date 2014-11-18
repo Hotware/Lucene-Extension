@@ -14,9 +14,9 @@ import org.apache.lucene.document.FieldType.NumericType;
 /**
  * @author Martin Braun
  */
-public abstract class BaseType implements Type {
+public abstract class BaseSingularType implements SingularFieldType {
 
-	public BaseType(NumericType numericType) {
+	public BaseSingularType(NumericType numericType) {
 		this.numericType = numericType;
 	}
 

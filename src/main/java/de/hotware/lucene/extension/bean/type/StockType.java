@@ -44,7 +44,7 @@ public final class StockType {
 
 	// TODO: throw Exceptions for the wrong objectFieldType
 
-	private static abstract class BaseStockType extends BaseType {
+	private static abstract class BaseStockType extends BaseSingularType {
 
 		public BaseStockType(NumericType numericType) {
 			super(numericType);

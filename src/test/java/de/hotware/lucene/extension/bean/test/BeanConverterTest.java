@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -29,21 +30,23 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.IndexableFieldType;
 
+import de.hotware.lucene.extension.bean.type.MultiFieldType;
 import de.hotware.lucene.extension.bean.type.StockType;
 import junit.framework.TestCase;
 
 public class BeanConverterTest extends TestCase {
-	
+
 	public static class TestBean {
-		
+
 		@BeanField(store = true, index = true, type = IntegerStringType.class)
 		public Integer integerStringTest;
 		@BeanField(store = true, index = true, type = IntegerType.class)
 		public Integer integerTest;
-		
+
 		@BeanField(store = true, index = true, type = IntegerStringType.class)
 		public int integerPrimStringTest;
 		@BeanField(store = true, index = true, type = IntegerType.class)
@@ -53,65 +56,94 @@ public class BeanConverterTest extends TestCase {
 		public Long longStringTest;
 		@BeanField(store = true, index = true, type = LongType.class)
 		public Long longTest;
-		
+
 		@BeanField(store = true, index = true, type = LongStringType.class)
 		public long longStringPrimTest;
 		@BeanField(store = true, index = true, type = LongType.class)
 		public long longPrimTest;
-		
+
 		@BeanField(store = true, index = true, type = FloatType.class)
 		public Float floatTest;
 		@BeanField(store = true, index = true, type = FloatStringType.class)
 		public Float floatStringTest;
-		
+
 		@BeanField(store = true, index = true, type = FloatType.class)
 		public float floatPrimTest;
 		@BeanField(store = true, index = true, type = FloatStringType.class)
 		public float floatStringPrimTest;
-		
+
 		@BeanField(store = true, index = true, type = DoubleType.class)
 		public Double doubleTest;
 		@BeanField(store = true, index = true, type = DoubleStringType.class)
 		public Double doubleStringTest;
-		
+
 		@BeanField(store = true, index = true, type = DoubleType.class)
 		public double doublePrimTest;
 		@BeanField(store = true, index = true, type = DoubleStringType.class)
 		public double doubleStringPrimTest;
-		
+
 		@BeanField(store = true, index = true, type = BooleanType.class)
 		public Boolean booleanTest;
 		@BeanField(store = true, index = true, type = BooleanType.class)
 		public boolean booleanPrimTest;
-		
+
 		@BeanField(store = true, index = true, type = StringType.class)
 		public String stringTest;
-		
+
 		@BeanField(store = false, index = true, type = StringType.class)
 		public String notStoredButIndexedTest;
 		@BeanField(store = true, index = false, type = StringType.class)
 		public String notIndexedButStoredTest;
-		
-		@BeanField(store = true, index = true, type = StringType.class, 
-				analyzerProvider = StockAnalyzerProvider.GermanAnalyzerProvider.class)
+
+		@BeanField(store = true, index = true, type = StringType.class, analyzerProvider = StockAnalyzerProvider.GermanAnalyzerProvider.class)
 		public String customAnalyzerTest;
-		
+
 		@BeanField(store = true, index = true, type = StringType.class)
 		public List<String> listTest;
-		
+
 		@BeanField(store = true, index = true, type = StringType.class)
 		public Set<String> setTest;
-		
+
 		@BeanField(store = true, index = true, type = StringType.class)
 		public Set<String> emptySetTest;
-		
-		//index is ignored, so do whatever you want here
+
+		// index is ignored, so do whatever you want here
 		@BeanField(store = true, index = false, type = SerializeType.class)
 		public Object serializeTest;
-		
+
 		@BeanField(store = true, index = true, type = StockType.StringType.class, name = "customName")
 		public String customNameTest;
-		
+
+		@BeanField(store = true, index = true, type = StringInTwoFieldsType.class)
+		public String multiTest;
+
+		@BeanField(store = true, index = true, type = StringInTwoFieldsType.class)
+		public List<String> multiMultiTest;
+
+		// This test should be sufficient. But if there is enough time we can
+		// actually implement this here.
+		public static class StringInTwoFieldsType extends MultiFieldType {
+
+			@Override
+			public void configureFieldType(FieldType fieldType) {
+
+			}
+
+			@Override
+			protected void handleMultiDocFieldValue(Document document,
+					String name, Iterable<Object> values, FieldType fieldType,
+					Class<?> objectFieldType) {
+
+			}
+
+			@Override
+			public Collection<Object> toBeanValues(Document document,
+					String name) {
+				return new ArrayList<>();
+			}
+
+		}
+
 		public String notAnnotatedTest;
 
 		@Override
@@ -312,15 +344,16 @@ public class BeanConverterTest extends TestCase {
 				return false;
 			return true;
 		}
-		
+
 	}
-	
+
 	public final class WrongTypeTest {
-		
-		//not being serialized -> exception is expected when used with the BeanConverter
+
+		// not being serialized -> exception is expected when used with the
+		// BeanConverter
 		@BeanField(store = true, index = true, type = StockType.StringType.class)
 		public Object wrongType;
-		
+
 	}
 
 	protected void setUp() throws Exception {
@@ -335,135 +368,151 @@ public class BeanConverterTest extends TestCase {
 		new BeanConverterImpl(new BeanInformationCacheImpl());
 	}
 
-	public void testBeanDocumentConversionViceVersa() throws IllegalArgumentException, IllegalAccessException {
-		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
+	public void testBeanDocumentConversionViceVersa()
+			throws IllegalArgumentException, IllegalAccessException {
+		BeanConverter converter = new BeanConverterImpl(
+				new BeanInformationCacheImpl());
 		Field[] fields = TestBean.class.getFields();
 		TestBean testBean = new TestBean();
-		for(Field field : fields) {
+		for (Field field : fields) {
 			String fieldName = field.getName();
 			Class<?> type = field.getType();
-			if(type.equals(int.class)) {
+			if (type.equals(int.class)) {
 				field.setInt(testBean, Integer.MAX_VALUE);
-			} else if(type.equals(long.class)) {
+			} else if (type.equals(long.class)) {
 				field.setLong(testBean, Long.MAX_VALUE);
-			} else if(type.equals(double.class)) {
+			} else if (type.equals(double.class)) {
 				field.setDouble(testBean, Double.MAX_VALUE);
-			} else if(type.equals(float.class)) {
+			} else if (type.equals(float.class)) {
 				field.setFloat(testBean, Float.MAX_VALUE);
-			} else if(type.equals(boolean.class)) {
+			} else if (type.equals(boolean.class)) {
 				field.setBoolean(testBean, true);
-			} else if(type.equals(Integer.class)) {
+			} else if (type.equals(Integer.class)) {
 				field.set(testBean, Integer.MAX_VALUE);
-			} else if(type.equals(Long.class)) {
+			} else if (type.equals(Long.class)) {
 				field.set(testBean, Long.MAX_VALUE);
-			} else if(type.equals(Double.class)) {
+			} else if (type.equals(Double.class)) {
 				field.set(testBean, Double.MAX_VALUE);
-			} else if(type.equals(Float.class)) {
+			} else if (type.equals(Float.class)) {
 				field.set(testBean, Float.MAX_VALUE);
-			} else if(type.equals(Boolean.class)) {
+			} else if (type.equals(Boolean.class)) {
 				field.set(testBean, true);
-			} else if(type.equals(String.class)) {	
+			} else if (type.equals(String.class)) {
 				field.set(testBean, "Test");
-			} else if(fieldName.equals("emptySetTest")) {
+			} else if (fieldName.equals("emptySetTest")) {
 				field.set(testBean, new HashSet<String>());
-			} else if(type.equals(Set.class) ) {
+			} else if (type.equals(Set.class)) {
 				Set<String> set = new HashSet<String>();
 				set.add("1");
 				set.add("2");
 				set.add("3");
 				field.set(testBean, set);
-			} else if(type.equals(List.class)) {
+			} else if (type.equals(List.class)) {
 				List<String> list = new ArrayList<String>();
 				list.add("1");
 				list.add("2");
 				list.add("3");
 				field.set(testBean, list);
-			} else if(type.equals(Object.class)) {
+			} else if (type.equals(Object.class)) {
 				field.set(testBean, new Date());
 			} else {
 				fail("type is not handled in the Unit-Test, please add " + type);
 			}
 			Document document = converter.beanToDocument(testBean);
-			//check if all values are stored the same way they were entered
-			if(fieldName.equals("serializeTest")) {
+			// check if all values are stored the same way they were entered
+			if (fieldName.equals("serializeTest")) {
 				System.out.println("doing serialize equality test.");
-				assertTrue(Arrays.equals(toSerializedLuceneValue(field.get(testBean)), 
+				assertTrue(Arrays.equals(
+						toSerializedLuceneValue(field.get(testBean)),
 						document.getBinaryValue(fieldName).bytes));
-			} else if(fieldName.equals("customNameTest")) {
+			} else if (fieldName.equals("customNameTest")) {
 				System.out.println("doing custom name equality test.");
 				String originalValue = (String) field.get(testBean);
 				String documentValue = document.get("customName");
 				assertEquals(originalValue, documentValue);
-			} else if(fieldName.equals("notAnnotatedTest")) {
+			} else if (fieldName.equals("notAnnotatedTest")) {
 				System.out.println("doing not annotated test.");
 				assertEquals(null, document.get(fieldName));
-			} else if(fieldName.equals("listTest")) {
+			} else if (fieldName.equals("listTest")) {
 				System.out.println("doing listTest");
 				@SuppressWarnings("unchecked")
 				List<String> originalList = (List<String>) field.get(testBean);
 				IndexableField[] documentFields = document.getFields(fieldName);
-				for(int i = 0; i < originalList.size(); ++i) {
-					assertEquals(originalList.get(i), documentFields[i].stringValue());
+				for (int i = 0; i < originalList.size(); ++i) {
+					assertEquals(originalList.get(i),
+							documentFields[i].stringValue());
 				}
-			} else if(fieldName.equals("setTest")) {
+			} else if (fieldName.equals("setTest")) {
 				System.out.println("doing listTest");
 				@SuppressWarnings("unchecked")
 				Set<String> originalSet = (Set<String>) field.get(testBean);
 				Set<String> docSet = new HashSet<String>();
-				for(IndexableField documentField : document.getFields(fieldName)) {
+				for (IndexableField documentField : document
+						.getFields(fieldName)) {
 					docSet.add(documentField.stringValue());
 				}
 				assertEquals(originalSet, docSet);
-			} else if(fieldName.equals("emptySetTest")) {
+			} else if (fieldName.equals("emptySetTest")) {
 				System.out.println("doing emptySetTest");
 				assertEquals(null, document.get(fieldName));
+			} else if (fieldName.equals("multiTest")) {
+				System.out.println("doing multiTest");
+				assertEquals("multiTest", document.get(fieldName));
+			} else if (fieldName.equals("multiMultiTest")) {
+				System.out.println("doint multiMultiTest");
+				assertEquals("multiMultiTest", document.get(fieldName));
 			} else {
-				//normally a check is needed, but in the test-case we
-				//can do this without checking for a present annotation
+				// normally a check is needed, but in the test-case we
+				// can do this without checking for a present annotation
 				BeanField bf = field.getAnnotation(BeanField.class);
-				System.out.println("doing " + bf.type() +" tests on \"" +  fieldName + "\".");
-				assertEquals(field.get(testBean).toString(), document.get(fieldName));
+				System.out.println("doing " + bf.type() + " tests on \""
+						+ fieldName + "\".");
+				assertEquals(field.get(testBean).toString(),
+						document.get(fieldName));
 				IndexableField indexField = document.getField(fieldName);
 				IndexableFieldType indexFieldType = indexField.fieldType();
 				assertEquals(bf.store(), indexFieldType.stored());
 				assertEquals(bf.index(), indexFieldType.indexed());
 				assertEquals(bf.tokenized(), indexFieldType.tokenized());
-				//TODO: test if fieldType is correct?
+				// TODO: test if fieldType is correct?
 			}
 		}
-		
-		//now that all the conversion works we can safely generate
-		//a document with that and work backwards :)
+
+		// now that all the conversion works we can safely generate
+		// a document with that and work backwards :)
 		System.out.println("doing reverse conversion (document to bean) test.");
 		Document document = converter.beanToDocument(testBean);
-		TestBean reverseBean = converter.documentToBean(TestBean.class, document);
-		
-		//setting the stuff that can not be in the document and therefore not in the reverseBean
+		TestBean reverseBean = converter.documentToBean(TestBean.class,
+				document);
+
+		// setting the stuff that can not be in the document and therefore not
+		// in the reverseBean
 		reverseBean.notAnnotatedTest = testBean.notAnnotatedTest;
 		reverseBean.notStoredButIndexedTest = testBean.notStoredButIndexedTest;
-		assertTrue(testBean.equals(reverseBean));		
-		
+		assertTrue(testBean.equals(reverseBean));
+
 		System.out.println("Result: conversion test successfull.");
 	}
-	
+
 	public void testWrongType() {
 		System.out.println("doing malformed bean tests.");
-		BeanConverter converter = new BeanConverterImpl(new BeanInformationCacheImpl());
+		BeanConverter converter = new BeanConverterImpl(
+				new BeanInformationCacheImpl());
 		try {
 			WrongTypeTest wrongTypeTest = new WrongTypeTest();
-			//really awkward type. :)
+			// really awkward type. :)
 			wrongTypeTest.wrongType = new HashMap<Object, GregorianCalendar>();
 			converter.beanToDocument(wrongTypeTest);
 			fail("Exception expected");
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 		}
 		try {
 			converter.beanToDocument(WrongTypeTest.class);
 			fail("Exception expected");
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 		}
 	}
-	
+
 	protected static byte[] toSerializedLuceneValue(Object value) {
 		ObjectOutputStream out = null;
 		try {
@@ -471,13 +520,13 @@ public class BeanConverterTest extends TestCase {
 			out = new ObjectOutputStream(serData);
 			out.writeObject(value);
 			return serData.toByteArray();
-		} catch(IOException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			if(out != null) {
+			if (out != null) {
 				try {
 					out.close();
-				} catch(IOException e) {
+				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
