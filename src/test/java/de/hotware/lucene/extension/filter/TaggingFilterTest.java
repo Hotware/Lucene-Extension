@@ -82,9 +82,6 @@ public class TaggingFilterTest extends TestCase {
 		}
 	}
 
-	// TODO: don't just look at the string output here, look at all the other
-	// attribute stuff as well!
-
 	public void testStartEndTaggingFilter() {
 		SimpleStartEndTaggingAnalyzer analyzer = new SimpleStartEndTaggingAnalyzer();
 		String input = "<#word> This </#word> <#word> <#verb> is </#verb> a </#word> sentence";
