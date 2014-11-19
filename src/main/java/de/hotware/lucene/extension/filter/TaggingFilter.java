@@ -167,6 +167,7 @@ public abstract class TaggingFilter extends TokenFilter {
 		} else {
 			boolean newTokenRet = this.handleNewToken(this.curTerm);
 			if (!this.produceTaggedVersions) {
+				this.setTagAtts();
 				this.finishedHandlingTagsForCurrentToken();
 				// tagged versions should get skipped
 				this.nextToken();

@@ -4,7 +4,7 @@
 	<groupId>de.hotware.lucene.extension.bean</groupId>
 	<artifactId>lucene-bean-extension</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.1.2</version>
+	<version>0.2.1.3</version>
 	<name>LuceneBeanExtension</name>
 	<url>https://github.com/Hotware/LuceneBeanExtension</url>
 
