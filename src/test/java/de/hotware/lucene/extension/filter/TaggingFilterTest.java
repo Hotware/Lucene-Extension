@@ -8,7 +8,11 @@
  */
 package de.hotware.lucene.extension.filter;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -16,9 +20,10 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 
 import de.hotware.lucene.extension.filter.TaggingFilter.IndexFormatProvider;
-import de.hotware.lucene.extension.util.Tokenize;
 import junit.framework.TestCase;
 
 public class TaggingFilterTest extends TestCase {
@@ -83,14 +88,76 @@ public class TaggingFilterTest extends TestCase {
 	public void testStartEndTaggingFilter() {
 		SimpleStartEndTaggingAnalyzer analyzer = new SimpleStartEndTaggingAnalyzer();
 		String input = "<#word> This </#word> <#word> <#verb> is </#verb> a </#word> sentence";
-		System.out.println(Tokenize.tokenizeString(analyzer, input));
+		List<String> result = new ArrayList<String>();
+		boolean foundTagAttTag = false;
+		boolean foundTaggedVersion = false;
+		try (TokenStream stream = analyzer.tokenStream(null, new StringReader(
+				input))) {
+			stream.reset();
+			while (stream.incrementToken()) {
+				String str = stream.getAttribute(CharTermAttribute.class)
+						.toString();
+				result.add(str);
+				PositionIncrementAttribute posInc = stream
+						.getAttribute(PositionIncrementAttribute.class);
+				if (posInc.getPositionIncrement() == 0) {
+					foundTaggedVersion = true;
+				}
+				TagAttribute tagAtt = stream.getAttribute(TagAttribute.class);
+				if (tagAtt.getTags().size() > 0) {
+					foundTagAttTag = true;
+					System.out.println("Info for token \"" + str
+							+ "\", found tagAttTags: " + tagAtt.getTags());
+				}
+			}
+		} catch (IOException e) {
+			// not thrown b/c we're using a string reader...
+			throw new RuntimeException(e);
+		}
+		if (!foundTagAttTag) {
+			fail("should have found a TagAttTag of at least one token");
+		}
+		if(!foundTaggedVersion) {
+			fail("should have found tagged version of at least one token");
+		}
+		System.out.println(result);
 		analyzer.close();
 	}
 
 	public void testNextTokenTaggingFilter() {
 		SimpleNextTokenTaggingAnalyzer analyzer = new SimpleNextTokenTaggingAnalyzer();
 		String input = "<#word> This test <#verb> is a sentence";
-		System.out.println(Tokenize.tokenizeString(analyzer, input));
+		List<String> result = new ArrayList<String>();
+		boolean foundTagAttTag = false;
+		try (TokenStream stream = analyzer.tokenStream(null, new StringReader(
+				input))) {
+			stream.reset();
+			while (stream.incrementToken()) {
+				String str = stream.getAttribute(CharTermAttribute.class)
+						.toString();
+				result.add(str);
+				PositionIncrementAttribute posInc = stream
+						.getAttribute(PositionIncrementAttribute.class);
+				if (posInc.getPositionIncrement() == 0) {
+					// we configured it to not return any tagged versions but it
+					// did
+					fail("no tagged versions should be returned at this point");
+				}
+				TagAttribute tagAtt = stream.getAttribute(TagAttribute.class);
+				if (tagAtt.getTags().size() > 0) {
+					foundTagAttTag = true;
+					System.out.println("Info for token \"" + str
+							+ "\", found tagAttTags: " + tagAtt.getTags());
+				}
+			}
+		} catch (IOException e) {
+			// not thrown b/c we're using a string reader...
+			throw new RuntimeException(e);
+		}
+		if (!foundTagAttTag) {
+			fail("should have found a TagAttTag of at least one token");
+		}
+		System.out.println(result);
 		analyzer.close();
 	}
 
