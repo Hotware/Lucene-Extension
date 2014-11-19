@@ -42,7 +42,7 @@ public class TaggingFilterTest extends TestCase {
 				}
 
 			}, Pattern.compile("</#([a-zA-Z]+)>"),
-					Pattern.compile("<#([a-zA-Z]+)>"), true, true, false);
+					Pattern.compile("<#([a-zA-Z]+)>"), true, true, true);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
 			// for
 			// the analysis of texts with all its parts
@@ -69,13 +69,16 @@ public class TaggingFilterTest extends TestCase {
 					return "#" + tagName + "_" + term;
 				}
 
-			}, Pattern.compile("<#([a-zA-Z]+)>"), true, true, true);
+			}, Pattern.compile("<#([a-zA-Z]+)>"), true, true, false);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
 			// for
 			// the analysis of texts with all its parts
 			return new TokenStreamComponents(src, tok);
 		}
 	}
+
+	// TODO: don't just look at the string output here, look at all the other
+	// attribute stuff as well!
 
 	public void testStartEndTaggingFilter() {
 		SimpleStartEndTaggingAnalyzer analyzer = new SimpleStartEndTaggingAnalyzer();

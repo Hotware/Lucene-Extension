@@ -46,7 +46,7 @@ public abstract class TaggingFilter extends TokenFilter {
 	private final IndexFormatProvider indexFormatProvider;
 	private final boolean produceTaggedVersions;
 
-	private boolean taggedNext;
+	private boolean nonMarkerTokenFoundAndTagsAvailable;
 	private int curTagIndex;
 
 	private String curTerm;
@@ -96,7 +96,7 @@ public abstract class TaggingFilter extends TokenFilter {
 		super(input);
 		this.indexFormatProvider = indexFormatProvider;
 		this.currentTags = new ArrayList<>();
-		this.taggedNext = false;
+		this.nonMarkerTokenFoundAndTagsAvailable = false;
 		if (!produceTagAttribute && !produceTaggedVersions) {
 			throw new IllegalArgumentException(
 					"this filter should at least produce something "
@@ -126,11 +126,11 @@ public abstract class TaggingFilter extends TokenFilter {
 				this.tokStart = this.offsetAtt.startOffset();
 				this.tokEnd = this.offsetAtt.endOffset();
 				this.curTagIndex = 0;
-				this.taggedNext = false;
+				this.nonMarkerTokenFoundAndTagsAvailable = false;
 			}
 		}
 
-		if (this.taggedNext) {
+		if (this.nonMarkerTokenFoundAndTagsAvailable) {
 			this.clearAttributes();
 			if (this.curTagIndex < 0
 					|| this.curTagIndex >= this.currentTags.size()) {
@@ -166,13 +166,20 @@ public abstract class TaggingFilter extends TokenFilter {
 			return true;
 		} else {
 			boolean newTokenRet = this.handleNewToken(this.curTerm);
-			if (!this.produceTaggedVersions) {
+			if (this.nonMarkerTokenFoundAndTagsAvailable) {
+				//set the tag atts for the original token as well :)
 				this.setTagAtts();
+			}
+			if (!this.produceTaggedVersions
+					&& this.nonMarkerTokenFoundAndTagsAvailable) {
+				// we would produce tagged versions next
+				// but we are not allowed to, so we immediately go to the next
+				// token and behave as if we handled all our stuff
 				this.finishedHandlingTagsForCurrentToken();
 				// tagged versions should get skipped
 				this.nextToken();
-			} else if (newTokenRet && this.produceTaggedVersions) {
-				this.setTagAtts();
+			} else if (this.produceTaggedVersions) {
+
 			}
 			return newTokenRet;
 		}
@@ -211,7 +218,7 @@ public abstract class TaggingFilter extends TokenFilter {
 	 */
 	protected final void nextToken() {
 		this.curTagIndex = -1;
-		this.taggedNext = false;
+		this.nonMarkerTokenFoundAndTagsAvailable = false;
 		this.curTerm = null;
 	}
 
@@ -219,10 +226,10 @@ public abstract class TaggingFilter extends TokenFilter {
 	 * call this if the tagged versions should be produced in the next call of
 	 * incrementTokens()
 	 */
-	protected final void produceTaggedVersions() {
+	protected final void nonMarkerTokenFound() {
 		if (this.currentTags.size() > 0) {
 			this.curTagIndex = 0;
-			this.taggedNext = true;
+			this.nonMarkerTokenFoundAndTagsAvailable = true;
 		} else {
 			this.nextToken();
 		}

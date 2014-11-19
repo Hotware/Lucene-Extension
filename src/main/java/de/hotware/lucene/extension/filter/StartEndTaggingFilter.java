@@ -92,7 +92,7 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 		if (!matchedOnce) {
 			// first: return the original version in this call, but make sure
 			// the next time the tagged versions are returned
-			this.produceTaggedVersions();
+			this.nonMarkerTokenFound();
 			return true;
 		} else {
 			if (!this.allowMarkerTokens) {
