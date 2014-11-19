@@ -106,9 +106,9 @@ public class TaggingFilterTest extends TestCase {
 				TagAttribute tagAtt = stream.getAttribute(TagAttribute.class);
 				if (tagAtt.getTags().size() > 0) {
 					foundTagAttTag = true;
-					System.out.println("Info for token \"" + str
-							+ "\", found tagAttTags: " + tagAtt.getTags());
 				}
+				System.out.println("Info for token \"" + str
+						+ "\", found tagAttTags: " + tagAtt.getTags());
 			}
 		} catch (IOException e) {
 			// not thrown b/c we're using a string reader...
@@ -117,7 +117,7 @@ public class TaggingFilterTest extends TestCase {
 		if (!foundTagAttTag) {
 			fail("should have found a TagAttTag of at least one token");
 		}
-		if(!foundTaggedVersion) {
+		if (!foundTaggedVersion) {
 			fail("should have found tagged version of at least one token");
 		}
 		System.out.println(result);
@@ -146,9 +146,9 @@ public class TaggingFilterTest extends TestCase {
 				TagAttribute tagAtt = stream.getAttribute(TagAttribute.class);
 				if (tagAtt.getTags().size() > 0) {
 					foundTagAttTag = true;
-					System.out.println("Info for token \"" + str
-							+ "\", found tagAttTags: " + tagAtt.getTags());
 				}
+				System.out.println("Info for token \"" + str
+						+ "\", found tagAttTags: " + tagAtt.getTags());
 			}
 		} catch (IOException e) {
 			// not thrown b/c we're using a string reader...
