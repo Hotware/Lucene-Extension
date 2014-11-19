@@ -33,8 +33,9 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 	public StartEndTaggingFilter(TokenStream input,
 			IndexFormatProvider indexFormatProvider, Pattern patternForEndTag,
 			Pattern patternForStartTag, boolean allowMarkerTokens,
-			boolean produceTagAttribute) {
-		super(input, indexFormatProvider, produceTagAttribute);
+			boolean produceTagAttribute, boolean produceTaggedVersions) {
+		super(input, indexFormatProvider, produceTagAttribute,
+				produceTaggedVersions);
 		if (patternForStartTag.matcher("").groupCount() != 1
 				|| patternForEndTag.matcher("").groupCount() != 1) {
 			throw new IllegalArgumentException(
@@ -91,12 +92,7 @@ public final class StartEndTaggingFilter extends TaggingFilter {
 		if (!matchedOnce) {
 			// first: return the original version in this call, but make sure
 			// the next time the tagged versions are returned
-			if (this.currentTags.size() > 0) {
-				this.produceTaggedVersions();
-			} else {
-				this.nextToken();
-			}
-			this.finishCurrentWorkingToken();
+			this.produceTaggedVersions();
 			return true;
 		} else {
 			if (!this.allowMarkerTokens) {

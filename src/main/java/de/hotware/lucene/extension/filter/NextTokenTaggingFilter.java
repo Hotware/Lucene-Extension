@@ -21,8 +21,10 @@ public final class NextTokenTaggingFilter extends TaggingFilter {
 
 	public NextTokenTaggingFilter(TokenStream input,
 			IndexFormatProvider indexFormatProvider, Pattern patternForTag,
-			boolean allowMarkerTokens, boolean produceTagAttribute) {
-		super(input, indexFormatProvider, produceTagAttribute);
+			boolean allowMarkerTokens, boolean produceTagAttribute,
+			boolean produceTaggedVersions) {
+		super(input, indexFormatProvider, produceTagAttribute,
+				produceTaggedVersions);
 		if (patternForTag.matcher("").groupCount() != 1) {
 			throw new IllegalArgumentException("pattern has to have exactly"
 					+ " one capturing group in it");
@@ -58,12 +60,7 @@ public final class NextTokenTaggingFilter extends TaggingFilter {
 		if (!matchedOnce) {
 			// first: return the original version in this call, but make sure
 			// the next time the tagged versions are returned
-			if (this.currentTags.size() > 0) {
-				this.produceTaggedVersions();
-			} else {
-				this.nextToken();
-			}
-			this.finishCurrentWorkingToken();
+			this.produceTaggedVersions();
 			return true;
 		} else {
 			if (!this.allowMarkerTokens) {
@@ -77,7 +74,7 @@ public final class NextTokenTaggingFilter extends TaggingFilter {
 	}
 
 	@Override
-	protected void finishedProducingTokens() {
+	protected void finishedHandlingTagsForCurrentToken() {
 		// we already produced stuff and we only want the next token after all
 		// the taggers to be tagged, so here we go
 		this.currentTags.clear();

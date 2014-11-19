@@ -44,8 +44,9 @@ public abstract class TaggingFilter extends TokenFilter {
 	protected final List<String> currentTags;
 
 	private final IndexFormatProvider indexFormatProvider;
+	private final boolean produceTaggedVersions;
 
-	private boolean produceTaggedVersions;
+	private boolean taggedNext;
 	private int curTagIndex;
 
 	private String curTerm;
@@ -90,16 +91,23 @@ public abstract class TaggingFilter extends TokenFilter {
 	 *            {@link #indexFormatProvider}
 	 */
 	public TaggingFilter(TokenStream input,
-			IndexFormatProvider indexFormatProvider, boolean produceTagAttribute) {
+			IndexFormatProvider indexFormatProvider,
+			boolean produceTagAttribute, boolean produceTaggedVersions) {
 		super(input);
 		this.indexFormatProvider = indexFormatProvider;
 		this.currentTags = new ArrayList<>();
-		this.produceTaggedVersions = false;
+		this.taggedNext = false;
+		if (!produceTagAttribute && !produceTaggedVersions) {
+			throw new IllegalArgumentException(
+					"this filter should at least produce something "
+							+ "(produceTagAttribute & produceTaggedVersions were equal to false");
+		}
 		if (produceTagAttribute) {
 			this.tagAtt = this.addAttribute(TagAttribute.class);
 		} else {
 			this.tagAtt = null;
 		}
+		this.produceTaggedVersions = produceTaggedVersions;
 	}
 
 	@Override
@@ -118,11 +126,11 @@ public abstract class TaggingFilter extends TokenFilter {
 				this.tokStart = this.offsetAtt.startOffset();
 				this.tokEnd = this.offsetAtt.endOffset();
 				this.curTagIndex = 0;
-				this.produceTaggedVersions = false;
+				this.taggedNext = false;
 			}
 		}
 
-		if (this.produceTaggedVersions) {
+		if (this.taggedNext) {
 			this.clearAttributes();
 			if (this.curTagIndex < 0
 					|| this.curTagIndex >= this.currentTags.size()) {
@@ -131,8 +139,9 @@ public abstract class TaggingFilter extends TokenFilter {
 			}
 			if (this.curTerm.equals("")) {
 				// don't tag empty tokens
-				// TODO: maybe move this call as we can stop handling stuff earlier
-				this.finishedProducingTokens();
+				// TODO: maybe move this call as we can stop handling stuff
+				// earlier
+				this.finishedHandlingTagsForCurrentToken();
 				this.nextToken();
 				return true;
 			}
@@ -147,16 +156,24 @@ public abstract class TaggingFilter extends TokenFilter {
 			// this can just be copied
 			this.posLenAtt.setPositionLength(this.curPosLen);
 			this.offsetAtt.setOffset(this.tokStart, this.tokEnd);
-			this.finishCurrentWorkingToken();
+			this.setTagAtts();
 			// check if we have to produce another tagged version of the current
 			// token. If not, go to the next token
 			if (this.curTagIndex >= this.currentTags.size()) {
-				this.finishedProducingTokens();
+				this.finishedHandlingTagsForCurrentToken();
 				this.nextToken();
 			}
 			return true;
 		} else {
-			return this.handleNewToken(this.curTerm);
+			boolean newTokenRet = this.handleNewToken(this.curTerm);
+			if (!this.produceTaggedVersions) {
+				this.finishedHandlingTagsForCurrentToken();
+				// tagged versions should get skipped
+				this.nextToken();
+			} else if (newTokenRet && this.produceTaggedVersions) {
+				this.setTagAtts();
+			}
+			return newTokenRet;
 		}
 	}
 
@@ -175,7 +192,7 @@ public abstract class TaggingFilter extends TokenFilter {
 	/**
 	 * callback
 	 */
-	protected void finishedProducingTokens() {
+	protected void finishedHandlingTagsForCurrentToken() {
 
 	}
 
@@ -193,7 +210,7 @@ public abstract class TaggingFilter extends TokenFilter {
 	 */
 	protected final void nextToken() {
 		this.curTagIndex = -1;
-		this.produceTaggedVersions = false;
+		this.taggedNext = false;
 		this.curTerm = null;
 	}
 
@@ -202,15 +219,15 @@ public abstract class TaggingFilter extends TokenFilter {
 	 * incrementTokens()
 	 */
 	protected final void produceTaggedVersions() {
-		this.curTagIndex = 0;
-		this.produceTaggedVersions = true;
+		if (this.currentTags.size() > 0) {
+			this.curTagIndex = 0;
+			this.taggedNext = true;
+		} else {
+			this.nextToken();
+		}
 	}
 
-	/**
-	 * call this to finish the current token (internally called for tagged
-	 * versions as well)
-	 */
-	protected final void finishCurrentWorkingToken() {
+	private void setTagAtts() {
 		if (this.tagAtt != null) {
 			this.tagAtt.addTags(this.currentTags);
 		}
