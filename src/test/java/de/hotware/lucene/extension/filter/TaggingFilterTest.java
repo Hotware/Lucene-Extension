@@ -23,7 +23,10 @@ import org.apache.lucene.analysis.miscellaneous.TrimFilter;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 
-import de.hotware.lucene.extension.filter.TaggingFilter.IndexFormatProvider;
+import de.hotware.lucene.extension.filter.tagging.IndexFormatProvider;
+import de.hotware.lucene.extension.filter.tagging.NextTokenTaggingFilter;
+import de.hotware.lucene.extension.filter.tagging.StartEndTaggingFilter;
+import de.hotware.lucene.extension.filter.tagging.TagAttribute;
 import junit.framework.TestCase;
 
 public class TaggingFilterTest extends TestCase {

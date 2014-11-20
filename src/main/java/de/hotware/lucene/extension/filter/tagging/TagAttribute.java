@@ -1,4 +1,4 @@
-package de.hotware.lucene.extension.filter;
+package de.hotware.lucene.extension.filter.tagging;
 
 import java.util.Set;
 
