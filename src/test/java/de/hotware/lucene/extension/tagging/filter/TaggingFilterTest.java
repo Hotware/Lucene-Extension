@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Martin Braun
  * ----------------------------------------------------------------------------
  */
-package de.hotware.lucene.extension.filter;
+package de.hotware.lucene.extension.tagging.filter;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -23,7 +23,6 @@ import org.apache.lucene.analysis.miscellaneous.TrimFilter;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 
-import de.hotware.lucene.extension.filter.tagging.IndexFormatProvider;
 import de.hotware.lucene.extension.filter.tagging.NextTokenTaggingFilter;
 import de.hotware.lucene.extension.filter.tagging.StartEndTaggingFilter;
 import de.hotware.lucene.extension.filter.tagging.TagAttribute;
@@ -42,13 +41,8 @@ public class TaggingFilterTest extends TestCase {
 			// found otherwise
 			final Tokenizer src = new WhitespaceTokenizer(reader);
 			TokenStream tok = new TrimFilter(src);
-			tok = new StartEndTaggingFilter(tok, new IndexFormatProvider() {
-
-				@Override
-				public String produce(String tagName, String term) {
-					return "#" + tagName + "_" + term;
-				}
-
+			tok = new StartEndTaggingFilter(tok, (tagName, term) -> {
+				return "#" + tagName + "_" + term;
 			}, Pattern.compile("</#([a-zA-Z]+)>"),
 					Pattern.compile("<#([a-zA-Z]+)>"), true, true, true);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
@@ -70,13 +64,8 @@ public class TaggingFilterTest extends TestCase {
 			// found otherwise
 			final Tokenizer src = new WhitespaceTokenizer(reader);
 			TokenStream tok = new TrimFilter(src);
-			tok = new NextTokenTaggingFilter(tok, new IndexFormatProvider() {
-
-				@Override
-				public String produce(String tagName, String term) {
-					return "#" + tagName + "_" + term;
-				}
-
+			tok = new NextTokenTaggingFilter(tok, (tagName, term) -> {
+				return "#" + tagName + "_" + term;
 			}, Pattern.compile("<#([a-zA-Z]+)>"), true, true, false);
 			// we shouldn't lowercase here or use stopwordfilters, as this is
 			// for
