@@ -12,14 +12,14 @@ package com.github.hotware.lucene.extension.bean.type;
  * Types that can handle all classes. All fields annotated with such a type will
  * be passed through as the "raw" Object and not iterated upon.
  * 
- * <br /><br/>
+ * <br><br>
  * 
  * Single-layered Sets/Lists are already supported in {
  * {@link com.github.hotware.lucene.extension.bean.converter.BeanConverterImpl} and use
  * {@link com.github.hotware.lucene.extension.bean.type.Type} for internal conversion.
  * So don't use this interface for this.
  * 
- * <br /><br />
+ * <br><br>
  * 
  * This can also be used for rudimentary hierarchical indexing of beans
  * 

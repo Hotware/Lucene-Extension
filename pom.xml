@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.hotware.lucene.extension</groupId>
+	<groupId>com.github.hotware</groupId>
 	<artifactId>lucene-extension</artifactId>
 	<packaging>jar</packaging>
 	<version>0.2.2.3</version>
@@ -12,6 +12,20 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+		<license>
+			<name>Beerware License</name>
+			<url>https://github.com/Hotware/Lucene-Extension/blob/master/LICENSE.md</url>
+			<!-- TODO: what does this mean? repo? -->
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<build>
 		<plugins>
@@ -53,7 +67,6 @@
 			<version>4.10.2</version>
 			<scope>provided</scope>
 		</dependency>
-
 	</dependencies>
 
 </project>

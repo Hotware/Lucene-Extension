@@ -7,12 +7,12 @@ import java.util.regex.Pattern;
 import org.apache.lucene.analysis.TokenStream;
 
 /**
- * Filter to process tokens between start and end tags. <br />
- * <br />
- * <br />
+ * Filter to process tokens between start and end tags. <br>
+ * <br>
+ * <br>
  * All Tokens between a start and end tag can be recognized. One use case would
- * be Part of Speech tagging. <br />
- * <br />
+ * be Part of Speech tagging. <br>
+ * <br>
  * Tagging could be done in other ways, for example by providing custom
  * Attributes during Filtering, but for this one would have to provide a custom
  * {@link org.apache.lucene.search.Query} implementation. This could be worth

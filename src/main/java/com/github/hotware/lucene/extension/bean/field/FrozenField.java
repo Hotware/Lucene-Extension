@@ -16,8 +16,8 @@ import java.lang.reflect.Type;
 /**
  * We don't want people to tamper with the field's setter methods. so we have
  * this 'frozen' class for this.
- * <br />
- * <br />
+ * <br>
+ * <br>
  * This will not prevent all tampering. As users will still have access to the
  * declaring class but will make people think about what they are doing first
  * 

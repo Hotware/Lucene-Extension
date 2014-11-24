@@ -43,7 +43,7 @@ import org.apache.lucene.search.vectorhighlight.FragListBuilder;
  * {@link org.apache.lucene.search.vectorhighlight.FastVectorHighlighter} that
  * exposes more of the api.
  * 
- * <br />
+ * <br>
  * 
  * Most of the code is copy pasted but is restructured for our needs.
  * 

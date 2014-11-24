@@ -36,7 +36,7 @@ import com.github.hotware.lucene.extension.util.LuceneVersion;
 /**
  * Reference Implementation of a LuceneManager.
  * 
- * <br />
+ * <br>
  * 
  * Refreshes the SearcherManager automatically in the provided time
  * 

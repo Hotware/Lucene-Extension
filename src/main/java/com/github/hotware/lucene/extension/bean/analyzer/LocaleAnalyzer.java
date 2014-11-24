@@ -15,8 +15,8 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 /**
  * Locale dependent Analyzer helper class. So far only de_DE and en_EN are
- * supported. <br />
- * <br />
+ * supported. <br>
+ * <br>
  * In order to use this class, you should provide your own
  * {@link AnalyzerProvider}
  * 

@@ -12,8 +12,8 @@ import org.apache.lucene.document.FieldType;
 
 /**
  * the main extension point for providing different types to handle in Lucene
- * Beans <br />
- * <br />
+ * Beans <br>
+ * <br>
  * For slightly easier usage use {@link BaseSingularType}
  * 
  * @author Martin Braun

@@ -28,13 +28,13 @@ import org.apache.lucene.index.IndexableField;
 /**
  * Inner classes of this type contain basic Types that are shipped with the
  * extension. Most of the time these types are sufficient <br />
- * <br />
- * All Numbers have two different types: <br />
- * One [Number]Type and one [Number]StringType. <br />
+ * <br>
+ * All Numbers have two different types: <br>
+ * One [Number]Type and one [Number]StringType. <br>
  * The first one tells Lucene to store the Field in a Numeric Field (with the
  * corresponding Lucene NumericType) and the second one converts the Number into
- * a String and then stores that String into the Document. <br />
- * <br />
+ * a String and then stores that String into the Document. <br>
+ * <br>
  * In fact, all Types that don't have a specific name (i.e. SerializeType)
  * convert the field by toString() into the Document and retrieve the value
  * 

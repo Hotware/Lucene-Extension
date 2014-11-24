@@ -25,7 +25,7 @@ import com.github.hotware.lucene.extension.bean.type.Type;
  * Annotation for Beans that should be stored into lucene Use this class in
  * addition with a BeanConverter Implementation
  * 
- * From the Lucene-Wiki: <br />
+ * From the Lucene-Wiki: <br>
  * What is the different between Stored, Tokenized, Indexed, and Vector?
  * 
  * Stored = as-is value stored in the Lucene index Tokenized = field is analyzed
