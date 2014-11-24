@@ -3,6 +3,8 @@ LuceneBeanExtension
 
 Github-pages:
 http://hotware.github.io/Lucene-Extension/
+Documentation:
+http://hotware.github.io/Lucene-Extension/apidocs/
 
 Utility classes for easier storage of beans in Lucene
 
