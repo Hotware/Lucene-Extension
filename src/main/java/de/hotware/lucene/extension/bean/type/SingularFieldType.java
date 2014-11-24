@@ -6,7 +6,8 @@ import org.apache.lucene.index.IndexableField;
 
 /**
  * types that store their stuff in a singular field 
- * (that can still have multiple values!)
+ * (that can still have multiple values, but most of 
+ * the time the already supported Set and List are sufficient)
  * 
  * @author Martin
  */
