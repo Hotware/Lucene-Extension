@@ -1,0 +1,10 @@
+com.github.hotware.lucene.extension.bean.analyzer
+com.github.hotware.lucene.extension.bean.annotations
+com.github.hotware.lucene.extension.bean.converter
+com.github.hotware.lucene.extension.bean.field
+com.github.hotware.lucene.extension.bean.type
+com.github.hotware.lucene.extension.filter.tagging
+com.github.hotware.lucene.extension.highlight
+com.github.hotware.lucene.extension.manager
+com.github.hotware.lucene.extension.util
+com.github.hotware.lucene.extension.util.tagging
