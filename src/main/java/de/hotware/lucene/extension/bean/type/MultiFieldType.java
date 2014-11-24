@@ -16,7 +16,7 @@ import org.apache.lucene.document.StoredField;
  */
 public abstract class MultiFieldType implements Type {
 
-	public void handleDocFieldValues(Document document, String fieldName,
+	public final void handleDocFieldValues(Document document, String fieldName,
 			Iterable<Object> values, FieldType fieldType, Class<?> objectFieldType) {
 		document.add(new StoredField(fieldName, fieldName));
 		this.handleMultiDocFieldValue(document, fieldName, values, fieldType,
