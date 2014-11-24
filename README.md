@@ -3,6 +3,7 @@ LuceneBeanExtension
 
 Github-pages:
 http://hotware.github.io/Lucene-Extension/
+
 Documentation:
 http://hotware.github.io/Lucene-Extension/apidocs/
 
