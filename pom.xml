@@ -6,6 +6,10 @@
 	<packaging>jar</packaging>
 	<version>0.2.2.3</version>
 	<name>Lucene-Extension</name>
+	<description>
+		General Utility to ease using Lucene. The most prominent Feature is the BeanConverter 
+		that convertes annotated Java beans into Documents and back.
+	</description>
 	<url>https://github.com/Hotware/Lucene-Extension</url>
 
 	<properties>
@@ -21,7 +25,7 @@
 		</license>
 		<license>
 			<name>Beerware License</name>
-			<url>https://github.com/Hotware/Lucene-Extension/blob/master/LICENSE.md</url>
+			<url>https://raw.githubusercontent.com/Hotware/Lucene-Extension/master/BEERWARE.md</url>
 			<!-- TODO: what does this mean? repo? -->
 			<distribution>repo</distribution>
 		</license>
@@ -68,5 +72,24 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+
+	<developers>
+		<developer>
+			<id>s4ke</id>
+			<name>Martin Braun</name>
+			<email>martinbraun123@aol.com</email>
+			<url>https://github.com/s4ke</url>
+			<organization>Hotware</organization>
+			<organizationUrl>https://github.com/Hotware</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+			<properties>
+				<picUrl>http://getdrunkonmovies.com/files/martin.jpg</picUrl>
+			</properties>
+		</developer>
+	</developers>
 
 </project>

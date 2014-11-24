@@ -1,6 +1,9 @@
 LuceneBeanExtension
 ===================
 
+Github-pages:
+http://hotware.github.io/Lucene-Extension/
+
 Utility classes for easier storage of beans in Lucene
 
 No need for manual mapping of Beans to Lucene documents.
