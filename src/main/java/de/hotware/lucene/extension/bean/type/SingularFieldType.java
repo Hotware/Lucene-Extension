@@ -5,7 +5,8 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexableField;
 
 /**
- * types that store their stuff in a singular field
+ * types that store their stuff in a singular field 
+ * (that can still have multiple values!)
  * 
  * @author Martin
  */
