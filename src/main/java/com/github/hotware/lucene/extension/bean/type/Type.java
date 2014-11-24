@@ -8,7 +8,10 @@
  */
 package com.github.hotware.lucene.extension.bean.type;
 
+import com.github.hotware.lucene.extension.bean.annotations.BeanField;
+
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.FieldInfo;
 
 /**
  * the main extension point for providing different types to handle in Lucene
@@ -26,7 +29,11 @@ public interface Type {
 	 * stuff is set up in the fieldtype.
 	 * 
 	 * <b>Note: you can change the index, store and tokenized attribute in here,
-	 * but it is discouraged to do so</b>
+	 * but it is discouraged to do so. However this should be used to change the
+	 * {@link FieldInfo.DocValuesType} with
+	 * {@link FieldType#setDocValueType(org.apache.lucene.index.FieldInfo.DocValuesType)}
+	 * as the default is null and this cannot be handled in {@link BeanField}
+	 * </b>
 	 */
 	public void configureFieldType(FieldType fieldType);
 

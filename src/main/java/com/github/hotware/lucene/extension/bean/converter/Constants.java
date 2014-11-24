@@ -19,7 +19,7 @@ import com.github.hotware.lucene.extension.util.Util;
  * 
  * @author Martin Braun
  */
-public class Constants {
+public final class Constants {
 
 	private Constants() {
 		throw new AssertionError("can't touch this!");

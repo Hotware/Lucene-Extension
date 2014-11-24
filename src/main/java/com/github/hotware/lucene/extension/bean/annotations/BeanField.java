@@ -39,7 +39,9 @@ import com.github.hotware.lucene.extension.bean.type.Type;
  * Note: Default values correspond to the way
  * {@link org.apache.lucene.document.FieldType} handles things. The
  * {@link org.apache.lucene.index.FieldInfo.DocValuesType} has to be handled via
- * a custom Type as it's default is null in the FieldType class.
+ * a custom Type
+ * {@link Type#configureFieldType(org.apache.lucene.document.FieldType)} as it's
+ * default is null in the FieldType class.
  * 
  * @author Martin Braun
  */
