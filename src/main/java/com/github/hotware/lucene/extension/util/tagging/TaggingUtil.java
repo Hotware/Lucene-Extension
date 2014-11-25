@@ -9,10 +9,29 @@ public final class TaggingUtil {
 		throw new AssertionError("can't touch this!");
 	}
 
-	public static final NextPositionTag SURROGATE_START = new NextPositionTag() {
+	public static final NextPositionTag SURROGATE_START_NEXT_POSITION_TAG = new NextPositionTag() {
 
 		@Override
 		public int getStart() {
+			return 0;
+		}
+
+		@Override
+		public String getName() {
+			throw new AssertionError("just a surrogate!");
+		}
+
+	};
+
+	public static final StartEndTag SURROGATE_START_START_END_POSITION_TAG = new StartEndTag() {
+
+		@Override
+		public int getStart() {
+			return 0;
+		}
+
+		@Override
+		public int getEnd() {
 			return 0;
 		}
 
@@ -44,7 +63,7 @@ public final class TaggingUtil {
 			// at least as long as the input text
 			StringBuilder stringBuilder = new StringBuilder(
 					originalTextBuf.length);
-			NextPositionTag lastTag = SURROGATE_START;
+			NextPositionTag lastTag = SURROGATE_START_NEXT_POSITION_TAG;
 			for (NextPositionTag tag : tags) {
 				// write the text after the last tag into the builder
 				stringBuilder.append(originalTextBuf, lastTag.getStart(),
@@ -55,9 +74,8 @@ public final class TaggingUtil {
 				stringBuilder.append(" ");
 				lastTag = tag;
 			}
-			;
-			if (lastTag != SURROGATE_START) {
-				//and add the remaining text from the last last tag :P
+			if (lastTag != SURROGATE_START_NEXT_POSITION_TAG) {
+				// and add the remaining text from the last last tag :P
 				stringBuilder.append(originalTextBuf, lastTag.getStart(),
 						originalTextBuf.length - lastTag.getStart());
 			}
@@ -66,5 +84,38 @@ public final class TaggingUtil {
 			return originalText;
 		}
 	}
-	
+
+	public static String writeStartEndTokenTagsIntoText(String originalText,
+			List<StartEndTag> tags,
+			Function<String, String> startTagFormatProvider,
+			Function<String, String> endTagFormatProvider) {
+		if (tags.size() > 0) {
+			final char[] originalTextBuf = originalText.toCharArray();
+			// at least as long as the input text
+			StringBuilder stringBuilder = new StringBuilder(
+					originalTextBuf.length);
+			StartEndTag lastTag = SURROGATE_START_START_END_POSITION_TAG;
+			for (StartEndTag tag : tags) {
+				// write the text after the last tag into the builder
+				stringBuilder.append(originalTextBuf, lastTag.getEnd(),
+						tag.getStart() - lastTag.getEnd());
+				// write the current tag into the builder
+				stringBuilder
+						.append(startTagFormatProvider.apply(tag.getName()))
+						.append(" ")
+						.append(originalTextBuf, tag.getStart(), tag.getEnd() - tag.getStart())
+						.append(" ")
+						.append(endTagFormatProvider.apply(tag.getName()));
+				lastTag = tag;
+			}
+			if (lastTag != SURROGATE_START_START_END_POSITION_TAG) {
+				// and add the remaining text from the last last tag :P
+				stringBuilder.append(originalTextBuf, lastTag.getEnd(),
+						originalTextBuf.length - lastTag.getEnd());
+			}
+			return stringBuilder.toString();
+		} else {
+			return originalText;
+		}
+	}
 }

@@ -37,6 +37,8 @@ public class Finder<T> {
 		if (topDocs.totalHits > 1) {
 			throw new IllegalArgumentException(
 					"query resulted in more than one results!");
+		} else if(topDocs.totalHits == 0) {
+			return null;
 		}
 		int docId = topDocs.scoreDocs[0].doc;
 		Document doc = this.indexSearcher.doc(docId);

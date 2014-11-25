@@ -59,13 +59,14 @@ public class LuceneManagerImpl implements LuceneManager {
 			TimeUnit.MINUTES);
 
 	public static IndexWriterConfig getDefaultIndexWriterConfig() {
-		IndexWriterConfig defaultIndexWriterConfig = new IndexWriterConfig(LuceneVersion.VERSION,
-				new StandardAnalyzer());
+		IndexWriterConfig defaultIndexWriterConfig = new IndexWriterConfig(
+				LuceneVersion.VERSION, new StandardAnalyzer());
 		defaultIndexWriterConfig.setCheckIntegrityAtMerge(true);
 		return defaultIndexWriterConfig;
 	}
 
-	public LuceneManagerImpl(Directory directory, Scheduling scheduling) throws IOException {
+	public LuceneManagerImpl(Directory directory, Scheduling scheduling)
+			throws IOException {
 		this.lock = new ReentrantLock();
 		this.beanConverter = new BeanConverterImpl(
 				this.beanInformationCache = new BeanInformationCacheImpl());
@@ -99,7 +100,8 @@ public class LuceneManagerImpl implements LuceneManager {
 	}
 
 	@Override
-	public final IndexWriter getIndexWriter(IndexWriterConfig config) throws IOException {
+	public final IndexWriter getIndexWriter(IndexWriterConfig config)
+			throws IOException {
 		return new IndexWriter(this.directory, config);
 	}
 

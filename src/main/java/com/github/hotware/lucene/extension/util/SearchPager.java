@@ -52,7 +52,12 @@ public class SearchPager<T> {
 	@SuppressWarnings("unchecked")
 	public List<T> getPage(int page) throws IOException {
 		List<T> results = new ArrayList<>();
-		for (int cur = page * this.pageSize; cur < this.topDocs.totalHits; ++cur) {
+		for (int i = 0; i < this.pageSize; ++i) {
+			int cur = (this.pageSize * page) + i;
+			if(cur >= this.topDocs.totalHits) {
+				//we are done here.
+				break;
+			}
 			int docId = this.topDocs.scoreDocs[cur].doc;
 			Document doc = this.indexSearcher.doc(docId);
 			if (beanClazz.equals(Document.class)) {

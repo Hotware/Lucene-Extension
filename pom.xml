@@ -4,7 +4,7 @@
 	<groupId>com.github.hotware</groupId>
 	<artifactId>lucene-extension</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.2.3</version>
+	<version>0.2.2.7</version>
 	<name>Lucene-Extension</name>
 	<description>
 		General Utility to ease using Lucene. The most prominent Feature is the BeanConverter 
