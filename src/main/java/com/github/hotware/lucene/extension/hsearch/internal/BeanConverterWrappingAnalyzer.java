@@ -16,6 +16,7 @@ public class BeanConverterWrappingAnalyzer extends AnalyzerWrapper {
 		if (fieldName.equals(HibernateSearchDTO.ID_FIELD_NAME)) {
 			return PassThroughAnalyzer.INSTANCE;
 		} else {
+			//FIXME: real analysis is needed here.
 			return new StandardAnalyzer();
 		}
 	}

@@ -29,7 +29,6 @@ import org.apache.lucene.store.Directory;
 
 import com.github.hotware.lucene.extension.bean.converter.BeanConverter;
 import com.github.hotware.lucene.extension.bean.converter.BeanConverterImpl;
-import com.github.hotware.lucene.extension.bean.field.BeanInformationCache;
 import com.github.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 import com.github.hotware.lucene.extension.util.LuceneVersion;
 
@@ -50,7 +49,6 @@ public class LuceneManagerImpl implements LuceneManager {
 	private final Lock lock;
 	private final BeanConverter beanConverter;
 	private final Directory directory;
-	private final BeanInformationCache beanInformationCache;
 	private final ScheduledExecutorService searcherScheduler;
 	private SearcherManager searcherManager;
 	private boolean closed;
@@ -68,8 +66,7 @@ public class LuceneManagerImpl implements LuceneManager {
 	public LuceneManagerImpl(Directory directory, Scheduling scheduling)
 			throws IOException {
 		this.lock = new ReentrantLock();
-		this.beanConverter = new BeanConverterImpl(
-				this.beanInformationCache = new BeanInformationCacheImpl());
+		this.beanConverter = new BeanConverterImpl(new BeanInformationCacheImpl());
 		this.directory = directory;
 		try {
 			this.searcherManager = new SearcherManager(this.directory,
@@ -142,11 +139,6 @@ public class LuceneManagerImpl implements LuceneManager {
 			}
 			this.lock.unlock();
 		}
-	}
-
-	@Override
-	public final BeanInformationCache getBeanInformationCache() {
-		return this.beanInformationCache;
 	}
 
 	private void checkOpen() {

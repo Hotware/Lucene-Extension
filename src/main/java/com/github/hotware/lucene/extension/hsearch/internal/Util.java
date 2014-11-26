@@ -5,7 +5,7 @@ import com.github.hotware.lucene.extension.bean.converter.BeanConverterImpl;
 import com.github.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
 import com.github.hotware.lucene.extension.util.CacheMap;
 
-final class Util {
+public final class Util {
 	
 	private Util() {
 		throw new AssertionError("can't touch this!");

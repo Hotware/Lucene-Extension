@@ -16,7 +16,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ReferenceManager;
 
 import com.github.hotware.lucene.extension.bean.converter.BeanConverter;
-import com.github.hotware.lucene.extension.bean.field.BeanInformationCache;
 
 /**
  * A LuceneManager helps you to handle all Low-Level Index-Management.
@@ -24,11 +23,6 @@ import com.github.hotware.lucene.extension.bean.field.BeanInformationCache;
  * @author Martin Braun
  */
 public interface LuceneManager extends AutoCloseable {
-
-	/**
-	 * @return the BeanInformationCache used by this instance
-	 */
-	public BeanInformationCache getBeanInformationCache();
 
 	/**
 	 * @return the (thread-safe) BeanConverter used by this instance
