@@ -2,36 +2,30 @@ package com.github.hotware.lucene.extension.hsearch.manager;
 
 import java.io.IOException;
 
-import org.hibernate.search.indexes.IndexReaderAccessor;
+import org.hibernate.search.cfg.spi.SearchConfiguration;
+import org.hibernate.search.spi.SearchFactoryBuilder;
 
-import com.github.hotware.lucene.extension.bean.converter.BeanConverter;
-import com.github.hotware.lucene.extension.bean.field.BeanInformationCache;
-import com.github.hotware.lucene.extension.hsearch.internal.Util;
+public class HibernateSearchLuceneManagerImpl implements
+		HibernateSearchLuceneManager {
 
-public class HibernateSearchLuceneManagerImpl implements HibernateSearchLuceneManager {
-		
-	public HibernateSearchLuceneManagerImpl(BeanConverter beanConverter,
-			BeanInformationCache beanInformationCache) {
+	private final SearchFactory searchFactory;
+
+	public HibernateSearchLuceneManagerImpl(
+			SearchConfiguration searchConfiguration) {
 		super();
-	}
-
-	@Override
-	public BeanConverter getBeanConverter() {
-		return Util.BEAN_CONVERTER;
-	}
-
-	@Override
-	public IndexReaderAccessor getIndexReaderAccessor() {
-		// TODO Auto-generated method stub
-		return null;
+		SearchFactoryBuilder builder = new SearchFactoryBuilder();
+		this.searchFactory = new SearchFactoryImpl(builder.configuration(
+				new SearchConfigurationImpl()).buildSearchFactory());
 	}
 
 	@Override
 	public void close() throws IOException {
-		// TODO Auto-generated method stub
-		
+		this.searchFactory.close();
 	}
 
-
+	@Override
+	public SearchFactory getSearchFactory() {
+		return this.searchFactory;
+	}
 
 }
