@@ -4,7 +4,7 @@
 	<groupId>com.github.hotware</groupId>
 	<artifactId>lucene-extension</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.2.7</version>
+	<version>0.2.2.8</version>
 	<name>Lucene-Extension</name>
 	<description>
 		General Utility to ease using Lucene. The most prominent Feature is the BeanConverter 
@@ -53,16 +53,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<artifactId>lucene-core</artifactId>
-			<groupId>org.apache.lucene</groupId>
-			<type>jar</type>
-			<version>4.10.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.10.2</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-search-engine</artifactId>
+			<version>5.0.0.Beta3</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

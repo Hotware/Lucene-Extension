@@ -161,21 +161,27 @@ public class BeanConverterImpl implements BeanConverter {
 
 	@Override
 	public Document beanToDocument(Object bean) {
+		return this.writeBeanToDocument(bean, new Document());
+	}
+	
+	
+
+	@Override
+	public <T> Document writeBeanToDocument(Object bean, Document document) {
 		Class<?> clazz = bean.getClass();
 		List<FieldInformation> fieldInformations = this.cache
 				.getFieldInformations(clazz);
-		Document ret = new Document();
 		boolean foundAnnotation = false;
 		for (FieldInformation fieldInformation : fieldInformations) {
 			foundAnnotation = true;
 			TypeHandler typeHandler = this.getTypeHandler(fieldInformation);
-			typeHandler.writeBeanInfoToDocument(fieldInformation, bean, ret);
+			typeHandler.writeBeanInfoToDocument(fieldInformation, bean, document);
 		}
 		if (!foundAnnotation) {
 			throw new IllegalArgumentException(
 					"the given object is no correct bean");
 		}
-		return ret;
+		return document;
 	}
 
 	@Override

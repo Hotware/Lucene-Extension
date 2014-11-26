@@ -20,6 +20,8 @@ import org.apache.lucene.document.Document;
 public interface BeanConverter {
 
 	public <T> T documentToBean(Class<T> clazz, Document document);
+	
+	public <T> Document writeBeanToDocument(Object bean, Document document);
 
 	public Document beanToDocument(Object bean);
 
