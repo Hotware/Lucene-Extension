@@ -6,15 +6,15 @@
  * this stuff is worth it, you can buy me a beer in return.   Martin Braun
  * ----------------------------------------------------------------------------
  */
-package com.github.hotware.lucene.extension.bean.converter;
+package com.github.hotware.lucene.extension.bean.standalone.field;
+
+import java.util.List;
 
 /**
- * A Bean converter can convert Beans that are annotated with BeanField(s)s into
- * Lucene Documents
- * 
  * @author Martin Braun
  */
-public interface BeanConverter extends BeanToDocumentConverter,
-		DocumentToBeanConverter {
+public interface BeanInformationCache {
+
+	public List<FieldInformation> getFieldInformations(Class<?> clazz);
 
 }

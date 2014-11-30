@@ -6,15 +6,23 @@
  * this stuff is worth it, you can buy me a beer in return.   Martin Braun
  * ----------------------------------------------------------------------------
  */
-package com.github.hotware.lucene.extension.bean.converter;
+package com.github.hotware.lucene.extension.bean.standalone.analyzer;
+
+import org.apache.lucene.analysis.Analyzer;
+
+import com.github.hotware.lucene.extension.bean.standalone.field.FieldInformation;
 
 /**
- * A Bean converter can convert Beans that are annotated with BeanField(s)s into
- * Lucene Documents
+ * Extension point for providing custom Analyzers
  * 
  * @author Martin Braun
  */
-public interface BeanConverter extends BeanToDocumentConverter,
-		DocumentToBeanConverter {
+public interface AnalyzerProvider {
+
+	/**
+	 * @param fieldInformation
+	 *            info about the field, or null if default behaviour
+	 */
+	public Analyzer getAnalyzer(FieldInformation fieldInformation);
 
 }

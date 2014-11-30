@@ -15,13 +15,13 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 
-import com.github.hotware.lucene.extension.bean.analyzer.StockAnalyzerProvider;
-import com.github.hotware.lucene.extension.bean.annotations.BeanField;
 import com.github.hotware.lucene.extension.bean.converter.BeanConverter;
-import com.github.hotware.lucene.extension.bean.converter.BeanConverterImpl;
-import com.github.hotware.lucene.extension.bean.field.BeanInformationCache;
-import com.github.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
-import com.github.hotware.lucene.extension.bean.type.StockType;
+import com.github.hotware.lucene.extension.bean.standalone.analyzer.StockAnalyzerProvider;
+import com.github.hotware.lucene.extension.bean.standalone.annotations.BeanField;
+import com.github.hotware.lucene.extension.bean.standalone.converter.BeanConverterImpl;
+import com.github.hotware.lucene.extension.bean.standalone.field.BeanInformationCache;
+import com.github.hotware.lucene.extension.bean.standalone.field.BeanInformationCacheImpl;
+import com.github.hotware.lucene.extension.bean.standalone.type.StockType;
 
 import junit.framework.TestCase;
 

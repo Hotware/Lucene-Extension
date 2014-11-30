@@ -331,6 +331,10 @@ public class SearchFactoryBuilder {
 			factoryState.setIdProvidedImplicit(cfg.isIdProvidedImplicit());
 		}
 	}
+	
+	public void createCleanSearchFactoryState() {
+		this.createCleanFactoryState(this.cfg, new BuildContext());
+	}
 
 	public Map<Class<?>, TypeMetadata> getMetaData(List<Class<?>> classes) {
 		final Properties configurationProperties = this.factoryState
@@ -350,8 +354,6 @@ public class SearchFactoryBuilder {
 		final Map<XClass, Class<?>> classMappings = initializeClassMappings(
 				searchConfiguration, searchConfiguration.getReflectionManager());
 
-		// we process the @Indexed classes last, so we first start all
-		// IndexManager(s).
 		final org.hibernate.search.engine.metadata.impl.MetadataProvider metadataProvider = new AnnotationMetadataProvider(
 				searchConfiguration.getReflectionManager(), configContext);
 		

@@ -27,14 +27,14 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.IndexableFieldType;
 
-import com.github.hotware.lucene.extension.bean.analyzer.StockAnalyzerProvider;
-import com.github.hotware.lucene.extension.bean.annotations.BeanField;
 import com.github.hotware.lucene.extension.bean.converter.BeanConverter;
-import com.github.hotware.lucene.extension.bean.converter.BeanConverterImpl;
-import com.github.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
-import com.github.hotware.lucene.extension.bean.type.MultiFieldType;
-import com.github.hotware.lucene.extension.bean.type.StockType;
-import com.github.hotware.lucene.extension.bean.type.StockType.*;
+import com.github.hotware.lucene.extension.bean.standalone.analyzer.StockAnalyzerProvider;
+import com.github.hotware.lucene.extension.bean.standalone.annotations.BeanField;
+import com.github.hotware.lucene.extension.bean.standalone.converter.BeanConverterImpl;
+import com.github.hotware.lucene.extension.bean.standalone.field.BeanInformationCacheImpl;
+import com.github.hotware.lucene.extension.bean.standalone.type.MultiFieldType;
+import com.github.hotware.lucene.extension.bean.standalone.type.StockType;
+import com.github.hotware.lucene.extension.bean.standalone.type.StockType.*;
 
 import junit.framework.TestCase;
 

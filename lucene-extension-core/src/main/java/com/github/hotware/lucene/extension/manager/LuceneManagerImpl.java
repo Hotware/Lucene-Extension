@@ -28,8 +28,8 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 
 import com.github.hotware.lucene.extension.bean.converter.BeanConverter;
-import com.github.hotware.lucene.extension.bean.converter.BeanConverterImpl;
-import com.github.hotware.lucene.extension.bean.field.BeanInformationCacheImpl;
+import com.github.hotware.lucene.extension.bean.standalone.converter.BeanConverterImpl;
+import com.github.hotware.lucene.extension.bean.standalone.field.BeanInformationCacheImpl;
 import com.github.hotware.lucene.extension.util.LuceneVersion;
 
 /**
