@@ -1,26 +1,29 @@
 package com.github.hotware.lucene.extension.hsearch.manager;
 
 import java.io.IOException;
+import java.util.Map;
 
-import org.hibernate.search.backend.AddLuceneWork;
-import org.hibernate.search.backend.LuceneWork;
-import org.hibernate.search.backend.TransactionContext;
-import org.hibernate.search.backend.impl.WorkVisitor;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.backend.spi.Work;
+import org.hibernate.search.backend.spi.WorkType;
 import org.hibernate.search.backend.spi.Worker;
+import org.hibernate.search.engine.metadata.impl.TypeMetadata;
 import org.hibernate.search.engine.spi.SearchFactoryImplementor;
 import org.hibernate.search.indexes.IndexReaderAccessor;
 import org.hibernate.search.query.dsl.QueryContextBuilder;
+import org.hibernate.search.query.engine.spi.HSQuery;
 import org.hibernate.search.stat.Statistics;
 
 public class SearchFactoryImpl implements SearchFactory {
-	
+
 	private final SearchFactoryImplementor searchFactoryImplementor;
 
-	public SearchFactoryImpl(SearchFactoryImplementor searchFactoryImplementor) {
+	public SearchFactoryImpl(SearchFactoryImplementor searchFactoryImplementor,
+			Map<Class<?>, TypeMetadata> metaData) {
 		super();
 		this.searchFactoryImplementor = searchFactoryImplementor;
 	}
-	
+
 	@Override
 	public IndexReaderAccessor getIndexReaderAccessor() {
 		return this.searchFactoryImplementor.getIndexReaderAccessor();
@@ -52,11 +55,18 @@ public class SearchFactoryImpl implements SearchFactory {
 	}
 
 	@Override
-	public void index(Iterable<Object> objects) {
+	public void doWork(Iterable<Object> objects, WorkType workType) {
 		TransactionContextImpl tc = new TransactionContextImpl();
 		Worker worker = this.searchFactoryImplementor.getWorker();
+		for (Object object : objects) {
+			worker.performWork(new Work(object, workType), tc);
+		}
 		tc.end();
 	}
 
+	@Override
+	public HSQuery query(Query query) {
+		return this.searchFactoryImplementor.createHSQuery().luceneQuery(query);
+	}
 
 }

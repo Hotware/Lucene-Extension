@@ -58,7 +58,7 @@ public class SearchConfigurationImpl extends SearchConfigurationBase implements
 		this.providedServices = new HashMap<Class<? extends Service>, Object>();
 		this.classLoaderService = new DefaultClassLoaderService();
 		this.addProperty("hibernate.search.default.directory_provider",
-				"org.hibernate.search.store.FSDirectoryProvider");
+				"ram");
 		this.addProperty("hibernate.search.lucene_version",
 				LuceneVersion.VERSION.toString());
 	}
