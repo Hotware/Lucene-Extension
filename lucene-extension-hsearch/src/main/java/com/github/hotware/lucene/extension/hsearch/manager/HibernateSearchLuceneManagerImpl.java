@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.hibernate.search.cfg.spi.SearchConfiguration;
 import org.hibernate.search.engine.spi.SearchFactoryImplementor;
-
-import com.github.hotware.lucene.extension.hsearch.custom.SearchFactoryBuilder;
+import org.hibernate.search.spi.SearchFactoryBuilder;
 
 public class HibernateSearchLuceneManagerImpl implements
 		HibernateSearchLuceneManager {
@@ -20,8 +19,9 @@ public class HibernateSearchLuceneManagerImpl implements
 		SearchFactoryBuilder builder = new SearchFactoryBuilder();
 		this.searchFactoryImplementor = builder.configuration(
 				searchConfiguration).buildSearchFactory();
+		this.searchFactoryImplementor.getIndexedTypeDescriptor(this.getClass());
 		this.searchFactory = new SearchFactoryImpl(
-				this.searchFactoryImplementor, builder.getMetaData(classes));
+				this.searchFactoryImplementor);
 	}
 
 	@Override

@@ -1,27 +1,33 @@
 package com.github.hotware.lucene.extension.hsearch.manager;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.search.backend.spi.Work;
 import org.hibernate.search.backend.spi.WorkType;
 import org.hibernate.search.backend.spi.Worker;
-import org.hibernate.search.engine.metadata.impl.TypeMetadata;
 import org.hibernate.search.engine.spi.SearchFactoryImplementor;
 import org.hibernate.search.indexes.IndexReaderAccessor;
 import org.hibernate.search.query.dsl.QueryContextBuilder;
 import org.hibernate.search.query.engine.spi.HSQuery;
 import org.hibernate.search.stat.Statistics;
 
+import com.github.hotware.lucene.extension.bean.converter.DocumentToBeanConverter;
+import com.github.hotware.lucene.extension.bean.hsearch.HibernateSearchDocumentToBeanConverter;
+import com.github.hotware.lucene.extension.util.SearchPager;
+
 public class SearchFactoryImpl implements SearchFactory {
 
 	private final SearchFactoryImplementor searchFactoryImplementor;
+	private final DocumentToBeanConverter beanConverter;
 
-	public SearchFactoryImpl(SearchFactoryImplementor searchFactoryImplementor,
-			Map<Class<?>, TypeMetadata> metaData) {
+	public SearchFactoryImpl(SearchFactoryImplementor searchFactoryImplementor) {
 		super();
 		this.searchFactoryImplementor = searchFactoryImplementor;
+		this.beanConverter = new HibernateSearchDocumentToBeanConverter((clazz) -> {
+			return this.searchFactoryImplementor.getIndexedTypeDescriptor(clazz);
+		});
 	}
 
 	@Override
@@ -65,8 +71,8 @@ public class SearchFactoryImpl implements SearchFactory {
 	}
 
 	@Override
-	public HSQuery query(Query query) {
-		return this.searchFactoryImplementor.createHSQuery().luceneQuery(query);
+	public <T> List<T> query(Query query, Class<T> dtoClazz) {
+		return null;
 	}
 
 }
