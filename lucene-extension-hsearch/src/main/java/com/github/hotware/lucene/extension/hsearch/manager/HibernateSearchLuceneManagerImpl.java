@@ -17,9 +17,12 @@ public class HibernateSearchLuceneManagerImpl implements
 			SearchConfiguration searchConfiguration, List<Class<?>> classes) {
 		super();
 		SearchFactoryBuilder builder = new SearchFactoryBuilder();
-		this.searchFactoryImplementor = builder.configuration(
+		builder.configuration(
 				searchConfiguration).buildSearchFactory();
-		this.searchFactoryImplementor.getIndexedTypeDescriptor(this.getClass());
+		classes.forEach((clazz) -> {
+			builder.addClass(clazz);
+		});
+		this.searchFactoryImplementor = builder.buildSearchFactory();
 		this.searchFactory = new SearchFactoryImpl(
 				this.searchFactoryImplementor);
 	}

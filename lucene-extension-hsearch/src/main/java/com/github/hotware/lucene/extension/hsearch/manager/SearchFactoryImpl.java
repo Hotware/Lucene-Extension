@@ -1,6 +1,7 @@
 package com.github.hotware.lucene.extension.hsearch.manager;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
@@ -13,21 +14,23 @@ import org.hibernate.search.query.dsl.QueryContextBuilder;
 import org.hibernate.search.query.engine.spi.HSQuery;
 import org.hibernate.search.stat.Statistics;
 
-import com.github.hotware.lucene.extension.bean.converter.DocumentToBeanConverter;
-import com.github.hotware.lucene.extension.bean.hsearch.HibernateSearchDocumentToBeanConverter;
-import com.github.hotware.lucene.extension.util.SearchPager;
+import com.github.hotware.lucene.extension.bean.hsearch.HibernateSearchDocumentToDtoConverter;
+import com.github.hotware.lucene.extension.bean.hsearch.annotations.DtoOverEntity;
+import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 
 public class SearchFactoryImpl implements SearchFactory {
 
 	private final SearchFactoryImplementor searchFactoryImplementor;
-	private final DocumentToBeanConverter beanConverter;
+	private final HibernateSearchDocumentToDtoConverter beanConverter;
 
 	public SearchFactoryImpl(SearchFactoryImplementor searchFactoryImplementor) {
 		super();
 		this.searchFactoryImplementor = searchFactoryImplementor;
-		this.beanConverter = new HibernateSearchDocumentToBeanConverter((clazz) -> {
-			return this.searchFactoryImplementor.getIndexedTypeDescriptor(clazz);
-		});
+		this.beanConverter = new HibernateSearchDocumentToDtoConverter(
+				(clazz) -> {
+					return this.searchFactoryImplementor
+							.getIndexedTypeDescriptor(clazz);
+				});
 	}
 
 	@Override
@@ -71,8 +74,18 @@ public class SearchFactoryImpl implements SearchFactory {
 	}
 
 	@Override
-	public <T> List<T> query(Query query, Class<T> dtoClazz) {
+	public <R> List<R> query(HSearchQuery<?> query, Class<R> returnedType) {
+		if(returnedType.isAnnotationPresent(DtoOverEntity.class)) {
+//			hsquery.
+		} else {
+			
+		}
 		return null;
 	}
 
+	@Override
+	public <T> HSearchQuery<T> createQuery(Query query, Class<T> targetedEntity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
