@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>lucene-extension - Issue Tracking</title>
+    <title>lucene-extension - Reactor Dependency Convergence</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -75,8 +75,8 @@
                           <a href="dependency-info.html" title="Dependency Information">Dependency Information</a>
             </li>
                       <li class="none">
-                          <a href="dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a>
-            </li>
+            <strong>Dependency Convergence</strong>
+          </li>
                       <li class="none">
                           <a href="source-repository.html" title="Source Repository">Source Repository</a>
             </li>
@@ -84,8 +84,8 @@
                           <a href="mail-lists.html" title="Mailing Lists">Mailing Lists</a>
             </li>
                       <li class="none">
-            <strong>Issue Tracking</strong>
-          </li>
+                          <a href="issue-tracking.html" title="Issue Tracking">Issue Tracking</a>
+            </li>
                       <li class="none">
                           <a href="integration.html" title="Continuous Integration">Continuous Integration</a>
             </li>
@@ -120,8 +120,144 @@
     <div id="bodyColumn">
       <div id="contentBox">
         <div class="section">
-<h2>Issue Tracking<a name="Issue_Tracking"></a></h2><a name="Issue_Tracking"></a>
-<p>No issue management system is defined. Please check back at a later date.</p></div>
+<h2>Reactor Dependency Convergence<a name="Reactor_Dependency_Convergence"></a></h2>
+<table border="0" class="bodyTable"><caption>
+  <b>Legend:</b>
+</caption>
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>All projects share one version of the dependency.</td></tr>
+<tr class="b">
+<td><img alt="error" src="images/icon_error_sml.gif" /></td>
+<td>At least one project has a differing version of the dependency.</td></tr></table><br />
+<table border="0" class="bodyTable"><caption>
+  <b>Statistics:</b>
+</caption>
+<tr class="a">
+<th>Number of sub-projects:</th>
+<td>5</td></tr>
+<tr class="b">
+<th>Number of dependencies (NOD):</th>
+<td>8</td></tr>
+<tr class="a">
+<th>Number of unique artifacts (NOA):</th>
+<td>8</td></tr>
+<tr class="b">
+<th>Number of SNAPSHOT artifacts (NOS):</th>
+<td>0</td></tr>
+<tr class="a">
+<th>Convergence (NOD/NOA):</th>
+<td><img alt="success" src="images/icon_success_sml.gif" />&#160;<b>100%</b></td></tr>
+<tr class="b">
+<th>Ready for Release (100% Convergence and no SNAPSHOTS):</th>
+<td><img alt="success" src="images/icon_success_sml.gif" />&#160;<b>Success</b></td></tr></table></div>
+<div class="section">
+<h3>Dependencies used in sub-projects<a name="Dependencies_used_in_sub-projects"></a></h3>
+<div class="section">
+<h4>com.github.hotware:lucene-extension-core<a name="com.github.hotware:lucene-extension-core"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">0.3.0.1</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-bean-converter</li>
+<li>com.github.hotware:lucene-extension-hsearch-jpa</li>
+<li>com.github.hotware:lucene-extension-hsearch</li></ol></td></tr></table></td></tr></table></div>
+<div class="section">
+<h4>com.github.hotware:lucene-extension-hsearch<a name="com.github.hotware:lucene-extension-hsearch"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">0.3.0.1</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-hsearch-jpa</li></ol></td></tr></table></td></tr></table></div>
+<div class="section">
+<h4>javax.transaction:jta<a name="javax.transaction:jta"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">1.1</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-hsearch-jpa</li>
+<li>com.github.hotware:lucene-extension-hsearch</li></ol></td></tr></table></td></tr></table></div>
+<div class="section">
+<h4>junit:junit<a name="junit:junit"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">3.8.1</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-bean-converter</li>
+<li>com.github.hotware:lucene-extension-core</li>
+<li>com.github.hotware:lucene-extension-hsearch-jpa</li>
+<li>com.github.hotware:lucene-extension-hsearch</li></ol></td></tr></table></td></tr></table></div>
+<div class="section">
+<h4>org.apache.lucene:lucene-analyzers-common<a name="org.apache.lucene:lucene-analyzers-common"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">4.10.2</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-bean-converter</li>
+<li>com.github.hotware:lucene-extension-core</li></ol></td></tr></table></td></tr></table></div>
+<div class="section">
+<h4>org.apache.lucene:lucene-core<a name="org.apache.lucene:lucene-core"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">4.10.2</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-bean-converter</li>
+<li>com.github.hotware:lucene-extension-core</li></ol></td></tr></table></td></tr></table></div>
+<div class="section">
+<h4>org.apache.lucene:lucene-highlighter<a name="org.apache.lucene:lucene-highlighter"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">4.10.2</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-core</li></ol></td></tr></table></td></tr></table></div>
+<div class="section">
+<h4>org.hibernate:hibernate-search-engine<a name="org.hibernate:hibernate-search-engine"></a></h4>
+<table border="0" class="bodyTable">
+<tr class="a">
+<td><img alt="success" src="images/icon_success_sml.gif" /></td>
+<td>
+<table border="0" class="bodyTable">
+<tr class="b">
+<td width="25%">5.0.0.Beta3</td>
+<td>
+<ol style="list-style-type: lower-alpha">
+<li>com.github.hotware:lucene-extension-hsearch-jpa</li>
+<li>com.github.hotware:lucene-extension-hsearch</li></ol></td></tr></table></td></tr></table></div></div>
       </div>
     </div>
     <div class="clear">
