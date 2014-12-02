@@ -12,8 +12,8 @@ import org.hibernate.search.indexes.IndexReaderAccessor;
 import org.hibernate.search.query.dsl.QueryContextBuilder;
 import org.hibernate.search.stat.Statistics;
 
-import com.github.hotware.lucene.extension.bean.hsearch.HibernateSearchDocumentToDtoConverter;
-import com.github.hotware.lucene.extension.bean.hsearch.annotations.DtoOverEntity;
+import com.github.hotware.lucene.extension.hsearch.dto.HibernateSearchDocumentToDtoConverter;
+import com.github.hotware.lucene.extension.hsearch.dto.annotations.DtoOverEntity;
 import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 
 public class SearchFactoryImpl implements SearchFactory {
