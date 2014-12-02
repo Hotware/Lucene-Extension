@@ -1,7 +1,6 @@
 package com.github.hotware.lucene.extension.hsearch.manager;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
@@ -11,7 +10,6 @@ import org.hibernate.search.backend.spi.Worker;
 import org.hibernate.search.engine.spi.SearchFactoryImplementor;
 import org.hibernate.search.indexes.IndexReaderAccessor;
 import org.hibernate.search.query.dsl.QueryContextBuilder;
-import org.hibernate.search.query.engine.spi.HSQuery;
 import org.hibernate.search.stat.Statistics;
 
 import com.github.hotware.lucene.extension.bean.hsearch.HibernateSearchDocumentToDtoConverter;
