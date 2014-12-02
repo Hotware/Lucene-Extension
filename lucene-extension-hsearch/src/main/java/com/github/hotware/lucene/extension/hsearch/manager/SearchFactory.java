@@ -27,6 +27,6 @@ public interface SearchFactory extends Closeable {
 	
 	public <T> HSearchQuery<T> createQuery(Query query, Class<T> targetedEntity);
 	
-	public <R> List<R> query(HSearchQuery<?> query, Class<R> returnedType);
+	public <R> List<R> queryDto(HSearchQuery<?> query, Class<R> returnedType);
 	
 }

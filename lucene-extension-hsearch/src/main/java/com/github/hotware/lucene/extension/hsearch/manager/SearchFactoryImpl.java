@@ -72,11 +72,9 @@ public class SearchFactoryImpl implements SearchFactory {
 	}
 
 	@Override
-	public <R> List<R> query(HSearchQuery<?> query, Class<R> returnedType) {
+	public <R> List<R> queryDto(HSearchQuery<?> query, Class<R> returnedType) {
 		if(returnedType.isAnnotationPresent(DtoOverEntity.class)) {
 //			hsquery.
-		} else {
-			
 		}
 		return null;
 	}
