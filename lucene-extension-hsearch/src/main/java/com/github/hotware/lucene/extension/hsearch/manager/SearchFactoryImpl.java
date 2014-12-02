@@ -1,7 +1,7 @@
 package com.github.hotware.lucene.extension.hsearch.manager;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.search.backend.spi.Work;
@@ -10,25 +10,21 @@ import org.hibernate.search.backend.spi.Worker;
 import org.hibernate.search.engine.spi.SearchFactoryImplementor;
 import org.hibernate.search.indexes.IndexReaderAccessor;
 import org.hibernate.search.query.dsl.QueryContextBuilder;
+import org.hibernate.search.query.engine.spi.HSQuery;
 import org.hibernate.search.stat.Statistics;
 
-import com.github.hotware.lucene.extension.hsearch.dto.HibernateSearchDocumentToDtoConverter;
-import com.github.hotware.lucene.extension.hsearch.dto.annotations.DtoOverEntity;
+import com.github.hotware.lucene.extension.hsearch.dto.HibernateSearchQueryExecutor;
 import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 
 public class SearchFactoryImpl implements SearchFactory {
 
 	private final SearchFactoryImplementor searchFactoryImplementor;
-	private final HibernateSearchDocumentToDtoConverter beanConverter;
+	private final HibernateSearchQueryExecutor queryExec;
 
 	public SearchFactoryImpl(SearchFactoryImplementor searchFactoryImplementor) {
 		super();
 		this.searchFactoryImplementor = searchFactoryImplementor;
-		this.beanConverter = new HibernateSearchDocumentToDtoConverter(
-				(clazz) -> {
-					return this.searchFactoryImplementor
-							.getIndexedTypeDescriptor(clazz);
-				});
+		this.queryExec = new HibernateSearchQueryExecutor();
 	}
 
 	@Override
@@ -62,7 +58,7 @@ public class SearchFactoryImpl implements SearchFactory {
 	}
 
 	@Override
-	public void doWork(Iterable<Object> objects, WorkType workType) {
+	public void doIndexWork(Iterable<Object> objects, WorkType workType) {
 		TransactionContextImpl tc = new TransactionContextImpl();
 		Worker worker = this.searchFactoryImplementor.getWorker();
 		for (Object object : objects) {
@@ -70,18 +66,17 @@ public class SearchFactoryImpl implements SearchFactory {
 		}
 		tc.end();
 	}
-
+	
 	@Override
-	public <R> List<R> queryDto(HSearchQuery<?> query, Class<R> returnedType) {
-		if(returnedType.isAnnotationPresent(DtoOverEntity.class)) {
-//			hsquery.
-		}
-		return null;
+	public void doIndexwork(Object object, WorkType workType) {
+		this.doIndexWork(Arrays.asList(object), workType);
 	}
 
 	@Override
 	public <T> HSearchQuery<T> createQuery(Query query, Class<T> targetedEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		HSQuery hsQuery = this.searchFactoryImplementor.createHSQuery();
+		hsQuery.targetedEntities(Arrays.asList(targetedEntity));
+		return new HSearchQuery<T>(hsQuery, this.queryExec);
 	}
+	
 }

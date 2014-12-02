@@ -14,7 +14,7 @@ import com.github.hotware.lucene.extension.hsearch.dto.annotations.DtoOverEntity
 public class DtoDescriptorImpl implements DtoDescriptor {
 
 	@Override
-	public DtoDescription getFieldNames(Class<?> clazz) {
+	public DtoDescription getDtoDescription(Class<?> clazz) {
 		final Map<String, List<FieldDescription>> fieldDescriptionsForProfile = new HashMap<>();
 		DtoOverEntity[] dtoOverEntity = clazz
 				.getAnnotationsByType(DtoOverEntity.class);
@@ -66,7 +66,7 @@ public class DtoDescriptorImpl implements DtoDescriptor {
 			throw new IllegalArgumentException(
 					"no DtoField(s) found! The passed class is no annotated DTO");
 		}
-		return new DtoDescription(dtoOverEntity[0].entityClass(),
+		return new DtoDescription(clazz, dtoOverEntity[0].entityClass(),
 				fieldDescriptionsForProfile);
 	}
 

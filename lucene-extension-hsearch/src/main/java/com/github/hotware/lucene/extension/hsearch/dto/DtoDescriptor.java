@@ -10,7 +10,7 @@ import com.github.hotware.lucene.extension.util.Util;
 
 public interface DtoDescriptor {
 
-	public DtoDescription getFieldNames(Class<?> clazz);
+	public DtoDescription getDtoDescription(Class<?> clazz);
 
 	public final class DtoDescription {
 
@@ -20,12 +20,14 @@ public interface DtoDescriptor {
 		public static final String DEFAULT_FIELD_NAME = (String) Util
 				.getDefaultValueForAnnotationMethod(DtoField.class, "fieldName");
 
+		private final Class<?> dtoClass;
 		private final Class<?> entityClass;
 		private final Map<String, List<FieldDescription>> fieldNamesForProfile;
 
-		public DtoDescription(Class<?> entityClass,
+		public DtoDescription(Class<?> dtoClass, Class<?> entityClass,
 				Map<String, List<FieldDescription>> fieldNamesForProfile) {
 			super();
+			this.dtoClass = dtoClass;
 			this.entityClass = entityClass;
 			this.fieldNamesForProfile = fieldNamesForProfile;
 		}
@@ -37,6 +39,10 @@ public interface DtoDescriptor {
 
 		public Class<?> getEntityClass() {
 			return this.entityClass;
+		}
+		
+		public Class<?> getDtoClass() {
+			return this.dtoClass;
 		}
 
 		public static class FieldDescription {

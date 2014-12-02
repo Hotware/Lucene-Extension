@@ -11,7 +11,7 @@ public class DtoDescriptorTest extends TestCase {
 	// the value of entityClass isn't that important in this test
 	// but we want to check if it's set properly in the resulting
 	// DtoDescription
-	@DtoOverEntity(entityClass = A.class)
+	@DtoOverEntity(entityClass = B.class)
 	public static class A {
 
 		@DtoField(fieldName = "toastFieldName", profileName = "toast")
@@ -22,11 +22,16 @@ public class DtoDescriptorTest extends TestCase {
 		String fieldTwo;
 
 	}
+	
+	public static class B {
+		
+	}
 
 	public void testDescriptor() {
 		DtoDescriptor descriptor = new DtoDescriptorImpl();
-		DtoDescription description = descriptor.getFieldNames(A.class);
-		assertEquals(A.class, description.getEntityClass());
+		DtoDescription description = descriptor.getDtoDescription(A.class);
+		assertEquals(A.class, description.getDtoClass());
+		assertEquals(B.class, description.getEntityClass());
 		assertEquals(1, description.getFieldDescriptionsForProfile("toast").size());
 		assertEquals("toastFieldName",
 				description.getFieldDescriptionsForProfile("toast").get(0)

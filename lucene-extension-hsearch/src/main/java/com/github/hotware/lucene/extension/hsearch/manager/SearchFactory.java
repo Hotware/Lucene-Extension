@@ -1,7 +1,6 @@
 package com.github.hotware.lucene.extension.hsearch.manager;
 
 import java.io.Closeable;
-import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.search.backend.spi.WorkType;
@@ -9,7 +8,6 @@ import org.hibernate.search.indexes.IndexReaderAccessor;
 import org.hibernate.search.query.dsl.QueryContextBuilder;
 import org.hibernate.search.stat.Statistics;
 
-import com.github.hotware.lucene.extension.hsearch.dto.annotations.DtoField;
 import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 
 public interface SearchFactory extends Closeable {
@@ -24,10 +22,10 @@ public interface SearchFactory extends Closeable {
 	
 	public Statistics getStatistics();
 
-	public void doWork(Iterable<Object> objects, WorkType workType);
+	public void doIndexWork(Iterable<Object> objects, WorkType workType);
+	
+	public void doIndexwork(Object object, WorkType workType);
 	
 	public <T> HSearchQuery<T> createQuery(Query query, Class<T> targetedEntity);
-	
-	public <R> List<R> queryDto(HSearchQuery<?> query, Class<R> returnedType);
 	
 }
