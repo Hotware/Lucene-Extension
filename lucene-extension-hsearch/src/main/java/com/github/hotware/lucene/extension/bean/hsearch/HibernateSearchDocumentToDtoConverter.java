@@ -11,12 +11,10 @@ import org.hibernate.search.bridge.TwoWayFieldBridge;
 import org.hibernate.search.metadata.FieldDescriptor;
 import org.hibernate.search.metadata.IndexedTypeDescriptor;
 
-import com.github.hotware.lucene.extension.bean.converter.DocumentToBeanConverter;
 import com.github.hotware.lucene.extension.bean.hsearch.annotations.DtoField;
 import com.github.hotware.lucene.extension.bean.hsearch.annotations.DtoOverEntity;
 
-public class HibernateSearchDocumentToDtoConverter implements
-		DocumentToBeanConverter {
+public class HibernateSearchDocumentToDtoConverter {
 
 	private final Function<Class<?>, IndexedTypeDescriptor> typeDescriptorProvider;
 
@@ -25,7 +23,6 @@ public class HibernateSearchDocumentToDtoConverter implements
 		this.typeDescriptorProvider = typeDescriptorProvider;
 	}
 
-	@Override
 	public <T> T documentToBean(Class<T> clazz, Document document) {
 		T ret;
 		try {
