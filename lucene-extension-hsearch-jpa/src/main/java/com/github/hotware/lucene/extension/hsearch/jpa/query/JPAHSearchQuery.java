@@ -1,4 +1,4 @@
-package com.github.hotware.lucene.extension.hsearch.query;
+package com.github.hotware.lucene.extension.hsearch.jpa.query;
 
 import java.util.List;
 
@@ -7,15 +7,15 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.hibernate.search.filter.FullTextFilter;
 
-public interface HSearchQuery<T> {
+public interface JPAHSearchQuery<T> {
 
-	public HSearchQuery<T> sort(Sort sort);
+	public JPAHSearchQuery<T> sort(Sort sort);
 
-	public HSearchQuery<T> filter(Filter filter);
+	public JPAHSearchQuery<T> filter(Filter filter);
 
-	public HSearchQuery<T> firstResult(int firstResult);
+	public JPAHSearchQuery<T> firstResult(int firstResult);
 
-	public HSearchQuery<T> maxResults(int maxResults);
+	public JPAHSearchQuery<T> maxResults(int maxResults);
 
 	public Query getLuceneQuery();
 
