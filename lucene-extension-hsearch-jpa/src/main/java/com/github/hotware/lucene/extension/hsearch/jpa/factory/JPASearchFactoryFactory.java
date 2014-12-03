@@ -10,7 +10,7 @@ import com.github.hotware.lucene.extension.hsearch.jpa.event.EventProvider;
 
 public final class JPASearchFactoryFactory {
 
-	public static JPASearchFactory getJPASearchFactory(EventProvider eventProvider,
+	public static JPASearchFactory createJPASearchFactory(EventProvider eventProvider,
 			SearchConfiguration searchConfiguration, List<Class<?>> classes) {
 		SearchFactory plainSearchFactory = SearchFactoryFactory
 				.createSearchFactory(searchConfiguration, classes);

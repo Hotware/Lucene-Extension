@@ -20,27 +20,27 @@ public class JPASearchFactoryImpl implements JPASearchFactory {
 		this.searchFactory = searchFactory;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> void index(Class<T> entityClass, Iterable<T> entities) {
-
+		this.doIndexWork((Iterable<Object>) entities, WorkType.ADD);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> void update(Class<T> entityClass, Iterable<T> entities) {
-		// TODO Auto-generated method stub
-
+		this.doIndexWork((Iterable<Object>) entities, WorkType.UPDATE);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> void delete(Class<T> entityClass, Iterable<T> entities) {
-		// TODO Auto-generated method stub
-
+		this.doIndexWork((Iterable<Object>) entities, WorkType.DELETE);
 	}
 
 	@Override
 	public <T> void purge(Class<T> entityClass) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("purge is not implemented yet!");
 	}
 
 	@Override

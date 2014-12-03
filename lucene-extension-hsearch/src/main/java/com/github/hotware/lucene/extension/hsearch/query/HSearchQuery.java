@@ -9,6 +9,9 @@ import org.hibernate.search.filter.FullTextFilter;
 
 public interface HSearchQuery<T> {
 
+	// TODO: check if more methods are from hsquery are needed here
+	// FIXME: faceting is definitely needed!
+
 	public HSearchQuery<T> sort(Sort sort);
 
 	public HSearchQuery<T> filter(Filter filter);

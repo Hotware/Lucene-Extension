@@ -14,8 +14,6 @@ import com.github.hotware.lucene.extension.hsearch.dto.HibernateSearchQueryExecu
 
 public class HSearchQueryImpl<T> implements HSearchQuery<T> {
 
-	// TODO: check if more methods are from hsquery are needed here
-
 	private final HSQuery hsquery;
 	private final AtomicBoolean frozen;
 	private final HibernateSearchQueryExecutor queryExec;

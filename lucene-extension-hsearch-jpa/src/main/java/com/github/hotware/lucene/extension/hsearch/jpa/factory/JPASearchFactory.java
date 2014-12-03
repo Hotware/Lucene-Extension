@@ -1,5 +1,7 @@
 package com.github.hotware.lucene.extension.hsearch.jpa.factory;
 
+import java.io.Closeable;
+
 import org.apache.lucene.search.Query;
 import org.hibernate.search.backend.spi.WorkType;
 import org.hibernate.search.indexes.IndexReaderAccessor;
@@ -9,7 +11,7 @@ import org.hibernate.search.stat.Statistics;
 import com.github.hotware.lucene.extension.hsearch.jpa.event.EventConsumer;
 import com.github.hotware.lucene.extension.hsearch.jpa.query.JPAHSearchQuery;
 
-public interface JPASearchFactory extends EventConsumer, AutoCloseable {
+public interface JPASearchFactory extends EventConsumer, Closeable {
 	
 	public IndexReaderAccessor getIndexReaderAccessor();
 	
