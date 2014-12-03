@@ -6,7 +6,7 @@ import java.util.List;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 
-import org.hibernate.search.backend.TransactionContext;
+import com.github.hotware.lucene.extension.hsearch.transaction.TransactionContext;
 
 public class TransactionContextImpl implements TransactionContext {
 	

@@ -16,6 +16,7 @@ import org.hibernate.search.stat.Statistics;
 import com.github.hotware.lucene.extension.hsearch.dto.HibernateSearchQueryExecutor;
 import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 import com.github.hotware.lucene.extension.hsearch.query.HSearchQueryImpl;
+import com.github.hotware.lucene.extension.hsearch.transaction.TransactionContext;
 
 public class SearchFactoryImpl implements SearchFactory {
 
@@ -57,17 +58,35 @@ public class SearchFactoryImpl implements SearchFactory {
 	public Statistics getStatistics() {
 		return this.searchFactoryImplementor.getStatistics();
 	}
+	
 
 	@Override
-	public void doIndexWork(Iterable<Object> objects, WorkType workType) {
-		TransactionContextImpl tc = new TransactionContextImpl();
+	public void doIndexWork(Iterable<Object> objects, WorkType workType, TransactionContext tc) {
 		Worker worker = this.searchFactoryImplementor.getWorker();
 		for (Object object : objects) {
 			worker.performWork(new Work(object, workType), tc);
 		}
+	}
+
+	@Override
+	public void doIndexWork(Iterable<Object> objects, WorkType workType) {
+		if (workType == WorkType.PURGE_ALL) {
+			throw new IllegalArgumentException(
+					"to purge all objects use the purgeAll method!");
+		}
+		TransactionContextImpl tc = new TransactionContextImpl();
+		this.doIndexWork(objects, workType, tc);
 		tc.end();
 	}
-	
+
+	@Override
+	public void purgeAll(Class<?> entityClass) {
+		TransactionContextImpl tc = new TransactionContextImpl();
+		Worker worker = this.searchFactoryImplementor.getWorker();
+		worker.performWork(new Work(entityClass, null, WorkType.PURGE_ALL), tc);
+		tc.end();
+	}
+
 	@Override
 	public void doIndexwork(Object object, WorkType workType) {
 		this.doIndexWork(Arrays.asList(object), workType);
@@ -80,5 +99,5 @@ public class SearchFactoryImpl implements SearchFactory {
 		hsQuery.targetedEntities(Arrays.asList(targetedEntity));
 		return new HSearchQueryImpl<T>(hsQuery, this.queryExec);
 	}
-	
+
 }
