@@ -106,6 +106,7 @@ public class IntegrationTest {
 			//check if the consumer was set correctly
 			eventProvider.sendEvent(this.valinor);
 			
+			//TODO: check if this is done correctly in the index
 			searchFactory.purgeAll(Place.class);
 			searchFactory.index(this.valinor);
 			searchFactory.delete(this.valinor);
