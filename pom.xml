@@ -1,19 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.hotware</groupId>
-  <artifactId>lucene-extension</artifactId>
-  <version>0.3.0.1</version>
-  <packaging>pom</packaging>
-  <name>lucene-extension</name>
-  
-  <modules>
-  	<module>lucene-extension-core</module>
-	<module>lucene-extension-bean-converter</module>
-  	<module>lucene-extension-hsearch</module>
-	<module>lucene-extension-hsearch-jpa</module>
-  </modules>
-  
-  	<description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.hotware</groupId>
+	<artifactId>lucene-extension</artifactId>
+	<version>0.3.0.1</version>
+	<packaging>pom</packaging>
+	<name>lucene-extension</name>
+
+	<modules>
+		<module>lucene-extension-core</module>
+		<module>lucene-extension-bean-converter</module>
+		<module>lucene-extension-hsearch</module>
+		<module>lucene-extension-hsearch-jpa</module>
+	</modules>
+
+	<description>
 		General Utility to ease using Lucene. The most prominent Feature is the BeanConverter 
 		that convertes annotated Java beans into Documents and back.
 	</description>
@@ -37,7 +38,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<id>s4ke</id>
@@ -56,5 +57,37 @@
 			</properties>
 		</developer>
 	</developers>
-  
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Deploy the web site -->
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.10</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<!-- select the Maven phase in which the plugin will be executed -->
+						<phase>site</phase>
+						<configuration>
+							<!-- Plugin configuration goes here -->
+							<server>github</server>
+
+							<!-- The commit message -->
+							<message>site for ${project.version}</message>
+							<!-- The location where the site is uploaded -->
+							<path>${project.version}</path>
+							<!-- Use merge or override the content -->
+							<merge>true</merge>
+							<force>true</force>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

@@ -6,6 +6,7 @@
 	<packaging>jar</packaging>
 	<version>0.3.0.1</version>
 	<name>lucene-extension-bean-converter</name>
+	<url>https://github.com/Hotware/Lucene-Extension/lucene-extension-bean-converter</url>
 	
 	<build>
 		<plugins>
