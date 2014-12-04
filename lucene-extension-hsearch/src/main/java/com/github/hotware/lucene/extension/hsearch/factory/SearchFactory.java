@@ -8,10 +8,11 @@ import org.hibernate.search.indexes.IndexReaderAccessor;
 import org.hibernate.search.query.dsl.QueryContextBuilder;
 import org.hibernate.search.stat.Statistics;
 
+import com.github.hotware.lucene.extension.hsearch.event.EventConsumer;
 import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 import com.github.hotware.lucene.extension.hsearch.transaction.TransactionContext;
 
-public interface SearchFactory extends Closeable {
+public interface SearchFactory extends Closeable, EventConsumer {
 	
 	public IndexReaderAccessor getIndexReaderAccessor();
 	

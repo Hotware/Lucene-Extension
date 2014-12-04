@@ -18,16 +18,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.hotware.lucene.extension.hseach.entity.jpa.EntityManagerEntityProvider;
+import com.github.hotware.lucene.extension.hsearch.entity.EntityProvider;
+import com.github.hotware.lucene.extension.hsearch.event.EventConsumer;
+import com.github.hotware.lucene.extension.hsearch.event.EventProvider;
 import com.github.hotware.lucene.extension.hsearch.factory.SearchConfigurationImpl;
-import com.github.hotware.lucene.extension.hsearch.jpa.entity.EntityManagerEntityProvider;
-import com.github.hotware.lucene.extension.hsearch.jpa.entity.EntityProvider;
-import com.github.hotware.lucene.extension.hsearch.jpa.event.EventConsumer;
-import com.github.hotware.lucene.extension.hsearch.jpa.event.EventProvider;
-import com.github.hotware.lucene.extension.hsearch.jpa.factory.JPASearchFactory;
-import com.github.hotware.lucene.extension.hsearch.jpa.factory.JPASearchFactoryFactory;
-import com.github.hotware.lucene.extension.hsearch.jpa.query.JPAHSearchQuery;
+import com.github.hotware.lucene.extension.hsearch.factory.SearchFactory;
+import com.github.hotware.lucene.extension.hsearch.factory.SearchFactoryFactory;
 import com.github.hotware.lucene.extension.hsearch.jpa.test.entities.Place;
 import com.github.hotware.lucene.extension.hsearch.jpa.test.entities.Sorcerer;
+import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 
 public class IntegrationTest {
 
@@ -94,12 +94,12 @@ public class IntegrationTest {
 	@Test
 	public void test() throws InterruptedException, IOException {
 		EntityProvider entityProvider = null;
-		JPASearchFactory searchFactory = null;
+		SearchFactory searchFactory = null;
 		try {
 			entityProvider = new EntityManagerEntityProvider(
 					this.emf.createEntityManager());
 			EmptyEventProvider eventProvider = new EmptyEventProvider();
-			searchFactory = JPASearchFactoryFactory.createJPASearchFactory(
+			searchFactory = SearchFactoryFactory.createSearchFactory(
 					eventProvider, new SearchConfigurationImpl(),
 					Arrays.asList(Place.class));
 
@@ -115,7 +115,7 @@ public class IntegrationTest {
 
 			Query query = searchFactory.buildQueryBuilder().forEntity(Place.class).get()
 					.keyword().onField("name").matching("valinor").createQuery();
-			JPAHSearchQuery<Place> jpaQuery = searchFactory.createQuery(query, Place.class);
+			HSearchQuery<Place> jpaQuery = searchFactory.createQuery(query, Place.class);
 			List<Place> places = jpaQuery.query(entityProvider, Place.class);
 			
 			assertEquals(1, places.size());

@@ -30,6 +30,21 @@ public class SearchFactoryImpl implements SearchFactory {
 	}
 
 	@Override
+	public void index(Iterable<Object> entities, TransactionContext tc) {
+		this.doIndexWork(entities, WorkType.ADD, tc);
+	}
+
+	@Override
+	public void update(Iterable<Object> entities, TransactionContext tc) {
+		this.doIndexWork(entities, WorkType.UPDATE, tc);
+	}
+
+	@Override
+	public void delete(Iterable<Object> entities, TransactionContext tc) {
+		this.doIndexWork(entities, WorkType.PURGE, tc);
+	}
+
+	@Override
 	public IndexReaderAccessor getIndexReaderAccessor() {
 		return this.searchFactoryImplementor.getIndexReaderAccessor();
 	}
@@ -58,10 +73,10 @@ public class SearchFactoryImpl implements SearchFactory {
 	public Statistics getStatistics() {
 		return this.searchFactoryImplementor.getStatistics();
 	}
-	
 
 	@Override
-	public void doIndexWork(Iterable<Object> objects, WorkType workType, TransactionContext tc) {
+	public void doIndexWork(Iterable<Object> objects, WorkType workType,
+			TransactionContext tc) {
 		Worker worker = this.searchFactoryImplementor.getWorker();
 		for (Object object : objects) {
 			worker.performWork(new Work(object, workType), tc);

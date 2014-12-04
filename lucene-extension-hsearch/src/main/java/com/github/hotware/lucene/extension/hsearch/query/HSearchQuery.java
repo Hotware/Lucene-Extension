@@ -7,6 +7,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.hibernate.search.filter.FullTextFilter;
 
+import com.github.hotware.lucene.extension.hsearch.entity.EntityProvider;
+
 public interface HSearchQuery<T> {
 
 	// TODO: check if more methods are from hsquery are needed here
@@ -31,5 +33,9 @@ public interface HSearchQuery<T> {
 	public FullTextFilter enableFullTextFilter(String name);
 
 	public void disableFullTextFilter(String name);
+
+	//NEW METHODS:
+	
+	public <R> List<R> query(EntityProvider entityProvider, Class<R> returnedType);
 
 }

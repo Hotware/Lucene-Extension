@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.filter.FullTextFilter;
 import org.hibernate.search.query.engine.spi.HSQuery;
 
 import com.github.hotware.lucene.extension.hsearch.dto.HibernateSearchQueryExecutor;
+import com.github.hotware.lucene.extension.hsearch.entity.EntityProvider;
 
 public class HSearchQueryImpl<T> implements HSearchQuery<T> {
 
@@ -132,6 +134,15 @@ public class HSearchQueryImpl<T> implements HSearchQuery<T> {
 	public void disableFullTextFilter(String name) {
 		this.checkNotFrozen();
 		this.hsquery.disableFullTextFilter(name);
+	}
+	
+	@Override
+	public <R> List<R> query(EntityProvider entityProvider,
+			Class<R> returnedType) {
+		return this.queryProjection(ProjectionConstants.ID).stream()
+				.map((arr) -> {
+					return entityProvider.get(returnedType, arr[0]);
+				}).collect(Collectors.toList());
 	}
 
 	private void checkNotFrozen() {
