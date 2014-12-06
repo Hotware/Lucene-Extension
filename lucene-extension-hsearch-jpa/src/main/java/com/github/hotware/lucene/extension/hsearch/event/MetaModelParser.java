@@ -29,8 +29,9 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 
 public class MetaModelParser {
 
-	private final Map<Class<?>, List<Function<Object, Object>>> rootParentAccessors = new HashMap<>();
+	private final Map<Class<?>, Map<Class<?>, Function<Object, Object>>> rootParentAccessors = new HashMap<>();
 	private final Map<Class<?>, ManagedType<?>> managedTypes = new HashMap<>();
+	private final Map<Class<?>, Boolean> isRootType = new HashMap<>();
 
 	public void parse(Metamodel metaModel) {
 		this.rootParentAccessors.clear();
@@ -47,24 +48,18 @@ public class MetaModelParser {
 		for (EntityType<?> curEntType : metaModel.getEntities()) {
 			// we only consider Entities that are @Indexed here
 			if (curEntType.getJavaType().isAnnotationPresent(Indexed.class)) {
-				Function<Object, Object> toRoot = (obj) -> {
-					// we return the object itself as it's already a
-					// root
-					return obj;
-				};
-				this.getParentFunctionList(curEntType.getJavaType())
-						.add(toRoot);
+				this.isRootType.put(curEntType.getJavaType(), true);
 				Map<Class<? extends Annotation>, List<Attribute<?, ?>>> attributeForAnnotationType = this
 						.buildAttributeForAnnotationType(curEntType);
 				// and do the recursion
 				this.doRecursion(attributeForAnnotationType, curEntType,
-						emptyVisited, toRoot);
+						emptyVisited);
 			}
 		}
 	}
 
 	public void parse(EntityType<?> curEntType, Class<?> cameFrom,
-			Function<Object, Object> cameFromToRoot, Set<EntityType<?>> visited) {
+			Set<EntityType<?>> visited) {
 		Map<Class<? extends Annotation>, List<Attribute<?, ?>>> attributeForAnnotationType = this
 				.buildAttributeForAnnotationType(curEntType);
 
@@ -86,18 +81,14 @@ public class MetaModelParser {
 			toRoot = (object) -> {
 				Object parentOfThis = member(toParentAttribute.getJavaMember(),
 						object);
-				if (parentOfThis == null) {
-					// the entity has two types of parents or just no parent set
-					return null;
-				}
-				return cameFromToRoot.apply(parentOfThis);
+				return parentOfThis;
 			};
-			this.getParentFunctionList(curEntType.getJavaType()).add(toRoot);
+			this.getParentFunctionList(curEntType.getJavaType()).put(
+					curEntType.getJavaType(), toRoot);
 		}
 
 		// and do the recursion
-		this.doRecursion(attributeForAnnotationType, curEntType, visited,
-				toRoot);
+		this.doRecursion(attributeForAnnotationType, curEntType, visited);
 	}
 
 	private Map<Class<? extends Annotation>, List<Attribute<?, ?>>> buildAttributeForAnnotationType(
@@ -125,8 +116,7 @@ public class MetaModelParser {
 
 	private void doRecursion(
 			Map<Class<? extends Annotation>, List<Attribute<?, ?>>> attributeForAnnotationType,
-			EntityType<?> entType, Set<EntityType<?>> visited,
-			Function<Object, Object> toRoot) {
+			EntityType<?> entType, Set<EntityType<?>> visited) {
 		// we don't change the original visited set.
 		Set<EntityType<?>> newVisited = new HashSet<>(visited);
 		// add the current entityType to the set
@@ -161,13 +151,14 @@ public class MetaModelParser {
 						(attribute) -> {
 							this.parse((EntityType<?>) this.managedTypes
 									.get(attribute.getJavaType()), entType
-									.getJavaType(), toRoot, newVisited);
+									.getJavaType(), newVisited);
 						});
 	}
 
-	private List<Function<Object, Object>> getParentFunctionList(Class<?> clazz) {
+	private Map<Class<?>, Function<Object, Object>> getParentFunctionList(
+			Class<?> clazz) {
 		return this.rootParentAccessors.computeIfAbsent(clazz, (key) -> {
-			return new ArrayList<>();
+			return new HashMap<>();
 		});
 	}
 
