@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -23,6 +24,7 @@ public class Place {
 	private Integer id;
 	private String name;
 	private Set<Sorcerer> sorcerers = new HashSet<>();
+	private AdditionalPlace additionalPlace;
 
 	@Id
 	@DocumentId
@@ -58,6 +60,15 @@ public class Place {
 	public String toString() {
 		return "Place [id=" + id + ", name=" + name + ", sorcerers="
 				+ sorcerers + "]";
+	}
+
+	@OneToOne
+	public AdditionalPlace getAdditionalPlace() {
+		return additionalPlace;
+	}
+
+	public void setAdditionalPlace(AdditionalPlace additionalPlace) {
+		this.additionalPlace = additionalPlace;
 	}
 
 }

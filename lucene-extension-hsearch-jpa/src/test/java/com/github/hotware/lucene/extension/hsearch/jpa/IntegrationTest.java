@@ -3,6 +3,7 @@ package com.github.hotware.lucene.extension.hsearch.jpa;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.PluralAttribute;
 
 import org.apache.lucene.search.Query;
 import org.junit.After;
@@ -96,12 +99,23 @@ public class IntegrationTest {
 		EntityProvider entityProvider = null;
 		SearchFactory searchFactory = null;
 		try {
+			EntityManager em;
 			entityProvider = new EntityManagerEntityProvider(
-					this.emf.createEntityManager());
+					em = this.emf.createEntityManager());
 			EmptyEventProvider eventProvider = new EmptyEventProvider();
 			searchFactory = SearchFactoryFactory.createSearchFactory(
 					eventProvider, new SearchConfigurationImpl(),
 					Arrays.asList(Place.class));
+			
+			for(EntityType<?> entityType : em.getMetamodel().getEntities()) {
+				for(PluralAttribute<?, ?, ?> plural : entityType.getDeclaredPluralAttributes()) {
+					System.out.println(plural.getBindableJavaType());
+					System.out.println(plural.getJavaMember());
+					System.out.println(plural.getName());
+					System.out.println(plural.getPersistentAttributeType());
+					System.out.println(plural.getCollectionType());
+				}
+			}
 
 			//check if the consumer was set correctly
 			eventProvider.sendEvent(this.valinor);
