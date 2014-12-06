@@ -3,7 +3,6 @@ package com.github.hotware.lucene.extension.hsearch.jpa;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -13,12 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.PluralAttribute;
-
 import org.apache.lucene.search.Query;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.github.hotware.lucene.extension.hseach.entity.jpa.EntityManagerEntityProvider;
@@ -34,15 +28,10 @@ import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 
 public class IntegrationTest {
 
-	private EntityManagerFactory emf;
+	private int valinorId = 0;
 
-	private Place valinor;
-
-	@Before
-	public void setup() {
-		this.emf = Persistence.createEntityManagerFactory("Standalone");
-
-		EntityManager em = this.emf.createEntityManager();
+	public void setup(EntityManagerFactory emf) {
+		EntityManager em = emf.createEntityManager();
 		try {
 			EntityTransaction tx = em.getTransaction();
 			tx.begin();
@@ -82,7 +71,7 @@ public class IntegrationTest {
 			valinor.setSorcerers(sorcerersAtValinor);
 			em.persist(valinor);
 
-			this.valinor = valinor;
+			valinorId = valinor.getId();
 
 			em.flush();
 			tx.commit();
@@ -95,45 +84,94 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void test() throws InterruptedException, IOException {
+	public void testHibernate() throws IOException {
+		EntityManagerFactory emf = Persistence
+				.createEntityManagerFactory("Hibernate");
+		this.setup(emf);
+		try {
+			this.test(emf);
+		} finally {
+			emf.close();
+		}
+	}
+
+	// @Test
+	// public void testEclipseLink() throws IOException {
+	// EntityManagerFactory emf = Persistence
+	// .createEntityManagerFactory("EclipseLink");
+	// this.setup(emf);
+	// try {
+	// this.test(emf);
+	// } finally {
+	// emf.close();
+	// }
+	// }
+
+	public void test(EntityManagerFactory emf) throws IOException {
 		EntityProvider entityProvider = null;
 		SearchFactory searchFactory = null;
 		try {
 			EntityManager em;
 			entityProvider = new EntityManagerEntityProvider(
-					em = this.emf.createEntityManager());
+					em = emf.createEntityManager());
+			EntityTransaction tx = em.getTransaction();
+			tx.begin();
 			EmptyEventProvider eventProvider = new EmptyEventProvider();
 			searchFactory = SearchFactoryFactory.createSearchFactory(
 					eventProvider, new SearchConfigurationImpl(),
 					Arrays.asList(Place.class));
-			
-			for(EntityType<?> entityType : em.getMetamodel().getEntities()) {
-				for(PluralAttribute<?, ?, ?> plural : entityType.getDeclaredPluralAttributes()) {
-					System.out.println(plural.getBindableJavaType());
-					System.out.println(plural.getJavaMember());
-					System.out.println(plural.getName());
-					System.out.println(plural.getPersistentAttributeType());
-					System.out.println(plural.getCollectionType());
-				}
+
+			Place valinorDb = em.find(Place.class, valinorId);
+			valinorDb.setName("Valinor123");
+
+			em.flush();
+			valinorDb.setName("Valinor");
+			em.flush();
+
+			{
+				// this is done to test the behaviour of PostUpdate because of
+				// this:
+				// http://stackoverflow.com/questions/12097485/why-does-a-jpa-preupdate-annotated-method-get-called-during-a-query
+				//
+				// this was tested by hand, but should maybe changed into a unit
+				// test? PostUpdate will only get called when there is an actual
+				// change present (at least for Hibernate & EclipseLink) so we
+				// should be fine
+				// to use PostUpdate for automatically updating our index
+				Place place = (Place) em.createQuery("SELECT a FROM Place a")
+						.getResultList().get(0);
+
+				Sorcerer newSorcerer = new Sorcerer();
+				newSorcerer.setName("Odalbort the Unknown");
+
+				place.getSorcerers().add(newSorcerer);
+
+				place = (Place) em.createQuery("SELECT a FROM Place a")
+						.getResultList().get(0);
 			}
 
-			//check if the consumer was set correctly
-			eventProvider.sendEvent(this.valinor);
-			
-			//TODO: check if this is done correctly in the index
-			searchFactory.purgeAll(Place.class);
-			searchFactory.index(this.valinor);
-			searchFactory.delete(this.valinor);
-			searchFactory.index(this.valinor);
-			searchFactory.update(this.valinor);
+			// check if the consumer was set correctly
+			eventProvider.sendEvent(valinorDb);
 
-			Query query = searchFactory.buildQueryBuilder().forEntity(Place.class).get()
-					.keyword().onField("name").matching("valinor").createQuery();
-			HSearchQuery<Place> jpaQuery = searchFactory.createQuery(query, Place.class);
+			// TODO: check if this is done correctly in the index
+			searchFactory.purgeAll(Place.class);
+			searchFactory.index(valinorDb);
+			searchFactory.delete(valinorDb);
+			searchFactory.index(valinorDb);
+			searchFactory.update(valinorDb);
+
+			Query query = searchFactory.buildQueryBuilder()
+					.forEntity(Place.class).get().keyword().onField("name")
+					.matching("valinor").createQuery();
+			HSearchQuery<Place> jpaQuery = searchFactory.createQuery(query,
+					Place.class);
 			List<Place> places = jpaQuery.query(entityProvider, Place.class);
-			
+
 			assertEquals(1, places.size());
 			assertEquals("Valinor", places.get(0).getName());
+
+			System.out.println("finished integration test");
+			tx.commit();
 		} finally {
 			if (entityProvider != null) {
 				entityProvider.close();
@@ -142,11 +180,6 @@ public class IntegrationTest {
 				searchFactory.close();
 			}
 		}
-	}
-
-	@After
-	public void cleanUp() {
-		this.emf.close();
 	}
 
 	public static final class EmptyEventProvider implements EventProvider {

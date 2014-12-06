@@ -3,12 +3,14 @@ package com.github.hotware.lucene.extension.hsearch.jpa.test.entities;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PostUpdate;
 
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -20,6 +22,11 @@ import org.hibernate.search.annotations.Store;
 @Indexed
 @Entity
 public class Place {
+	
+	@PostUpdate
+	public void postUpdate() {
+		System.out.println("updated Place");
+	}
 
 	private Integer id;
 	private String name;
@@ -47,7 +54,7 @@ public class Place {
 	}
 
 	@IndexedEmbedded
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	public Set<Sorcerer> getSorcerers() {
 		return sorcerers;
 	}

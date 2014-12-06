@@ -24,7 +24,7 @@ public class AdditionalPlace2 {
 		return id;
 	}
 	
-	@OneToOne
+	@OneToOne(mappedBy="additionalPlace2")
 	@ContainedIn
 	public AdditionalPlace getAdditionalPlace() {
 		return additionalPlace;
