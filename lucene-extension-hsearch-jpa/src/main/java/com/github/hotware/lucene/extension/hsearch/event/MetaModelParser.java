@@ -21,6 +21,9 @@ import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.PluralAttribute;
+
+import javax.persistence.metamodel.SingularAttribute;
 
 import com.github.hotware.lucene.extension.hsearch.entity.annotation.Parent;
 
@@ -32,6 +35,18 @@ public class MetaModelParser {
 	private final Map<Class<?>, Map<Class<?>, Function<Object, Object>>> rootParentAccessors = new HashMap<>();
 	private final Map<Class<?>, ManagedType<?>> managedTypes = new HashMap<>();
 	private final Map<Class<?>, Boolean> isRootType = new HashMap<>();
+
+	public Map<Class<?>, Map<Class<?>, Function<Object, Object>>> getRootParentAccessors() {
+		return rootParentAccessors;
+	}
+
+	public Map<Class<?>, ManagedType<?>> getManagedTypes() {
+		return managedTypes;
+	}
+
+	public Map<Class<?>, Boolean> getIsRootType() {
+		return isRootType;
+	}
 
 	public void parse(Metamodel metaModel) {
 		this.rootParentAccessors.clear();
@@ -149,8 +164,21 @@ public class MetaModelParser {
 				})
 				.forEach(
 						(attribute) -> {
+							Class<?> entityTypeClass;
+							if (attribute instanceof PluralAttribute<?, ?, ?>) {
+								entityTypeClass = (((PluralAttribute<?, ?, ?>) attribute)
+										.getElementType().getJavaType());
+							} else if (attribute instanceof SingularAttribute<?, ?>) {
+								entityTypeClass = (((SingularAttribute<?, ?>) attribute)
+										.getType().getJavaType());
+							} else {
+								throw new AssertionError(
+										"attributes have to either be "
+												+ "instanceof PluralAttribute or SingularAttribute "
+												+ "at this point");
+							}
 							this.parse((EntityType<?>) this.managedTypes
-									.get(attribute.getJavaType()), entType
+									.get(entityTypeClass), entType
 									.getJavaType(), newVisited);
 						});
 	}
