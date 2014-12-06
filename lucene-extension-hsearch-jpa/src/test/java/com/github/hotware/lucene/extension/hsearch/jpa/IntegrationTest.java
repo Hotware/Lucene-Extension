@@ -95,17 +95,17 @@ public class IntegrationTest {
 		}
 	}
 
-	// @Test
-	// public void testEclipseLink() throws IOException {
-	// EntityManagerFactory emf = Persistence
-	// .createEntityManagerFactory("EclipseLink");
-	// this.setup(emf);
-	// try {
-	// this.test(emf);
-	// } finally {
-	// emf.close();
-	// }
-	// }
+//	@Test
+//	public void testEclipseLink() throws IOException {
+//		EntityManagerFactory emf = Persistence
+//				.createEntityManagerFactory("EclipseLink");
+//		this.setup(emf);
+//		try {
+//			this.test(emf);
+//		} finally {
+//			emf.close();
+//		}
+//	}
 
 	public void test(EntityManagerFactory emf) throws IOException {
 		EntityProvider entityProvider = null;
@@ -122,11 +122,14 @@ public class IntegrationTest {
 					Arrays.asList(Place.class));
 
 			Place valinorDb = em.find(Place.class, valinorId);
-			valinorDb.setName("Valinor123");
+			// this should not trigger an PostUpdate and doesn't
+			// TODO: unit-testify this
+			em.merge(valinorDb);
 
-			em.flush();
+			valinorDb.setName("Valinor123");
 			valinorDb.setName("Valinor");
-			em.flush();
+			// this shouldn't trigger an PostUpdate and doesn't
+			em.merge(valinorDb);
 
 			{
 				// this is done to test the behaviour of PostUpdate because of

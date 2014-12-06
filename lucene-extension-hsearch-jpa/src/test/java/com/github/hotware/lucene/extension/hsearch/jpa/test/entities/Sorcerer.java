@@ -1,12 +1,15 @@
 package com.github.hotware.lucene.extension.hsearch.jpa.test.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
 
 @Entity
@@ -14,6 +17,7 @@ public class Sorcerer {
 
 	private Integer id;
 	private String name;
+	private Place place;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,6 +41,16 @@ public class Sorcerer {
 	@Override
 	public String toString() {
 		return "Sorcerer [id=" + id + ", name=" + name + "]";
+	}
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@IndexedEmbedded
+	public Place getPlace() {
+		return place;
+	}
+
+	public void setPlace(Place place) {
+		this.place = place;
 	}
 
 }
