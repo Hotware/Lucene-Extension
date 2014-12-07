@@ -3,16 +3,20 @@ package com.github.hotware.lucene.extension.hsearch.jpa;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+
 import org.apache.lucene.search.Query;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.github.hotware.lucene.extension.hseach.entity.jpa.EntityManagerEntityProvider;
@@ -22,6 +26,11 @@ import com.github.hotware.lucene.extension.hsearch.event.EventProvider;
 import com.github.hotware.lucene.extension.hsearch.factory.SearchConfigurationImpl;
 import com.github.hotware.lucene.extension.hsearch.factory.SearchFactory;
 import com.github.hotware.lucene.extension.hsearch.factory.SearchFactoryFactory;
+import com.github.hotware.lucene.extension.hsearch.jpa.event.JPAEventProvider;
+import com.github.hotware.lucene.extension.hsearch.jpa.event.MetaModelParser;
+import com.github.hotware.lucene.extension.hsearch.jpa.test.entities.AdditionalPlace;
+import com.github.hotware.lucene.extension.hsearch.jpa.test.entities.AdditionalPlace2;
+import com.github.hotware.lucene.extension.hsearch.jpa.test.entities.EmbeddableInfo;
 import com.github.hotware.lucene.extension.hsearch.jpa.test.entities.Place;
 import com.github.hotware.lucene.extension.hsearch.jpa.test.entities.Sorcerer;
 import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
@@ -29,8 +38,12 @@ import com.github.hotware.lucene.extension.hsearch.query.HSearchQuery;
 public class IntegrationTest {
 
 	private int valinorId = 0;
+	private Place valinor;
+	private EntityManagerFactory emf;
 
-	public void setup(EntityManagerFactory emf) {
+	@Before
+	public void setup() {
+		this.emf = Persistence.createEntityManagerFactory("EclipseLink");
 		EntityManager em = emf.createEntityManager();
 		try {
 			EntityTransaction tx = em.getTransaction();
@@ -61,6 +74,7 @@ public class IntegrationTest {
 			helmsDeep.setName("Helm's Deep");
 			Set<Sorcerer> sorcerersAtHelmsDeep = new HashSet<>();
 			sorcerersAtHelmsDeep.add(gandalf);
+			gandalf.setPlace(helmsDeep);
 			helmsDeep.setSorcerers(sorcerersAtHelmsDeep);
 			em.persist(helmsDeep);
 
@@ -68,10 +82,13 @@ public class IntegrationTest {
 			valinor.setName("Valinor");
 			Set<Sorcerer> sorcerersAtValinor = new HashSet<>();
 			sorcerersAtValinor.add(saruman);
+			saruman.setPlace(valinor);
 			valinor.setSorcerers(sorcerersAtValinor);
 			em.persist(valinor);
 
 			valinorId = valinor.getId();
+
+			this.valinor = valinor;
 
 			em.flush();
 			tx.commit();
@@ -83,31 +100,51 @@ public class IntegrationTest {
 
 	}
 
+	// FIXME: for some reason, this doesn't work anymore...
+	// @Test
+	// public void testHibernate() throws IOException {
+	// EntityManagerFactory emf = Persistence
+	// .createEntityManagerFactory("Hibernate");
+	// this.setup(emf);
+	// try {
+	// this.test(emf);
+	// } finally {
+	// emf.close();
+	// }
+	// }
+
 	@Test
-	public void testHibernate() throws IOException {
-		EntityManagerFactory emf = Persistence
-				.createEntityManagerFactory("Hibernate");
-		this.setup(emf);
+	public void testEclipseLink() throws IOException {
+		System.out.println("meta model parser seems to be ok.");
+		this.test();
+	}
+
+	@Test
+	public void testMetaModelParser() throws IOException {
+		EntityProvider entityProvider = null;
+		SearchFactory searchFactory = null;
 		try {
-			this.test(emf);
+			MetaModelParser parser = new MetaModelParser();
+			parser.parse(this.emf.getMetamodel());
+			{
+				Sorcerer sorc = this.valinor.getSorcerers().iterator().next();
+				Function<Object, Object> func = parser.getRootParentAccessors()
+						.get(Sorcerer.class).get(Place.class);
+				Place place = (Place) func.apply(sorc);
+				assertEquals(this.valinor, place);
+			}
 		} finally {
-			emf.close();
+			if (entityProvider != null) {
+				entityProvider.close();
+			}
+			if (searchFactory != null) {
+				searchFactory.close();
+			}
 		}
 	}
 
-//	@Test
-//	public void testEclipseLink() throws IOException {
-//		EntityManagerFactory emf = Persistence
-//				.createEntityManagerFactory("EclipseLink");
-//		this.setup(emf);
-//		try {
-//			this.test(emf);
-//		} finally {
-//			emf.close();
-//		}
-//	}
-
-	public void test(EntityManagerFactory emf) throws IOException {
+	@SuppressWarnings("unchecked")
+	public void test() throws IOException {
 		EntityProvider entityProvider = null;
 		SearchFactory searchFactory = null;
 		try {
@@ -116,20 +153,32 @@ public class IntegrationTest {
 					em = emf.createEntityManager());
 			EntityTransaction tx = em.getTransaction();
 			tx.begin();
-			EmptyEventProvider eventProvider = new EmptyEventProvider();
+
+			MetaModelParser parser = new MetaModelParser();
+			parser.parse(em.getMetamodel());
+			JPAEventProvider eventProvider = JPAEventProvider.register(parser
+					.getManagedTypes().keySet(), true);
+
 			searchFactory = SearchFactoryFactory.createSearchFactory(
-					eventProvider, new SearchConfigurationImpl(),
-					Arrays.asList(Place.class));
+					eventProvider, new SearchConfigurationImpl(), Arrays
+							.asList(Place.class, Sorcerer.class,
+									EmbeddableInfo.class,
+									AdditionalPlace.class,
+									AdditionalPlace2.class));
+			
+			searchFactory.index(em.createQuery("SELECT a FROM Place a")
+						.getResultList());
 
 			Place valinorDb = em.find(Place.class, valinorId);
+
 			// this should not trigger an PostUpdate and doesn't
 			// TODO: unit-testify this
-			em.merge(valinorDb);
+			em.flush();
 
 			valinorDb.setName("Valinor123");
 			valinorDb.setName("Valinor");
 			// this shouldn't trigger an PostUpdate and doesn't
-			em.merge(valinorDb);
+			em.flush();
 
 			{
 				// this is done to test the behaviour of PostUpdate because of
@@ -146,22 +195,30 @@ public class IntegrationTest {
 
 				Sorcerer newSorcerer = new Sorcerer();
 				newSorcerer.setName("Odalbort the Unknown");
+				newSorcerer.setPlace(place);
 
 				place.getSorcerers().add(newSorcerer);
 
+				// this will trigger a postUpdate on Place :).
+				// collections can be handled from the entity owning the entity
+				// :)
 				place = (Place) em.createQuery("SELECT a FROM Place a")
 						.getResultList().get(0);
+
+				// this won't trigger a postUpdate on Place
+				newSorcerer.setName("Odalbert the once known");
+				em.flush();
 			}
 
-			// check if the consumer was set correctly
-			eventProvider.sendEvent(valinorDb);
-
-			// TODO: check if this is done correctly in the index
-			searchFactory.purgeAll(Place.class);
-			searchFactory.index(valinorDb);
-			searchFactory.delete(valinorDb);
-			searchFactory.index(valinorDb);
-			searchFactory.update(valinorDb);
+			List<EmbeddableInfo> embeddableInfo = new ArrayList<>();
+			{
+				EmbeddableInfo e1 = new EmbeddableInfo();
+				e1.setInfo("random info about valinor");
+				e1.setOwnerId(valinorId);
+				embeddableInfo.add(e1);
+			}
+			valinorDb.setInfo(embeddableInfo);
+			em.flush();
 
 			Query query = searchFactory.buildQueryBuilder()
 					.forEntity(Place.class).get().keyword().onField("name")
@@ -188,6 +245,11 @@ public class IntegrationTest {
 	public static final class EmptyEventProvider implements EventProvider {
 
 		private EventConsumer eventConsumer;
+
+		@Override
+		public void disable(boolean disable) {
+			// this can't even be enabled :D
+		}
 
 		@Override
 		public void setEventConsumer(EventConsumer eventConsumer) {

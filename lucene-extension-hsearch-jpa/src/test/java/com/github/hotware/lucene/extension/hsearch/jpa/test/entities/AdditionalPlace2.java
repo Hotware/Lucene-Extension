@@ -1,6 +1,7 @@
 package com.github.hotware.lucene.extension.hsearch.jpa.test.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -8,7 +9,10 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.search.annotations.ContainedIn;
 
+import com.github.hotware.lucene.extension.hsearch.jpa.event.HSearchJPAEventListener;
+
 @Entity
+@EntityListeners(HSearchJPAEventListener.class)
 public class AdditionalPlace2 {
 	
 	private Integer id;

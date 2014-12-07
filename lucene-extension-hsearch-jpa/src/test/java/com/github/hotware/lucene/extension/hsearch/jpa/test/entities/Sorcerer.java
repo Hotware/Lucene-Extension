@@ -2,17 +2,22 @@ package com.github.hotware.lucene.extension.hsearch.jpa.test.entities;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
 
+import com.github.hotware.lucene.extension.hsearch.jpa.event.HSearchJPAEventListener;
+
 @Entity
+@EntityListeners({HSearchJPAEventListener.class})
 public class Sorcerer {
 
 	private Integer id;
@@ -43,6 +48,7 @@ public class Sorcerer {
 		return "Sorcerer [id=" + id + ", name=" + name + "]";
 	}
 
+	@ContainedIn
 	@ManyToOne(cascade = CascadeType.ALL)
 	@IndexedEmbedded
 	public Place getPlace() {

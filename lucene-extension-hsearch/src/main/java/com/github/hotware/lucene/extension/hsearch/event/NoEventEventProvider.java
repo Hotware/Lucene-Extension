@@ -7,4 +7,9 @@ public class NoEventEventProvider implements EventProvider {
 		
 	}
 
+	@Override
+	public void disable(boolean disable) {
+		
+	}
+
 }
