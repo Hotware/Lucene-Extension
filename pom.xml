@@ -10,8 +10,6 @@
 	<modules>
 		<module>lucene-extension-core</module>
 		<module>lucene-extension-bean-converter</module>
-		<module>lucene-extension-hsearch</module>
-		<module>lucene-extension-hsearch-jpa</module>
 	</modules>
 
 	<description>
