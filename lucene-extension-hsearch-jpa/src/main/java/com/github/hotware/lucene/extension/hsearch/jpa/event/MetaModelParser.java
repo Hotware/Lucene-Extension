@@ -163,7 +163,7 @@ public class MetaModelParser {
 		// this should be okay to do, as cycles don't matter
 		// as long as we start from the original
 		attributeForAnnotationType
-				.get(IndexedEmbedded.class)
+				.getOrDefault(IndexedEmbedded.class, new ArrayList<>())
 				.stream()
 				.filter((attribute) -> {
 					Class<?> entityTypeClass = this

@@ -12,13 +12,14 @@ import com.github.hotware.lucene.extension.hsearch.event.EventProvider;
  * <br>
  * <br>
  * 
- * TODO: maybe implement a batching Provider wrapping this?
+ * TODO: maybe implement a batching Provider wrapping this to reduce the amount
+ * of requests we get.
  * 
  * @author Martin Braun
  */
 public final class JPAEventProvider implements EventProvider,
 		HSearchJPAEventListener.Listener {
-	
+
 	private boolean disable = false;
 	private final Set<Class<?>> listenTo;
 	private final boolean preEvents;
@@ -28,7 +29,7 @@ public final class JPAEventProvider implements EventProvider,
 		this.listenTo = Collections.unmodifiableSet(listenTo);
 		this.preEvents = preEvents;
 	}
-	
+
 	@Override
 	public void disable(boolean disable) {
 		this.disable = disable;
@@ -46,7 +47,7 @@ public final class JPAEventProvider implements EventProvider,
 
 	@Override
 	public Set<Class<?>> listenTo() {
-		if(this.disable) {
+		if (this.disable) {
 			return Collections.emptySet();
 		}
 		return this.listenTo;
@@ -72,13 +73,14 @@ public final class JPAEventProvider implements EventProvider,
 			this.eventConsumer.delete(entity);
 		}
 	}
-	
-	public static JPAEventProvider register(Set<Class<?>> listenTo, boolean preEvents) {
+
+	public static JPAEventProvider register(Set<Class<?>> listenTo,
+			boolean preEvents) {
 		JPAEventProvider provider = new JPAEventProvider(listenTo, preEvents);
 		HSearchJPAEventListener.listeners.add(provider);
 		return provider;
 	}
-	
+
 	public static void remove(JPAEventProvider provider) {
 		HSearchJPAEventListener.listeners.remove(provider);
 	}

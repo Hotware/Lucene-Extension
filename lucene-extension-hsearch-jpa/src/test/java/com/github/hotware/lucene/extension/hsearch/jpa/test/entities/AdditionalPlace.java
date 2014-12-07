@@ -1,13 +1,21 @@
 package com.github.hotware.lucene.extension.hsearch.jpa.test.entities;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Store;
 
 import com.github.hotware.lucene.extension.hsearch.jpa.event.HSearchJPAEventListener;
 
@@ -16,7 +24,8 @@ import com.github.hotware.lucene.extension.hsearch.jpa.event.HSearchJPAEventList
 public class AdditionalPlace {
 
 	private Integer id;
-	private Place place;
+	private String info;
+	private List<Place> place;
 	private AdditionalPlace2 additionalPlace2;
 
 	public void setId(Integer id) {
@@ -39,13 +48,23 @@ public class AdditionalPlace {
 	}
 
 	@ContainedIn
-	@OneToOne(mappedBy = "additionalPlace")
-	public Place getPlace() {
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "additionalPlace")
+	public List<Place> getPlace() {
 		return place;
 	}
 
-	public void setPlace(Place place) {
+	public void setPlace(List<Place> place) {
 		this.place = place;
+	}
+
+	@Column
+	@Field(store = Store.YES, index = Index.YES)
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
 	}
 
 }

@@ -10,9 +10,8 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PostUpdate;
 import javax.persistence.Transient;
 
 import org.hibernate.search.annotations.ContainedIn;
@@ -30,15 +29,10 @@ import com.github.hotware.lucene.extension.hsearch.jpa.event.HSearchJPAEventList
 @EntityListeners({HSearchJPAEventListener.class})
 public class Place {
 
-	@PostUpdate
-	public void postUpdate() {
-		System.out.println("updated Place");
-	}
-
 	private Integer id;
 	private String name;
 	private Set<Sorcerer> sorcerers = new HashSet<>();
-	private AdditionalPlace additionalPlace;
+	private List<AdditionalPlace> additionalPlace;
 	private List<EmbeddableInfo> info;
 
 	@Id
@@ -78,12 +72,14 @@ public class Place {
 				+ sorcerers + "]";
 	}
 
-	@OneToOne
-	public AdditionalPlace getAdditionalPlace() {
+	@ManyToMany(cascade = CascadeType.ALL)
+	@IndexedEmbedded
+	@ContainedIn
+	public List<AdditionalPlace> getAdditionalPlace() {
 		return additionalPlace;
 	}
 
-	public void setAdditionalPlace(AdditionalPlace additionalPlace) {
+	public void setAdditionalPlace(List<AdditionalPlace> additionalPlace) {
 		this.additionalPlace = additionalPlace;
 	}
 

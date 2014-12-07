@@ -21,8 +21,6 @@ import org.junit.Test;
 
 import com.github.hotware.lucene.extension.hseach.entity.jpa.EntityManagerEntityProvider;
 import com.github.hotware.lucene.extension.hsearch.entity.EntityProvider;
-import com.github.hotware.lucene.extension.hsearch.event.EventConsumer;
-import com.github.hotware.lucene.extension.hsearch.event.EventProvider;
 import com.github.hotware.lucene.extension.hsearch.factory.SearchConfigurationImpl;
 import com.github.hotware.lucene.extension.hsearch.factory.SearchFactory;
 import com.github.hotware.lucene.extension.hsearch.factory.SearchFactoryFactory;
@@ -48,6 +46,14 @@ public class IntegrationTest {
 		try {
 			EntityTransaction tx = em.getTransaction();
 			tx.begin();
+			
+			@SuppressWarnings("unchecked")
+			List<Place> toDelete = new ArrayList<>(em.createQuery("SELECT a FROM Place a")
+					.getResultList());
+			for(Place place : toDelete) {
+				em.remove(place);
+			}
+			em.flush();
 
 			Sorcerer gandalf = new Sorcerer();
 			gandalf.setName("Gandalf");
@@ -165,31 +171,56 @@ public class IntegrationTest {
 									EmbeddableInfo.class,
 									AdditionalPlace.class,
 									AdditionalPlace2.class));
-			
-			searchFactory.index(em.createQuery("SELECT a FROM Place a")
+
+			// at first: index all places we can find
+			{
+				searchFactory.index(em.createQuery("SELECT a FROM Place a")
 						.getResultList());
-
-			Place valinorDb = em.find(Place.class, valinorId);
-
-			// this should not trigger an PostUpdate and doesn't
-			// TODO: unit-testify this
-			em.flush();
-
-			valinorDb.setName("Valinor123");
-			valinorDb.setName("Valinor");
-			// this shouldn't trigger an PostUpdate and doesn't
-			em.flush();
+			}
 
 			{
-				// this is done to test the behaviour of PostUpdate because of
-				// this:
-				// http://stackoverflow.com/questions/12097485/why-does-a-jpa-preupdate-annotated-method-get-called-during-a-query
-				//
-				// this was tested by hand, but should maybe changed into a unit
-				// test? PostUpdate will only get called when there is an actual
-				// change present (at least for Hibernate & EclipseLink) so we
-				// should be fine
-				// to use PostUpdate for automatically updating our index
+				Place valinorDb = em.find(Place.class, valinorId);
+				valinorDb.setName("Valinor123");
+				em.flush();
+				// check if we find the renamed version in the index
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "name", "valinor123");
+					assertEquals(1, places.size());
+					assertEquals("Valinor123", places.get(0).getName());
+				}
+
+				// the original version should not be found in the index
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "name", "valinor");
+					assertEquals(0, places.size());
+				}
+
+				// and name it back
+				valinorDb.setName("Valinor");
+				em.flush();
+
+				// we should find it again
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "name", "valinor");
+					assertEquals(1, places.size());
+					assertEquals("Valinor", places.get(0).getName());
+				}
+
+				List<EmbeddableInfo> embeddableInfo = new ArrayList<>();
+				{
+					EmbeddableInfo e1 = new EmbeddableInfo();
+					e1.setInfo("random info about valinor");
+					e1.setOwnerId(valinorId);
+					embeddableInfo.add(e1);
+				}
+				valinorDb.setInfo(embeddableInfo);
+				em.flush();
+			}
+
+			{
 				Place place = (Place) em.createQuery("SELECT a FROM Place a")
 						.getResultList().get(0);
 
@@ -205,30 +236,68 @@ public class IntegrationTest {
 				place = (Place) em.createQuery("SELECT a FROM Place a")
 						.getResultList().get(0);
 
-				// this won't trigger a postUpdate on Place
-				newSorcerer.setName("Odalbert the once known");
+				// this won't trigger a postUpdate on Place, but on Sorcerer
+				newSorcerer.setName("Odalbert");
 				em.flush();
+
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "sorcerers.name", "odalbert");
+					assertEquals(1, places.size());
+				}
+
+				newSorcerer.setPlace(null);
+				em.flush();
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "sorcerers.name", "odalbert");
+					// as we set the parent to null
+					// but we didn't remove it from the collection
+					// of Place this should still be found here
+					// from the index of Place, but changes to this Sorcerer
+					// will not be propagated up anymore.
+					assertEquals(1, places.size());
+				}
+
+				newSorcerer.setPlace(place);
+				em.flush();
+
+				place.getSorcerers().remove(newSorcerer);
+				em.flush();
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "sorcerers.name", "odalbert");
+					assertEquals(0, places.size());
+				}
+				
+				List<AdditionalPlace> additionalPlace = new ArrayList<>();
+				{
+					AdditionalPlace a = new AdditionalPlace();
+					a.setPlace(Arrays.asList(place));
+					a.setInfo("addi");
+					additionalPlace.add(a);
+				}
+				place.setAdditionalPlace(additionalPlace);
+				em.flush();
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.info", "addi");
+					assertEquals(1, places.size());
+				}
+				
+				additionalPlace.get(0).setInfo("addi2");
+				em.flush();
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.info", "addi");
+					assertEquals(0, places.size());
+				}
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.info", "addi2");
+					assertEquals(1, places.size());
+				}
 			}
-
-			List<EmbeddableInfo> embeddableInfo = new ArrayList<>();
-			{
-				EmbeddableInfo e1 = new EmbeddableInfo();
-				e1.setInfo("random info about valinor");
-				e1.setOwnerId(valinorId);
-				embeddableInfo.add(e1);
-			}
-			valinorDb.setInfo(embeddableInfo);
-			em.flush();
-
-			Query query = searchFactory.buildQueryBuilder()
-					.forEntity(Place.class).get().keyword().onField("name")
-					.matching("valinor").createQuery();
-			HSearchQuery<Place> jpaQuery = searchFactory.createQuery(query,
-					Place.class);
-			List<Place> places = jpaQuery.query(entityProvider, Place.class);
-
-			assertEquals(1, places.size());
-			assertEquals("Valinor", places.get(0).getName());
 
 			System.out.println("finished integration test");
 			tx.commit();
@@ -242,24 +311,14 @@ public class IntegrationTest {
 		}
 	}
 
-	public static final class EmptyEventProvider implements EventProvider {
-
-		private EventConsumer eventConsumer;
-
-		@Override
-		public void disable(boolean disable) {
-			// this can't even be enabled :D
-		}
-
-		@Override
-		public void setEventConsumer(EventConsumer eventConsumer) {
-			this.eventConsumer = eventConsumer;
-		}
-
-		public void sendEvent(Place place) {
-			this.eventConsumer.index(place);
-		}
-
+	private List<Place> findPlaces(SearchFactory searchFactory,
+			EntityProvider entityProvider, String field, String value) {
+		Query query = searchFactory.buildQueryBuilder().forEntity(Place.class)
+				.get().keyword().onField(field).matching(value).createQuery();
+		HSearchQuery<Place> jpaQuery = searchFactory.createQuery(query,
+				Place.class);
+		List<Place> places = jpaQuery.query(entityProvider, Place.class);
+		return places;
 	}
 
 }
