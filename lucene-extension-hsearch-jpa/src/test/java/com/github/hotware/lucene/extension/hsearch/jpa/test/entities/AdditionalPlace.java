@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
 
 import com.github.hotware.lucene.extension.hsearch.jpa.event.HSearchJPAEventListener;
@@ -38,7 +39,8 @@ public class AdditionalPlace {
 		return id;
 	}
 
-	@OneToOne
+	@IndexedEmbedded
+	@OneToOne(cascade = CascadeType.ALL, optional = true)
 	public AdditionalPlace2 getAdditionalPlace2() {
 		return additionalPlace2;
 	}

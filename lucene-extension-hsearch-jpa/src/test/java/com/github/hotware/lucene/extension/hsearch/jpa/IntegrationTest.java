@@ -273,15 +273,24 @@ public class IntegrationTest {
 				List<AdditionalPlace> additionalPlace = new ArrayList<>();
 				{
 					AdditionalPlace a = new AdditionalPlace();
-					a.setPlace(Arrays.asList(place));
+					a.setPlace(new ArrayList<>(Arrays.asList(place)));
 					a.setInfo("addi");
+					AdditionalPlace2 a2 = new AdditionalPlace2();
+					a2.setAdditionalPlace(a);
+					a2.setInfo("toast");
+					a.setAdditionalPlace2(a2);
 					additionalPlace.add(a);
 				}
-				place.setAdditionalPlace(additionalPlace);
+				place.setAdditionalPlace(new ArrayList<>(additionalPlace));
 				em.flush();
 				{
 					List<Place> places = this.findPlaces(searchFactory,
 							entityProvider, "additionalPlace.info", "addi");
+					assertEquals(1, places.size());
+				}
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.additionalPlace2.info", "toast");
 					assertEquals(1, places.size());
 				}
 				
@@ -296,6 +305,47 @@ public class IntegrationTest {
 					List<Place> places = this.findPlaces(searchFactory,
 							entityProvider, "additionalPlace.info", "addi2");
 					assertEquals(1, places.size());
+				}
+				
+				additionalPlace.get(0).getAdditionalPlace2().setInfo("goal");
+				em.flush();
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.additionalPlace2.info", "goal");
+					assertEquals(1, places.size());
+				}
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.additionalPlace2.info", "toast");
+					assertEquals(0, places.size());
+				}
+				
+				additionalPlace.get(0).setInfo("addi");
+				additionalPlace.get(0).getAdditionalPlace2().setInfo("toast");
+				em.flush();
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.info", "addi");
+					assertEquals(1, places.size());
+				}
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.additionalPlace2.info", "toast");
+					assertEquals(1, places.size());
+				}
+				
+				place.getAdditionalPlace().remove(additionalPlace.get(0));
+				additionalPlace.get(0).getPlace().remove(place);
+				em.flush();
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.info", "addi");
+					assertEquals(0, places.size());
+				}
+				{
+					List<Place> places = this.findPlaces(searchFactory,
+							entityProvider, "additionalPlace.additionalPlace2.info", "toast");
+					assertEquals(0, places.size());
 				}
 			}
 

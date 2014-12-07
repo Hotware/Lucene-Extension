@@ -34,9 +34,9 @@ import org.hibernate.search.annotations.IndexedEmbedded;
  * This class also has means to have accessors to the root entities of a
  * specific class. This could be used to propagate events up <br>
  * <br>
- * However, we don't know whether it is needed to propagate the events up, yet.
- * Hibernate-Search could take care of this via the @ContainedIn events, which
- * would be neat :). Either way, we still need this class to check whether the
+ * This could be used to propagate events up to the top entity, but
+ * Hibernate-Search takes care of this via the @ContainedIn events, which
+ * would is neat :). Either way, we still need this class to check whether the
  * classes are annotated properly (every entity has to know its parent via
  * 
  * @ContainedIn)
